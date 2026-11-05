@@ -1,0 +1,103 @@
+{
+  "assign_relationship_manager": [
+    "org_admin",
+    "sales_agent",
+    "sales_lead"
+  ],
+  "confirm_assignments": [
+    "operations_lead",
+    "org_admin",
+    "sales_lead"
+  ],
+  "create_organisation": [
+    "super_admin"
+  ],
+  "edit_pricing": [
+    "org_admin"
+  ],
+  "erase_personal_data": [
+    "org_admin"
+  ],
+  "manage_leads": [
+    "org_admin",
+    "sales_agent",
+    "sales_lead"
+  ],
+  "manage_programs": [
+    "org_admin"
+  ],
+  "manage_relationships": [
+    "org_admin",
+    "relationship_manager"
+  ],
+  "manage_settings": [
+    "org_admin"
+  ],
+  "manage_staff": [
+    "org_admin"
+  ],
+  "manage_tasks": [
+    "operations_agent",
+    "operations_lead",
+    "org_admin",
+    "relationship_manager",
+    "sales_agent",
+    "sales_lead"
+  ],
+  "manage_teams": [
+    "operations_lead",
+    "org_admin"
+  ],
+  "manage_templates": [
+    "org_admin"
+  ],
+  "platform_stats": [
+    "super_admin"
+  ],
+  "record_meeting": [
+    "org_admin",
+    "relationship_manager",
+    "sales_agent",
+    "sales_lead"
+  ],
+  "schedule_demos": [
+    "operations_lead",
+    "org_admin",
+    "sales_lead"
+  ],
+  "send_messages": [
+    "org_admin",
+    "relationship_manager",
+    "sales_agent",
+    "sales_lead"
+  ],
+  "send_proposal": [
+    "org_admin",
+    "sales_agent",
+    "sales_lead"
+  ],
+  "update_demo_status": [
+    "operations_agent",
+    "operations_lead",
+    "org_admin"
+  ],
+  "view_audit": [
+    "org_admin"
+  ],
+  "view_demos": [
+    "operations_agent",
+    "operations_lead",
+    "org_admin",
+    "relationship_manager",
+    "sales_agent",
+    "sales_lead"
+  ],
+  "view_leads": [
+    "operations_agent",
+    "operations_lead",
+    "org_admin",
+    "relationship_manager",
+    "sales_agent",
+    "sales_lead"
+  ]
+}

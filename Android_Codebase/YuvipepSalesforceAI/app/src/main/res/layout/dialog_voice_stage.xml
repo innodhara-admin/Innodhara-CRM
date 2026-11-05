@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Jarvis voice screen: the avatar (or the orb) on top, what is being said
+  underneath, the conversation's cards below that, and the controls at the
+  bottom. Always dark (Theme.YuviPep.VoiceStage).
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <com.yuvipep.app.feature.assistant.voice.VoiceStageBackground
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- ── Face ─────────────────────────────────────────────── -->
+        <FrameLayout
+            android:id="@+id/stageFace"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.60">
+
+            <!-- The chosen face. Sized and shaped in code: the whole area for a
+                 cut-out avatar, a rounded "video call" window for a video one. -->
+            <FrameLayout
+                android:id="@+id/avatarFrame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/avatarPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:importantForAccessibility="no" />
+
+                <!-- The Duix view is added here in code, and only once the
+                     avatar loads: it must have its renderer before its surface
+                     exists, or it crashes on first draw. -->
+                <FrameLayout
+                    android:id="@+id/avatarHolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:alpha="0" />
+
+                <LinearLayout
+                    android:id="@+id/avatarNameTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:layout_margin="12dp"
+                    android:background="@drawable/bg_avatar_name_tag"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:visibility="gone">
+
+                    <View
+                        android:id="@+id/avatarLiveDot"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/bg_stage_dot" />
+
+                    <TextView
+                        android:id="@+id/avatarNameTagText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:textAppearance="?attr/textAppearanceLabelMedium"
+                        android:textColor="@color/stage_on"
+                        tools:text="Lily" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <com.yuvipep.app.feature.assistant.voice.VoiceOrbView
+                android:id="@+id/stageOrb"
+                android:layout_width="220dp"
+                android:layout_height="220dp"
+                android:layout_gravity="center" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="96dp"
+                android:layout_gravity="top"
+                android:background="@drawable/bg_stage_top_scrim" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_gravity="bottom"
+                android:background="@drawable/bg_stage_scrim" />
+
+            <!-- Swipe, or tap, to meet the next face -->
+            <ImageButton
+                android:id="@+id/avatarPrev"
+                android:layout_width="44dp"
+                android:layout_height="64dp"
+                android:layout_gravity="start|center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/stage_avatar_prev"
+                android:src="@drawable/ic_chevron_left"
+                app:tint="@color/stage_on_muted" />
+
+            <ImageButton
+                android:id="@+id/avatarNext"
+                android:layout_width="44dp"
+                android:layout_height="64dp"
+                android:layout_gravity="end|center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/stage_avatar_next"
+                android:src="@drawable/ic_chevron_right"
+                app:tint="@color/stage_on_muted" />
+
+            <!-- Offer / progress for the avatar download -->
+            <LinearLayout
+                android:id="@+id/avatarSetup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="52dp"
+                android:background="@drawable/bg_stage_glass"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/avatarSetupTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stage_avatar_offer_title"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="@color/stage_on" />
+
+                <TextView
+                    android:id="@+id/avatarSetupBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/stage_on_muted" />
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/avatarProgress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone"
+                    app:indicatorColor="@color/stage_accent"
+                    app:trackColor="@color/stage_glass"
+                    app:trackCornerRadius="4dp" />
+
+                <LinearLayout
+                    android:id="@+id/avatarSetupButtons"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="end"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/avatarHear"
+                        style="@style/Widget.Material3.Button.TextButton.Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stage_avatar_hear"
+                        android:textColor="@color/stage_on"
+                        app:icon="@drawable/ic_volume_on"
+                        app:iconTint="@color/stage_on" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/avatarDownload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/stage_avatar_download"
+                        app:backgroundTint="@color/stage_accent"
+                        android:textColor="#FF06101F" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Status -->
+            <LinearLayout
+                android:id="@+id/statusPill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_stage_pill"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="14dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:accessibilityLiveRegion="polite">
+
+                <View
+                    android:id="@+id/statusDot"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/bg_stage_dot" />
+
+                <TextView
+                    android:id="@+id/statusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:textAppearance="?attr/textAppearanceLabelLarge"
+                    android:textColor="@color/stage_on"
+                    tools:text="Listening" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- ── Top bar (over the face) ──────────────────────────── -->
+        <LinearLayout
+            android:id="@+id/stageTopBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="4dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageButton
+                android:id="@+id/stageClose"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/stage_back_to_chat"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/stage_on" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.08"
+                    android:text="@string/stage_title"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="@color/stage_on" />
+
+                <TextView
+                    android:id="@+id/stageSubtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/stage_on_muted"
+                    tools:text="Lily · Bright, lively voice" />
+
+                <!-- One dot per face; the chosen one is lit. -->
+                <LinearLayout
+                    android:id="@+id/avatarDots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:orientation="horizontal" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/stageMenu"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/stage_options"
+                android:src="@drawable/ic_more_vert"
+                app:tint="@color/stage_on" />
+        </LinearLayout>
+
+        <!-- ── Live caption ─────────────────────────────────────── -->
+        <LinearLayout
+            android:id="@+id/captionBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="4dp"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/stageFace"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/captionSpeaker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.12"
+                android:textAllCaps="true"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/stage_accent"
+                tools:text="Jarvis" />
+
+            <TextView
+                android:id="@+id/captionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:lineSpacingMultiplier="1.12"
+                android:textColor="@color/stage_on"
+                android:textSize="18sp"
+                tools:text="Sure. Who should own it? Priya Nair, Rahul Reddy, or you?" />
+        </LinearLayout>
+
+        <!-- ── Conversation (the same cards as the chat) ────────── -->
+        <TextView
+            android:id="@+id/conversationLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="12dp"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical"
+            android:letterSpacing="0.1"
+            android:text="@string/stage_conversation"
+            android:textAllCaps="true"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
+            android:textColor="@color/stage_on_faint"
+            app:layout_constraintTop_toBottomOf="@id/captionBox"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/stageTranscript"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:clipToPadding="false"
+            android:fadingEdgeLength="28dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp"
+            android:requiresFadingEdge="vertical"
+            app:layout_constraintTop_toBottomOf="@id/conversationLabel"
+            app:layout_constraintBottom_toTopOf="@id/stageTypeRow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- ── Typing, inside the spoken conversation ───────────── -->
+        <LinearLayout
+            android:id="@+id/stageTypeRow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/stageControls"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/stage_type_hint"
+                app:boxCornerRadiusBottomEnd="20dp"
+                app:boxCornerRadiusBottomStart="20dp"
+                app:boxCornerRadiusTopEnd="20dp"
+                app:boxCornerRadiusTopStart="20dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/stageInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionSend"
+                    android:inputType="textCapSentences"
+                    android:maxLines="3" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stageSend"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/assistant_send"
+                app:icon="@drawable/ic_send" />
+        </LinearLayout>
+
+        <!-- ── Controls ─────────────────────────────────────────── -->
+        <LinearLayout
+            android:id="@+id/stageControls"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="4dp"
+            android:paddingBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stageKeyboard"
+                style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/stage_type_instead"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:backgroundTint="@color/stage_glass"
+                app:icon="@drawable/ic_keyboard"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@color/stage_on" />
+
+            <FrameLayout
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_marginStart="28dp"
+                android:layout_marginEnd="28dp">
+
+                <com.yuvipep.app.feature.assistant.voice.VoiceOrbView
+                    android:id="@+id/micHalo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/stageMic"
+                    style="@style/Widget.Material3.Button.IconButton.Filled"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/stage_mic_listening"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    app:backgroundTint="@color/stage_on"
+                    app:icon="@drawable/ic_mic"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="30dp"
+                    app:iconTint="#FF0B1428" />
+            </FrameLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stageEnd"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:contentDescription="@string/voice_mode_end"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                app:backgroundTint="@color/stage_end"
+                app:icon="@drawable/ic_call_end"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconTint="@color/stage_on" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

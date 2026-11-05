@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="What happens to a client after the work is delivered: who looks after them, how we stay in touch, and how they come back for a second round.">
+<title>The Relationship Manager</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a3d7c'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='%23f5a623' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* Design tokens lifted from the Innodhara download page and the pre-sales
+   page so all three read as one product. Same navy/amber, same neutrals,
+   same radius and shadows. */
+:root{
+  --navy:#1a3d7c;
+  --navy-lift:#2f5eaf;
+  --amber:#f5a623;
+  --bg:#f6f7fb;
+  --surface:#ffffff;
+  --surface-2:#fbfcfe;
+  --border:#e2e6f0;
+  --border-strong:#cdd4e4;
+  --ink:#111827;
+  --ink-2:#4b5563;
+  --ink-3:#6b7280;
+  --hero-ink:#ffffff;
+  --hero-ink-2:#c3cee4;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 12px 28px -12px rgba(16,24,40,.16);
+  --shadow-lift:0 2px 4px rgba(16,24,40,.06),0 22px 44px -16px rgba(26,61,124,.30);
+  --ok:#15803d; --ok-bg:#dcfce7;
+  --warn:#92400e; --warn-bg:#fef3c7; --warn-br:#fcd34d;
+  --bad:#b91c1c; --bad-bg:#fee2e2;
+  --cold:#6a4fb6; --cold-bg:#efebfa; --cold-br:#d9cff4;
+  --open:#527080; --open-bg:#e8eef2;
+  /* The relationship phase gets its own colour: teal, the one hue neither the
+     sales states nor the pre-sales page had claimed. It marks the part of the
+     lifecycle nobody was watching before. */
+  --rel:#0f766e; --rel-bg:#d7f2ee; --rel-br:#9fd9d1;
+  --radius:16px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#080c15; --surface:#121a2b; --surface-2:#161f33;
+    --border:#25314c; --border-strong:#33415f;
+    --ink:#eef2f9; --ink-2:#a9b4cb; --ink-3:#8592ad;
+    --hero-ink:#ffffff; --hero-ink-2:#b3c1de;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -12px rgba(0,0,0,.6);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.5),0 22px 44px -16px rgba(0,0,0,.7);
+    --ok:#4ade80; --ok-bg:#052e16;
+    --warn:#fcd34d; --warn-bg:#2e1f05; --warn-br:#7c5e12;
+    --bad:#fca5a5; --bad-bg:#3f1010;
+    --cold:#a996ea; --cold-bg:#241d38; --cold-br:#3d3260;
+    --open:#93b0c2; --open-bg:#1a242a;
+    --rel:#5eead4; --rel-bg:#062e2a; --rel-br:#155e56;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#080c15; --surface:#121a2b; --surface-2:#161f33;
+  --border:#25314c; --border-strong:#33415f;
+  --ink:#eef2f9; --ink-2:#a9b4cb; --ink-3:#8592ad;
+  --hero-ink:#ffffff; --hero-ink-2:#b3c1de;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -12px rgba(0,0,0,.6);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.5),0 22px 44px -16px rgba(0,0,0,.7);
+  --ok:#4ade80; --ok-bg:#052e16;
+  --warn:#fcd34d; --warn-bg:#2e1f05; --warn-br:#7c5e12;
+  --bad:#fca5a5; --bad-bg:#3f1010;
+  --cold:#a996ea; --cold-bg:#241d38; --cold-br:#3d3260;
+  --open:#93b0c2; --open-bg:#1a242a;
+  --rel:#5eead4; --rel-bg:#062e2a; --rel-br:#155e56;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img{max-width:100%}
+a{color:var(--navy)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) a{color:#9fc0ff}}
+:root[data-theme="dark"] a{color:#9fc0ff}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* ── hero ───────────────────────────────────────────── */
+.hero{
+  position:relative; color:var(--hero-ink); overflow:hidden;
+  background:
+    radial-gradient(900px 460px at 78% -12%, rgba(245,166,35,.30), transparent 62%),
+    radial-gradient(760px 420px at 8% 8%, rgba(15,118,110,.38), transparent 58%),
+    linear-gradient(158deg,#16305f 0%,#1a3d7c 46%,#12274f 100%);
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:radial-gradient(760px 400px at 50% 0%,#000,transparent 76%);
+  -webkit-mask-image:radial-gradient(760px 400px at 50% 0%,#000,transparent 76%);
+}
+.hero>*{position:relative;z-index:1}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:36px;height:36px;flex:none;border-radius:10px;background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.2);display:grid;place-items:center}
+.brand-name{font-weight:650;letter-spacing:-.01em;font-size:17px;white-space:nowrap}
+.pill{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+  color:#fff;white-space:nowrap}
+.hero-body{padding:clamp(28px,7vw,60px) 0 clamp(32px,6vw,56px);max-width:780px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--amber);margin:0 0 18px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--amber);border-radius:2px}
+h1{margin:0 0 18px;font-size:clamp(2rem,5.6vw,3.1rem);line-height:1.07;
+  letter-spacing:-.033em;font-weight:700;text-wrap:balance}
+.lede{margin:0;font-size:clamp(1rem,2.1vw,1.12rem);color:var(--hero-ink-2);max-width:62ch}
+.hero-facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.fact{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);
+  border-radius:11px;padding:10px 15px}
+.fact b{display:block;font-size:15px;font-weight:660;letter-spacing:-.01em}
+.fact span{font-size:12.5px;color:var(--hero-ink-2)}
+
+/* ── sections ───────────────────────────────────────── */
+main{padding:clamp(34px,6vw,56px) 0 10px}
+section{margin-bottom:clamp(38px,6vw,62px)}
+h2{font-size:clamp(1.25rem,3.1vw,1.6rem);letter-spacing:-.02em;margin:0 0 6px;font-weight:680}
+.section-sub{color:var(--ink-3);margin:0 0 22px;font-size:15px;max-width:70ch}
+p{margin:0 0 14px}
+p:last-child{margin-bottom:0}
+
+figure{margin:0}
+.fig{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px;box-shadow:var(--shadow)}
+figcaption{margin-top:12px;font-size:13px;color:var(--ink-3);text-align:center}
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ── SIGNATURE: the loop ────────────────────────────────
+   The pre-sales page told a straight-line story. This one is a circle: the
+   client leaves the pipeline and comes back into it. The return arc is the
+   whole point of the role, so it is the one thing on this page drawn large. */
+.loopwrap{min-width:720px}
+.loop{width:100%;height:auto;display:block}
+.loop .box{fill:var(--surface-2);stroke:var(--border-strong)}
+.loop .box-closed{fill:var(--ok-bg);stroke:transparent}
+.loop .box-open{fill:var(--open-bg);stroke:transparent}
+.loop .box-rel{fill:var(--rel-bg);stroke:var(--rel-br)}
+.loop .t{fill:var(--ink-2);font-size:13.5px;font-weight:620;
+  font-family:ui-sans-serif,system-ui,sans-serif}
+.loop .t-closed{fill:var(--ok)} .loop .t-open{fill:var(--open)} .loop .t-rel{fill:var(--rel)}
+.loop .flow{stroke:var(--border-strong);stroke-width:2;fill:none}
+.loop .ret{stroke:var(--rel);stroke-width:2.5;fill:none;stroke-linecap:round}
+.loop .retlabel{fill:var(--rel);font-size:12.5px;font-weight:680;
+  font-family:ui-sans-serif,system-ui,sans-serif}
+.loop .way{fill:var(--surface);stroke:var(--rel);stroke-width:2}
+.loop .waytext{fill:var(--ink-2);font-size:12px;font-weight:600;
+  font-family:ui-sans-serif,system-ui,sans-serif}
+.loop .waynum{fill:var(--rel);font-size:12px;font-weight:750;
+  font-family:ui-sans-serif,system-ui,sans-serif}
+.loop .skip{fill:var(--ink-3);font-size:11.5px;font-style:italic;
+  font-family:ui-sans-serif,system-ui,sans-serif}
+
+/* ── who the RM is: can / cannot ────────────────────── */
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px}
+caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-3);padding-bottom:10px}
+th{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;padding:0 12px 10px 0;border-bottom:1px solid var(--border-strong)}
+th.c,td.c{text-align:center}
+td{padding:12px 12px 12px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+td b{font-weight:640}
+td small{display:block;color:var(--ink-3);font-size:12.5px;font-weight:400}
+.tick{font-weight:800;font-size:13px}
+.tick.y{color:var(--ok)} .tick.n{color:var(--bad)}
+
+/* ── numbered steps ─────────────────────────────────── */
+.steps{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));
+  counter-reset:s;margin-top:8px}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 22px 22px;counter-increment:s;position:relative;box-shadow:var(--shadow);
+  display:flex;flex-direction:column}
+.step::before{content:counter(s);position:absolute;top:-13px;left:22px;width:29px;height:29px;
+  border-radius:9px;background:var(--navy);color:#fff;display:grid;place-items:center;
+  font-size:14px;font-weight:700;box-shadow:0 4px 10px -3px rgba(26,61,124,.6)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .step::before{background:var(--navy-lift)}}
+:root[data-theme="dark"] .step::before{background:var(--navy-lift)}
+.step-who{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);margin:8px 0 6px}
+.step h3{margin:0 0 8px;font-size:1.05rem;letter-spacing:-.015em;font-weight:660}
+.step p{margin:0 0 12px;color:var(--ink-2);font-size:14.5px}
+
+.eg{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--amber);
+  border-radius:0 11px 11px 0;padding:13px 15px;margin-top:auto}
+.eg-l{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);display:block;margin-bottom:6px}
+.eg p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.eg p+p{margin-top:7px}
+.q{font-style:italic}
+
+.notif{background:var(--surface);border:1px solid var(--border-strong);border-radius:12px;
+  padding:12px 14px;display:grid;grid-template-columns:auto 1fr;gap:11px;align-items:start}
+.notif-ico{width:30px;height:30px;border-radius:9px;background:var(--navy);flex:none;
+  display:grid;place-items:center}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .notif-ico{background:var(--navy-lift)}}
+:root[data-theme="dark"] .notif-ico{background:var(--navy-lift)}
+.notif b{display:block;font-size:13.5px;font-weight:660;margin-bottom:1px}
+.notif span{font-size:13px;color:var(--ink-2);line-height:1.45}
+
+/* ── two kinds of meeting ───────────────────────────── */
+.outcomes{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:640px){.outcomes{grid-template-columns:1fr 1fr}}
+.oc{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--ocb);
+  border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.oc h3{margin:0 0 4px;font-size:1.05rem;font-weight:660;letter-spacing:-.01em}
+.oc .oc-sub{font-size:13px;color:var(--ink-3);margin:0 0 14px}
+.does{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.does li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;
+  font-size:14px;color:var(--ink-2)}
+
+/* ── the decision card ──────────────────────────────── */
+.phone{border:1px solid var(--border-strong);border-radius:20px;overflow:hidden;
+  background:var(--surface);box-shadow:var(--shadow);max-width:380px;margin:0 auto}
+.phone-head{padding:14px 16px 12px;border-bottom:1px solid var(--border)}
+.phone-title{font-weight:680;font-size:16px;letter-spacing:-.01em}
+.chip{display:inline-block;font-size:11px;font-weight:680;padding:3px 9px;border-radius:6px;
+  letter-spacing:.02em;white-space:nowrap}
+.chip-ok{background:var(--ok-bg);color:var(--ok)}
+.phone-meta{font-size:12.5px;color:var(--ink-3);margin-top:7px}
+.phone-body{padding:16px}
+.oppcard{border:1px solid var(--rel-br);background:var(--rel-bg);border-radius:13px;padding:15px}
+.oppcard .badge{display:inline-block;font-size:10.5px;font-weight:750;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--rel);margin-bottom:8px}
+.oppcard h4{margin:0 0 8px;font-size:15px;font-weight:670;letter-spacing:-.01em;color:var(--ink)}
+.oppcard .why{font-size:13.5px;color:var(--ink-2);margin:0 0 10px}
+.quote{border-left:3px solid var(--rel);padding:7px 0 7px 11px;font-size:13.5px;
+  color:var(--ink);font-style:italic;margin:0 0 13px}
+.acts{display:flex;gap:9px;flex-wrap:wrap}
+.btn{font-size:13px;font-weight:650;padding:9px 15px;border-radius:9px;border:1px solid transparent}
+.btn-y{background:var(--navy);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn-y{background:var(--navy-lift)}}
+:root[data-theme="dark"] .btn-y{background:var(--navy-lift)}
+.btn-n{background:transparent;border-color:var(--border-strong);color:var(--ink-2)}
+
+/* ── rounds of business ─────────────────────────────── */
+.rounds{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:680px){.rounds{grid-template-columns:1fr 1fr}}
+.round{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 22px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.round::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--rc)}
+.round-n{font-size:11px;font-weight:750;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--rc);margin:0 0 8px}
+.round dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.round dt{color:var(--ink-3);font-size:12.5px}
+.round dd{margin:0;color:var(--ink-2);font-weight:600}
+
+/* ── notices ────────────────────────────────────────── */
+.notice{background:var(--warn-bg);border:1px solid var(--warn-br);border-left-width:4px;
+  border-radius:var(--radius);padding:20px 22px}
+.notice h3{margin:0 0 8px;font-size:1.02rem;color:var(--warn);font-weight:660}
+.notice p{margin:0;color:var(--ink-2);font-size:14.5px}
+.rules{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:720px){.rules{grid-template-columns:1fr 1fr}}
+.rule{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 20px}
+.rule b{display:block;font-size:14.5px;font-weight:660;margin-bottom:5px}
+.rule p{margin:0;font-size:13.5px;color:var(--ink-2)}
+
+/* ── status ─────────────────────────────────────────── */
+.statuses{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:640px){.statuses{grid-template-columns:1fr 1fr}}
+.st{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 20px}
+.st-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:660;
+  padding:4px 11px;border-radius:999px;margin-bottom:10px}
+.st-badge.live{background:var(--ok-bg);color:var(--ok)}
+.st-badge.soon{background:var(--cold-bg);color:var(--cold)}
+.st-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.st b{display:block;font-size:14.5px;font-weight:650;margin-bottom:4px}
+.st p{margin:0;font-size:13.5px;color:var(--ink-2)}
+
+footer{border-top:1px solid var(--border);margin-top:20px;padding:26px 0 44px;
+  color:var(--ink-3);font-size:13.5px}
+footer p{max-width:78ch}
+footer a{font-weight:600}
+
+@media (max-width:420px){.topbar .pill{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+            <path d="M9 21V11l7 6 7-6v10" stroke="#f5a623" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brand-name">Innodhara</span>
+      </div>
+      <span class="pill">Process documentation</span>
+    </div>
+
+    <div class="hero-body">
+      <p class="eyebrow">New role</p>
+      <h1>Closed is not the end of the story</h1>
+      <p class="lede">
+        When we finish a piece of work, the client used to fall quiet and stay quiet.
+        A Relationship Manager keeps talking to them, and notices when they are ready
+        to buy again. This is that whole journey, following one client the entire way.
+      </p>
+      <div class="hero-facts">
+        <div class="fact"><b>1 new role</b><span>Relationship Manager</span></div>
+        <div class="fact"><b>Sells nothing</b><span>Keeps the client warm</span></div>
+        <div class="fact"><b>A person decides</b><span>Every single time</span></div>
+        <div class="fact"><b>No cold call</b><span>On the way back in</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ── the gap ─────────────────────────────────────────────────────── -->
+  <section>
+    <h2>The gap we were filling</h2>
+    <p class="section-sub">
+      A client who bought from us once is the warmest lead we will ever have. But
+      <b>closed</b> was a full stop: nobody owned the relationship afterwards, so nobody
+      noticed when the client was ready for more. We found out when they told us, or we
+      did not find out at all.
+    </p>
+
+    <figure>
+      <div class="fig">
+        <p style="margin:0 0 8px;font-size:14.5px;color:var(--ink-2)">
+          <b>Before.</b> The work finished, the lead went to <b>closed</b>, and that was
+          the last anyone thought about it.
+        </p>
+        <p style="margin:0;font-size:14.5px;color:var(--ink-2)">
+          <b>Now.</b> The owner can hand the client to a Relationship Manager, who stays
+          in touch until the client is ready to buy again &mdash; and then hands them back.
+        </p>
+      </div>
+      <figcaption>Nothing before &ldquo;closed&rdquo; changes. This is all after it.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── SIGNATURE: the loop ─────────────────────────────────────────── -->
+  <section>
+    <h2>The whole loop</h2>
+    <p class="section-sub">
+      Selling used to be a line that ended. With a Relationship Manager it becomes a
+      circle: the teal arc is the part that is new, and it is the only way a client
+      re-enters the pipeline without being cold called again.
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <div class="loopwrap">
+            <svg class="loop" viewBox="0 0 900 334" role="img"
+                 aria-label="A client moves from cold calling through open, active and execution to closed. From closed, a teal return arc runs through hand over, catch-ups, a hint that they want more, and a person saying yes, arriving back at open — skipping cold calling.">
+
+              <!-- forward line -->
+              <path class="flow" d="M138 60 H172"/>
+              <path class="flow" d="M282 60 H316"/>
+              <path class="flow" d="M426 60 H460"/>
+              <path class="flow" d="M570 60 H604"/>
+
+              <!-- stages -->
+              <rect class="box" x="20" y="36" width="118" height="48" rx="10"/>
+              <text class="t" x="79" y="65" text-anchor="middle">Cold calling</text>
+
+              <rect class="box box-open" x="172" y="36" width="110" height="48" rx="10"/>
+              <text class="t t-open" x="227" y="65" text-anchor="middle">Open</text>
+
+              <rect class="box" x="316" y="36" width="110" height="48" rx="10"/>
+              <text class="t" x="371" y="65" text-anchor="middle">Active</text>
+
+              <rect class="box" x="460" y="36" width="110" height="48" rx="10"/>
+              <text class="t" x="515" y="65" text-anchor="middle">Execution</text>
+
+              <rect class="box box-closed" x="604" y="36" width="110" height="48" rx="10"/>
+              <text class="t t-closed" x="659" y="65" text-anchor="middle">Closed</text>
+
+              <!-- the return arc: down from Closed, left, and back up into Open -->
+              <path class="ret"
+                    d="M714 60 H770 Q800 60 800 90 V236 Q800 266 770 266
+                       H257 Q227 266 227 236 V96"/>
+              <path class="ret" d="M219 106 L227 94 L235 106"/>
+
+              <text class="retlabel" x="820" y="150">The</text>
+              <text class="retlabel" x="820" y="168">way</text>
+              <text class="retlabel" x="820" y="186">back</text>
+
+              <!-- Waypoints run right to left, because that is the way the arc
+                   travels. Numbered so the order survives being read the other
+                   way, which is how anybody scanning a page will read them. -->
+              <circle class="way" cx="690" cy="266" r="11"/>
+              <text class="waynum" x="690" y="270" text-anchor="middle">1</text>
+              <text class="waytext" x="690" y="298" text-anchor="middle">Hand over</text>
+              <text class="skip"    x="690" y="315" text-anchor="middle">owner chooses</text>
+
+              <circle class="way" cx="540" cy="266" r="11"/>
+              <text class="waynum" x="540" y="270" text-anchor="middle">2</text>
+              <text class="waytext" x="540" y="298" text-anchor="middle">Catch-ups</text>
+              <text class="skip"    x="540" y="315" text-anchor="middle">summarised, next one planned</text>
+
+              <circle class="way" cx="390" cy="266" r="11"/>
+              <text class="waynum" x="390" y="270" text-anchor="middle">3</text>
+              <text class="waytext" x="390" y="298" text-anchor="middle">They want more</text>
+              <text class="skip"    x="390" y="315" text-anchor="middle">a card is raised</text>
+
+              <circle class="way" cx="257" cy="266" r="11"/>
+              <text class="waynum" x="257" y="270" text-anchor="middle">4</text>
+              <text class="waytext" x="257" y="298" text-anchor="middle">A person says yes</text>
+              <text class="skip"    x="257" y="315" text-anchor="middle">never the assistant</text>
+
+              <!-- the skip, called out where it happens -->
+              <text class="skip" x="79" y="104" text-anchor="middle">skipped on the way back &mdash;</text>
+              <text class="skip" x="79" y="120" text-anchor="middle">we already know them</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <figcaption>
+        The arc rejoins at <b>Open</b>, not at Cold calling. Cold calling exists to find out
+        whether there is any interest at all; with a client we have already delivered for,
+        we know there is.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ── who they are ────────────────────────────────────────────────── -->
+  <section>
+    <h2>What a Relationship Manager can and cannot do</h2>
+    <p class="section-sub">
+      They are not a salesperson. They look after people, not deals &mdash; so they can talk
+      to a client and record what was said, but they cannot move a deal along or price
+      anything. The server enforces this; it is not just hidden in the app.
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <caption>Every line here is checked on the server on every request.</caption>
+            <thead>
+              <tr>
+                <th>They can</th><th class="c">&nbsp;</th><th>Why</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><b>See the client&rsquo;s history</b></td><td class="c"><span class="tick y">&#10003;</span></td>
+                  <td>You cannot look after somebody you know nothing about.</td></tr>
+              <tr><td><b>Record a meeting</b></td><td class="c"><span class="tick y">&#10003;</span></td>
+                  <td>Catch-ups are the job.</td></tr>
+              <tr><td><b>Write to the client</b></td><td class="c"><span class="tick y">&#10003;</span></td>
+                  <td>Keeping in touch means actually being in touch.</td></tr>
+              <tr><td><b>Plan the next conversation</b></td><td class="c"><span class="tick y">&#10003;</span></td>
+                  <td>Their own reminders, on their own clients.</td></tr>
+              <tr><td><b>Move a deal through the sales stages</b></td><td class="c"><span class="tick n">&#10007;</span></td>
+                  <td>That belongs to the person who owns the sale.</td></tr>
+              <tr><td><b>Send a proposal or set a price</b></td><td class="c"><span class="tick n">&#10007;</span></td>
+                  <td>Not their role, and not their decision.</td></tr>
+              <tr><td><b>Hand a client to themselves</b></td><td class="c"><span class="tick n">&#10007;</span></td>
+                  <td>The sales side decides when a client is finished with selling.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>
+        One exception, and only one: they may hand a client <b>back</b> to sales. That is the
+        boundary of the role rather than a hole in it.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ── step by step ────────────────────────────────────────────────── -->
+  <section>
+    <h2>The flow, step by step</h2>
+    <p class="section-sub">
+      Following one client &mdash; ABC School &mdash; from the end of one sale to the start
+      of the next. Priya sold to them. Meena looks after them afterwards.
+    </p>
+
+    <div class="steps">
+
+      <article class="step">
+        <p class="step-who">Nothing new</p>
+        <h3>The work finishes</h3>
+        <p>The project is delivered and paid, the assistant suggests <b>closed</b>, and a
+           person confirms it. Exactly as it works today.</p>
+        <div class="eg">
+          <span class="eg-l">Example</span>
+          <p>ABC School&rsquo;s project is done. Priya marks the lead <b>closed</b>.</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <p class="step-who">The owner, or a sales lead</p>
+        <h3>Hand the client over &mdash; or don&rsquo;t</h3>
+        <p>A closed client gets a new button: <b>Hand to relationship manager</b>. Doing
+           nothing is a perfectly good answer, and stays the default.</p>
+        <div class="eg">
+          <span class="eg-l">Worth saying plainly</span>
+          <p>We are not pushing every client into relationship management. Only the ones
+             somebody chooses.</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <p class="step-who">The assistant</p>
+        <h3>It picks somebody, and says why</h3>
+        <p>It weighs each manager on three things: whether their areas of expertise match
+           this client, how many clients they already look after, and how many
+           relationships they have handled before. The reason is written down and you can
+           read it.</p>
+        <div class="eg">
+          <span class="eg-l">What the reason looks like</span>
+          <p class="q">&ldquo;Meena: expert with kolkata, looking after 3/8 clients, has
+             held 4 engagements before.&rdquo;</p>
+          <p>If it picks wrong, choose somebody yourself from the list. Both are recorded.</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <p class="step-who">The relationship manager</p>
+        <h3>Meena keeps in touch</h3>
+        <p>Her app opens on the clients she looks after, worst-neglected first. A client
+           nobody has ever called sits at the very top.</p>
+        <div class="eg">
+          <span class="eg-l">What Meena sees</span>
+          <div class="notif">
+            <span class="notif-ico" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff"
+                   stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.7 21a2 2 0 01-3.4 0"/>
+              </svg>
+            </span>
+            <div>
+              <b>ABC School is yours to look after</b>
+              <span>Priya handed this client over now that the work is finished.</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step">
+        <p class="step-who">After every catch-up</p>
+        <h3>The call is written up for her</h3>
+        <p>She records or types the conversation. The assistant writes a short summary,
+           keeps any facts worth remembering, and suggests when to speak next and what to
+           ask about. No task list, no project plan.</p>
+        <div class="eg">
+          <span class="eg-l">Example</span>
+          <p class="q">&ldquo;That went well. Suggest a call in about five days. Ask about
+             the new computer lab he mentioned, and the exam season plan.&rdquo;</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <p class="step-who">A person, never the assistant</p>
+        <h3>Somebody notices they want more</h3>
+        <p>If the client says something a colleague would want to follow up, a card
+           appears with the client&rsquo;s own words on it. Meena accepts or dismisses it.</p>
+        <div class="eg">
+          <span class="eg-l">Both answers are useful</span>
+          <p>Dismissing is recorded too &mdash; the assistant being wrong is the only
+             signal that its judgement needs adjusting.</p>
+        </div>
+      </article>
+
+      <article class="step">
+        <p class="step-who">Every sales lead</p>
+        <h3>Back into sales, with nobody on it yet</h3>
+        <p>The client returns to <b>open</b> with no owner, and every sales lead is told,
+           with the quote. One of them gives the new round to somebody.</p>
+        <div class="eg">
+          <span class="eg-l">Why no owner</span>
+          <p>So the round is given deliberately rather than grabbed. Until somebody is
+             chosen, only a sales lead can move the client at all.</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ── two kinds of meeting ────────────────────────────────────────── -->
+  <section>
+    <h2>Two kinds of meeting</h2>
+    <p class="section-sub">
+      A catch-up and a sales meeting are recorded the same way and treated completely
+      differently afterwards. The interesting half is what a catch-up deliberately does
+      <i>not</i> do.
+    </p>
+
+    <div class="outcomes">
+      <div class="oc" style="--ocb:var(--navy)">
+        <h3>A sales meeting</h3>
+        <p class="oc-sub">Recorded by a salesperson, on a live deal</p>
+        <ul class="does">
+          <li><span class="tick y">&#10003;</span> Pulls out the to-dos that were agreed</li>
+          <li><span class="tick y">&#10003;</span> Builds or updates the project plan</li>
+          <li><span class="tick y">&#10003;</span> Suggests moving the deal along</li>
+          <li><span class="tick y">&#10003;</span> Remembers what was said</li>
+        </ul>
+      </div>
+      <div class="oc" style="--ocb:var(--rel)">
+        <h3>A catch-up</h3>
+        <p class="oc-sub">Recorded by a relationship manager, on a finished client</p>
+        <ul class="does">
+          <li><span class="tick n">&#10007;</span> No to-do list</li>
+          <li><span class="tick n">&#10007;</span> No project plan</li>
+          <li><span class="tick n">&#10007;</span> No nudge to change the deal&rsquo;s stage</li>
+          <li><span class="tick y">&#10003;</span> A summary, and the next conversation planned</li>
+        </ul>
+      </div>
+    </div>
+    <figure style="margin-top:16px">
+      <figcaption style="text-align:left">
+        Meena does not need a project plan generated because she asked a client how their
+        holidays were. That is why the two paths are separate.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ── the decision card ───────────────────────────────────────────── -->
+  <section>
+    <h2>The card that asks a person</h2>
+    <p class="section-sub">
+      When a catch-up suggests the client is ready to buy again, nothing moves on its own.
+      A card appears carrying the reason and, more importantly, the client&rsquo;s own
+      words &mdash; because somebody is being asked to make a judgement, and a paraphrase
+      is not evidence.
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="phone">
+          <div class="phone-head">
+            <div class="phone-title">ABC School</div>
+            <span class="chip chip-ok">Closed</span>
+            <div class="phone-meta">Looked after by Meena</div>
+          </div>
+          <div class="phone-body">
+            <div class="oppcard">
+              <span class="badge">They may be ready to buy again</span>
+              <h4>Move ABC School back to sales?</h4>
+              <p class="why">They have approved budget and asked who to talk to about
+                 buying more.</p>
+              <p class="quote">&ldquo;we have budget approved for next quarter and we want
+                 three more of the same&rdquo;</p>
+              <div class="acts">
+                <span class="btn btn-y">Yes, tell sales</span>
+                <span class="btn btn-n">No, not real</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption>Accepting notifies every sales lead. Dismissing is recorded, not deleted.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── rounds ──────────────────────────────────────────────────────── -->
+  <section>
+    <h2>Rounds of business</h2>
+    <p class="section-sub">
+      A client who comes back has two rounds on record, not two lead pages. Contacts, the
+      notebook and everything we know stay in one place &mdash; you never re-enter a phone
+      number for round two.
+    </p>
+
+    <div class="rounds">
+      <div class="round" style="--rc:var(--ink-3)">
+        <p class="round-n">Round 1 &mdash; finished</p>
+        <dl>
+          <dt>Started from</dt><dd>A cold call</dd>
+          <dt>Owned by</dt><dd>Priya</dd>
+          <dt>Ended as</dt><dd>Closed &mdash; delivered and paid</dd>
+        </dl>
+      </div>
+      <div class="round" style="--rc:var(--rel)">
+        <p class="round-n">Round 2 &mdash; running</p>
+        <dl>
+          <dt>Started from</dt><dd>They came back to us</dd>
+          <dt>Owned by</dt><dd>Chosen by a sales lead</dd>
+          <dt>Ended as</dt><dd>Still going</dd>
+        </dl>
+      </div>
+    </div>
+    <figure style="margin-top:16px">
+      <figcaption style="text-align:left">
+        A client sold to once has no rounds shown at all &mdash; their page looks exactly
+        as it always did. The cards appear only when there is more than one round to tell
+        apart.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ── rules ───────────────────────────────────────────────────────── -->
+  <section>
+    <h2>Four rules that do not bend</h2>
+    <p class="section-sub">These hold everywhere in the product, and this role does not get an exception.</p>
+
+    <div class="rules">
+      <div class="rule">
+        <b>The assistant never moves a client by itself</b>
+        <p>It can notice, suggest and explain. Moving a client between stages is always a
+           person tapping something.</p>
+      </div>
+      <div class="rule">
+        <b>Every suggestion says why</b>
+        <p>Who was picked and on what grounds, what was said that raised a card &mdash;
+           all of it recorded and readable afterwards.</p>
+      </div>
+      <div class="rule">
+        <b>Coming back skips cold calling</b>
+        <p>Cold calling answers &ldquo;is there any interest?&rdquo;. For a client we have
+           delivered for, that question is already answered.</p>
+      </div>
+      <div class="rule">
+        <b>Closed and lost are different things</b>
+        <p><b>Closed</b> means won and delivered. A client who goes quiet is
+           <b>lost for now</b>. Mixing them would corrupt every report we produce.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── setup ───────────────────────────────────────────────────────── -->
+  <section>
+    <h2>Before it can be used</h2>
+    <div class="notice">
+      <h3>Somebody has to hold the role</h3>
+      <p>
+        Until an admin creates a user with the Relationship Manager role, the
+        <b>Hand to relationship manager</b> button will refuse and say so &mdash; there is
+        nobody to hand the client to. With only one manager the assistant will always pick
+        them and will say as much, rather than pretending it weighed a choice.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── status ──────────────────────────────────────────────────────── -->
+  <section>
+    <h2>Where this has got to</h2>
+    <div class="statuses">
+      <div class="st">
+        <span class="st-badge live"><span class="st-dot"></span>Live now</span>
+        <b>Backend</b>
+        <p>The role, handover, the manager&rsquo;s screens, catch-up meetings, the
+           opportunity card and rounds of business are all running on the server.</p>
+      </div>
+      <div class="st">
+        <span class="st-badge soon"><span class="st-dot"></span>Next app update</span>
+        <b>Android app</b>
+        <p>The manager&rsquo;s own screens, the handover button, the decision card and the
+           round cards are built and tested, waiting on the next release to reach
+           everybody&rsquo;s phone.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p>
+    Nothing that happens before a lead is closed has changed, and clients who are never
+    handed over carry on exactly as they do today. See also the
+    <a href="/documentation/pre-sales">pre-sales lead flow</a>, which covers the other end
+    of the same journey.
+  </p>
+</footer>
+</body>
+</html>

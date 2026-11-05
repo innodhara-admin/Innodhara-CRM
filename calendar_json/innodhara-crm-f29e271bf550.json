@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "innodhara-crm",
+  "private_key_id": "f29e271bf550695a65f33bae7606dba968f5246c",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCitrbtWpH2YAej\n2HhOm5gCBo4MUNvCNPFJZkfrGCAYxYS3tc48Y8dUgcHFc3DA1jrZCTZxaZFlzbeQ\nIUAXU2wtYMrTu4F52+R4xs/6SE/EI3KRcVC9JZ2v2Piitl9Ji+zU+9pDpTY/eEeb\nQOzdk7qxVVfF+9POdLUYLdf+WeQrprXJ0SELLTViVOiHN/vd9vDq83QQvfp0PEox\nDNn6+wkloRZ6mtGPPEwMETiMlmbNTZjP1vCrqC6auNN8bBR6c/VwtlHRnPRAQKn5\nAX2/YT/D1DfU4FtNVw4YFkT8CeF5w078E1JE9ewzUDPrvz7Chr6NoznATwbytZiJ\noAxOXWe3AgMBAAECggEAApWmaDTFFsXFuUuJ9a2xB281OGrcYsRWhNT0FX7nm50f\nk492vCzVkLkS6+D+jIGao7HqxHhpz9Upskdk7jnsAPiFoEFdOCNPCMAXs6EMa1Ao\n1LiZELgVPiLTKDp/XvqzA1sQx3xLVUzCzmuEl6xuDb0OTN3IKoJeEglAYhDpd+wC\ngJsWkNg0bI368td9P/aMpjNptX1uffTupf1DzfCaw6mGudRXw9E7PwaClbS/dTOB\n8DucLIHuEz/QRnfSeFL5TkV5ZojVmg8giH/WT3DXahPw9Flck3bcSQK/GhnXdQKK\nIvp1Ie87zZrEArKCltqkt3oVqBnwm8b2fPl8C2g8AQKBgQDSTK1CQWJnMMdmce5m\ndqnikG9dAcslNu+IfJWhvSrradggQxP6UMYjALKqgQ7YfS3JHaN1Pwnl9q6KExNm\n86n9RVFDBw8PBnf6XIHGVKKr4s+NtdISvMxPbrep1n9XvUQ3QNfiGmlH5fNlIKlM\nC4Iy97K5z1DjxMPpMgkGh5RRtwKBgQDGEsIy6Jaa2yLm8/sdCebZivJIgvyskUyb\nm2dJKM80icrVbCLaJ9aLWSOha1sBKz7DN9hkhmoBhs2pfvaScIwW2U/9VDXSzuBk\n8b28BWOfs+2KU5q4f/VJ4ew6C/rI+T0mmt7yKPvcaUHZ/dzTJd6ImugbEcyIkSd5\nv1+vu2eaAQKBgQCDbcRCShazovqbfcyeYL7fh6DxoXNSOLkOtb3WLSErqySVVRah\nM+YAbik7AhlDF0iMDmffmJwZCkgeprlTeCjeznlwyHKS01ocL8AzMSXRApjwWZeG\nelO9uNYz4IgJT5HYbj/9YMA3XPD2XKkxi2e9bqxWD8jf8FL35Htbh1QclQKBgB1+\np5prFhojLZRUmn0df1m/ngp8LuIHlO/K+Vtkj05Ugna7bokry3/emzarRNbsuKDb\nTQbTGS/3AeMOe+schU/VtlqT0pv8oF+Hu+gmqUobwfCKOIzmyQDieom+RO7uZlO8\nVhybS73rkpnCesKabgPLhWqagOmJK+auP7JsZqYBAoGBAKM0st5Zj3Wnhme6G/xm\n/oALfh/l89+VN0dBLoZG4jnja74Vex+HEe9txFMM/EbWJ1AS3FChq2G4fkX1ePdT\nGMrMhgluo69ZTu1clFhQB+mDXxcj9VKTDhXQC/VAr+iQUmO3F0J2YpSb2IZlegVv\n4HtsjM6dFUl2u2cBqVw3ebeA\n-----END PRIVATE KEY-----\n",
+  "client_email": "innodhara-calendar-service@innodhara-crm.iam.gserviceaccount.com",
+  "client_id": "116080714455898374802",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/innodhara-calendar-service%40innodhara-crm.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

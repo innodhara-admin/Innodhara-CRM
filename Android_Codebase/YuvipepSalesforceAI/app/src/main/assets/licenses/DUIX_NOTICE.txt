@@ -1,0 +1,6 @@
+Jarvis avatar (voice mode) uses the Duix Mobile SDK and avatar model.
+
+duix.com is licensed under the duix.com Community License, Copyright (c) duix.com Platforms, Inc. All Rights Reserved.
+
+Source: https://github.com/duixcom/Duix-Mobile
+The full agreement is in DUIX_LICENSE.md next to this file.

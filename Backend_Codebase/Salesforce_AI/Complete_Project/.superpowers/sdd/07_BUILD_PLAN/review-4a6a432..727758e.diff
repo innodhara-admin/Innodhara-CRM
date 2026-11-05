@@ -1,0 +1,245 @@
+# Review package: 4a6a432..HEAD
+
+## Commits
+727758e Fix round 1: commit guard-refusal tests, close playbook_suggestions orphan
+
+## Files changed
+ app/api/admin.py                      |   3 +-
+ tests/test_dashboard_deletes_admin.py | 132 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 134 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/app/api/admin.py b/app/api/admin.py
+index b627eed..e40c5d7 100644
+--- a/app/api/admin.py
++++ b/app/api/admin.py
+@@ -18,21 +18,21 @@ from app.core.constants import (
+ from app.core.context import OrgContext
+ from app.core.crypto import encrypt_secret
+ from app.core.exceptions import ConflictError, NotFoundError, ValidationFailedError
+ from app.core.reset_taxonomy import CONFIG, REPLACE, WIPE, deletion_order
+ from app.core.security import hash_password
+ from app.database import Base, get_db
+ from app.models.audit import AuditLog
+ from app.models.demo import Demo, DemoTeam, DemoTeamMember
+ from app.models.organisation import Organisation, OrgSettings
+ from app.models.program import MessageTemplate, PricingTable, Program, ProposalTemplate
+-from app.models.project import Playbook, Project
++from app.models.project import Playbook, PlaybookSuggestion, Project
+ from app.models.proposal import Proposal
+ from app.models.user import User
+ from app.services import audit_service
+ 
+ router = APIRouter(prefix="/admin", tags=["org admin"])
+ 
+ 
+ # ══════════════════════════ Staff ══════════════════════════════════════════
+ class CreateUserRequest(BaseModel):
+     email: EmailStr
+@@ -713,20 +713,21 @@ async def delete_program(
+         raise ConflictError(
+             f"'{program.name}' is used by {used_by_projects} project(s) and "
+             f"{used_by_proposals} proposal(s) and cannot be removed. Mark it "
+             f"inactive instead."
+         )
+ 
+     for model, scope in (
+         (PricingTable, {"program_id": program_id}),
+         (ProposalTemplate, {"program_id": program_id}),
+         (Playbook, {"program_id": program_id}),
++        (PlaybookSuggestion, {"program_id": program_id}),
+     ):
+         await db.execute(
+             sa_delete(model.__table__).where(
+                 model.__table__.c.org_id == ctx.org_id,
+                 model.__table__.c.program_id == program_id,
+             )
+         )
+ 
+     await db.delete(program)
+     await audit_service.record(
+diff --git a/tests/test_dashboard_deletes_admin.py b/tests/test_dashboard_deletes_admin.py
+index 5b9cb37..7cdfe12 100644
+--- a/tests/test_dashboard_deletes_admin.py
++++ b/tests/test_dashboard_deletes_admin.py
+@@ -21,27 +21,59 @@ async def _program(client, token, code: str) -> dict:
+     )
+     assert resp.status_code == 200, resp.text
+     return resp.json()
+ 
+ 
+ async def test_unused_program_deletes(client, super_token):
+     org = await _org(client, super_token, "prog")
+     token = org["admin_token"]
+     program = await _program(client, token, "GONE")
+ 
++    # A Knowledge-Engine suggestion for this program: `playbook_suggestions`
++    # carries a bare `program_id` with no FK (nothing enforces the reference at
++    # the database level), and there is no POST route for it — the Engine
++    # writes it internally — so the fixture is built directly, following the
++    # precedent in tests/test_assignment_skills.py.
++    from sqlalchemy import select as sa_select
++
++    from app.database import SessionLocal
++    from app.models.project import PlaybookSuggestion
++
++    async with SessionLocal() as db:
++        db.add(PlaybookSuggestion(
++            org_id=org["id"], program_id=program["id"], phase="preparation",
++            entry={"title": "Confirm working machines a day early"},
++            reason="Recurring incident pattern",
++        ))
++        await db.commit()
++
+     resp = await client.delete(
+         f"/api/v1/admin/programs/{program['id']}", headers=auth(token)
+     )
+     assert resp.status_code == 200, resp.text
+     assert (await client.get(
+         "/api/v1/admin/programs", headers=auth(token))).json() == []
+ 
++    async with SessionLocal() as db:
++        remaining = (
++            await db.execute(
++                sa_select(PlaybookSuggestion).where(
++                    PlaybookSuggestion.org_id == org["id"],
++                    PlaybookSuggestion.program_id == program["id"],
++                )
++            )
++        ).scalars().all()
++    assert remaining == [], (
++        "playbook_suggestions row(s) survived the deleted program: "
++        f"{[r.id for r in remaining]}"
++    )
++
+ 
+ async def test_program_with_a_proposal_refuses(client, super_token):
+     org = await _org(client, super_token, "progused")
+     token = org["admin_token"]
+     program = await _program(client, token, "USED")
+     await client.post(
+         f"/api/v1/admin/programs/{program['id']}/pricing", headers=auth(token),
+         json={"currency": "INR", "items": [
+             {"code": "per_rack", "label": "Per rack", "unit": "per rack",
+              "unit_price": 1000.0}]},
+@@ -66,20 +98,120 @@ async def test_program_with_a_proposal_refuses(client, super_token):
+     )
+     assert proposal.status_code == 200, proposal.text
+ 
+     resp = await client.delete(
+         f"/api/v1/admin/programs/{program['id']}", headers=auth(token)
+     )
+     assert resp.status_code == 409
+     assert "proposal" in resp.text.lower()
+ 
+ 
++async def test_pricing_locked_by_a_proposal_refuses(client, super_token):
++    """The lock guard reads `proposals.pricing_table_id`, which is populated on
++    every `build_proposal` call (non-nullable) — this proves it actually fires,
++    not just that the column exists."""
++    org = await _org(client, super_token, "pricelock")
++    token = org["admin_token"]
++    program = await _program(client, token, "PLOCK")
++    pricing = (await client.post(
++        f"/api/v1/admin/programs/{program['id']}/pricing", headers=auth(token),
++        json={"currency": "INR", "items": [
++            {"code": "per_rack", "label": "Per rack", "unit": "per rack",
++             "unit_price": 1000.0}]},
++    )).json()
++    assert pricing["version"] == 1
++    await client.post(
++        f"/api/v1/admin/programs/{program['id']}/proposal-templates",
++        headers=auth(token),
++        json={"name": "Standard", "body_md": "# {client_name}\n\n{pricing_table}"},
++    )
++    lead = (await client.post("/api/v1/leads", headers=auth(token),
++                              json={"name": "Buyer Ltd"})).json()
++    proposal = await client.post(
++        "/api/v1/proposals", headers=auth(token),
++        json={"lead_id": lead["id"], "program_id": program["id"]},
++    )
++    assert proposal.status_code == 200, proposal.text
++    assert proposal.json()["pricing_version"] == 1
++
++    resp = await client.delete(
++        f"/api/v1/admin/programs/{program['id']}/pricing/1", headers=auth(token)
++    )
++    assert resp.status_code == 409, resp.text
++    # The refusal must name what actually blocked it, not just refuse.
++    assert "proposal" in resp.text.lower()
++    assert "rate card" in resp.text.lower() or "locked" in resp.text.lower()
++
++
++async def test_template_locked_by_a_proposal_refuses(client, super_token):
++    """The lock guard reads `proposals.template_id`, which is populated on
++    every `build_proposal` call (non-nullable) — this proves it actually fires,
++    not just that the column exists."""
++    org = await _org(client, super_token, "tmpllock")
++    token = org["admin_token"]
++    program = await _program(client, token, "TLOCK")
++    await client.post(
++        f"/api/v1/admin/programs/{program['id']}/pricing", headers=auth(token),
++        json={"currency": "INR", "items": [
++            {"code": "per_rack", "label": "Per rack", "unit": "per rack",
++             "unit_price": 1000.0}]},
++    )
++    template = (await client.post(
++        f"/api/v1/admin/programs/{program['id']}/proposal-templates",
++        headers=auth(token),
++        json={"name": "Standard", "body_md": "# {client_name}\n\n{pricing_table}"},
++    )).json()
++    lead = (await client.post("/api/v1/leads", headers=auth(token),
++                              json={"name": "Buyer Ltd"})).json()
++    proposal = await client.post(
++        "/api/v1/proposals", headers=auth(token),
++        json={"lead_id": lead["id"], "program_id": program["id"]},
++    )
++    assert proposal.status_code == 200, proposal.text
++
++    resp = await client.delete(
++        f"/api/v1/admin/programs/{program['id']}/proposal-templates/{template['id']}",
++        headers=auth(token),
++    )
++    assert resp.status_code == 409, resp.text
++    assert "proposal" in resp.text.lower()
++    assert "template" in resp.text.lower()
++
++
++async def test_demo_team_booked_refuses(client, super_token):
++    """The guard reads `demos.team_id`, populated whenever a demo is scheduled
++    against a team — this proves it actually fires, not just that the column
++    exists."""
++    org = await _org(client, super_token, "teamlock")
++    token = org["admin_token"]
++    me = (await client.get("/api/v1/auth/me", headers=auth(token))).json()
++    team = (await client.post(
++        "/api/v1/admin/demo-teams", headers=auth(token),
++        json={"name": "Booked Squad", "lead_user_id": me["user_id"]},
++    )).json()
++    lead = (await client.post("/api/v1/leads", headers=auth(token),
++                              json={"name": "Buyer Ltd"})).json()
++    demo = await client.post(
++        "/api/v1/demos", headers=auth(token),
++        json={"lead_id": lead["id"], "scheduled_date": "2026-09-01",
++              "team_id": team["id"]},
++    )
++    assert demo.status_code == 200, demo.text
++
++    resp = await client.delete(
++        f"/api/v1/admin/demo-teams/{team['id']}", headers=auth(token)
++    )
++    assert resp.status_code == 409, resp.text
++    assert "demo" in resp.text.lower()
++    assert "booked squad" in resp.text.lower()
++
++
+ async def test_deleting_current_pricing_promotes_the_previous(client, super_token):
+     org = await _org(client, super_token, "price")
+     token = org["admin_token"]
+     program = await _program(client, token, "PRICE")
+     for price in (1000.0, 1200.0):
+         resp = await client.post(
+             f"/api/v1/admin/programs/{program['id']}/pricing", headers=auth(token),
+             json={"currency": "INR", "items": [
+                 {"code": "per_rack", "label": "Per rack", "unit": "per rack",
+                  "unit_price": price}]},

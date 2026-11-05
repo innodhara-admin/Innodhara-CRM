@@ -1,0 +1,15 @@
+{
+  "user_id": "995e19238e2342bf93629506ede31af4",
+  "email": "admin@fixtures1786930355-example.com",
+  "name": "Fixture Admin",
+  "role": "org_admin",
+  "org_id": "57ee5f5133a641d6bd50936f65421cc0",
+  "org_name": "Fixtures 1786930355",
+  "phone": null,
+  "has_email_app_password": false,
+  "org_slug": "fixtures-1786930355",
+  "org_logo_url": null,
+  "org_brand_colors": {},
+  "designation": null,
+  "department": null
+}

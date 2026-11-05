@@ -1,0 +1,22 @@
+{
+  "tests/test_org_clock_judgements.py::test_the_same_instant_is_judged_by_the_organisations_own_timezone": true,
+  "tests/test_action_preview_is_lossy.py::test_the_limit_is_where_the_readers_think_it_is": true,
+  "tests/test_relationship_opportunity.py::test_accepting_tells_every_sales_lead_but_moves_nothing": true,
+  "tests/test_relationship_screens.py::test_the_worst_neglected_client_is_first": true,
+  "tests/docx/test_tags.py::test_pasted_html_is_not_a_tag[<br>]": true,
+  "tests/docx/test_tags.py::test_pasted_html_is_not_a_tag[<b>]": true,
+  "tests/docx/test_tags.py::test_pasted_html_is_not_a_tag[<i>]": true,
+  "tests/docx/test_tags.py::test_a_bare_lowercase_word_is_read_as_html_however_long_it_is": true,
+  "tests/docx/test_tags.py::test_nothing_that_looks_like_html_becomes_a_placeholder": true,
+  "tests/docx/test_fill_build.py::test_the_locked_rate_card_still_owns_the_numbers": true,
+  "tests/docx/test_fill_build.py::test_a_rate_card_is_still_used_when_the_offering_has_one": true,
+  "tests/docx/test_models.py::test_only_the_proposal_and_the_chat_session_may_be_absent": true,
+  "tests/docx/test_tool_choice.py::test_a_reply_to_mou_questions_does_not_reach_create_mou_again": true,
+  "tests/docx/test_tool_choice.py::test_without_the_prompt_paragraph_the_model_picks_create_proposal": true,
+  "tests/docx/test_tool_choice.py::test_create_mou_is_called_once_across_the_whole_conversation": true,
+  "tests/docx/test_tool_choice.py::test_without_the_prompt_paragraph_a_reply_misses_the_mou_tools": true,
+  "tests/test_demos_followups.py::test_followup_complete_schedules_next": true,
+  "tests/test_what_is_late.py::test_a_task_due_today_is_not_called_overdue": true,
+  "tests/test_what_is_late.py::test_the_due_today_header_is_never_empty": true,
+  "tests/test_what_is_late.py::test_today_and_overdue_never_overlap": true
+}

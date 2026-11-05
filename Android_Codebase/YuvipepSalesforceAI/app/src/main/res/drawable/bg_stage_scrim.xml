@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fades the bottom of the avatar into the screen. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:angle="270"
+        android:startColor="#00070D1C"
+        android:centerColor="#80091022"
+        android:endColor="#FF0B1428" />
+</shape>

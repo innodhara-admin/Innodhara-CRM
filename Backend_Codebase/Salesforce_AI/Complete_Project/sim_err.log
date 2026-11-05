@@ -1,0 +1,94 @@
+INFO:     Started server process [1188]
+INFO:     Waiting for application startup.
+2026-07-21 22:45:24,886 INFO app: Super admin seeded: superadmin@platform-yuvipep.com
+2026-07-21 22:45:24,892 INFO app.jobs.queue: Job queue started with 3 workers
+2026-07-21 22:45:24,892 INFO app.jobs.scheduler: Scheduler started
+2026-07-21 22:45:24,893 INFO app: Platform ready
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-07-21 22:45:24,958 INFO app.jobs.scheduler: Follow-up reminders sent: 2
+2026-07-21 22:56:53,102 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 22:56:53,539 WARNING app.ai.llm: LLM call failed (attempt 1/5), retrying in 1.0s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (16/16)", "code": 502}
+2026-07-21 22:56:55,637 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 22:56:55,735 WARNING app.ai.llm: LLM call failed (attempt 2/5), retrying in 2.2s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (731/16)", "code": 502}
+2026-07-21 22:56:59,417 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 22:56:59,457 WARNING app.ai.llm: LLM call failed (attempt 3/5), retrying in 4.5s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (456/16)", "code": 502}
+2026-07-21 22:57:05,354 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+C:\Users\Ekaghni\AppData\Roaming\Python\Python310\site-packages\whisper\__init__.py:150: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint = torch.load(fp, map_location=device)
+C:\Users\Ekaghni\AppData\Roaming\Python\Python310\site-packages\whisper\model.py:124: UserWarning: 1Torch was not compiled with flash attention. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\aten\src\ATen\native\transformers\cuda\sdp_utils.cpp:555.)
+  a = scaled_dot_product_attention(
+2026-07-21 23:08:41,766 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:09:03,984 INFO httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=AQ.Ab8RN6JP96mEToPa7cVXgoTTQYmiD7lfCSpOY2dfe497VJAYsQ "HTTP/1.1 429 Too Many Requests"
+2026-07-21 23:09:04,003 WARNING app.ai.memory: Memory embedding skipped: Embedding failed (429): {
+  "error": {
+    "code": 429,
+    "message": "Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.
+2026-07-21 23:09:04,276 INFO httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=AQ.Ab8RN6JP96mEToPa7cVXgoTTQYmiD7lfCSpOY2dfe497VJAYsQ "HTTP/1.1 429 Too Many Requests"
+2026-07-21 23:09:04,277 WARNING app.ai.memory: Memory embedding skipped: Embedding failed (429): {
+  "error": {
+    "code": 429,
+    "message": "Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.
+2026-07-21 23:09:04,532 INFO httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=AQ.Ab8RN6JP96mEToPa7cVXgoTTQYmiD7lfCSpOY2dfe497VJAYsQ "HTTP/1.1 429 Too Many Requests"
+2026-07-21 23:09:04,534 WARNING app.ai.memory: Memory embedding skipped: Embedding failed (429): {
+  "error": {
+    "code": 429,
+    "message": "Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.
+2026-07-21 23:09:04,799 INFO httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=AQ.Ab8RN6JP96mEToPa7cVXgoTTQYmiD7lfCSpOY2dfe497VJAYsQ "HTTP/1.1 429 Too Many Requests"
+2026-07-21 23:09:04,825 WARNING app.ai.memory: Memory embedding skipped: Embedding failed (429): {
+  "error": {
+    "code": 429,
+    "message": "Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.
+2026-07-21 23:09:05,396 INFO httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=AQ.Ab8RN6JP96mEToPa7cVXgoTTQYmiD7lfCSpOY2dfe497VJAYsQ "HTTP/1.1 429 Too Many Requests"
+2026-07-21 23:09:05,428 WARNING app.ai.memory: Memory embedding skipped: Embedding failed (429): {
+  "error": {
+    "code": 429,
+    "message": "Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.
+2026-07-21 23:09:05,671 INFO httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=AQ.Ab8RN6JP96mEToPa7cVXgoTTQYmiD7lfCSpOY2dfe497VJAYsQ "HTTP/1.1 429 Too Many Requests"
+2026-07-21 23:09:05,692 WARNING app.ai.memory: Memory embedding skipped: Embedding failed (429): {
+  "error": {
+    "code": 429,
+    "message": "Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.
+2026-07-21 23:18:56,138 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:18:57,070 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:19:02,318 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:19:58,077 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:19:59,887 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:20:05,936 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:20:15,600 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:21:11,449 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:21:13,849 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:21:28,340 ERROR app.ai.agents.base: Tool draft_custom_email failed
+Traceback (most recent call last):
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\base.py", line 177, in _execute_tool
+    result = await spec.handler(runtime, **(call.args or {}))
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\email_agent.py", line 102, in _draft_custom
+    lead = await resolve_lead(runtime, school)
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\resolvers.py", line 40, in resolve_lead
+    raise NotFoundError(f"No school matching '{term}' found")
+app.core.exceptions.NotFoundError: No school matching 'Ekaghni' found
+2026-07-21 23:21:28,590 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:22:34,722 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:22:35,050 WARNING app.ai.llm: LLM call failed (attempt 1/5), retrying in 1.7s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (16/16)", "code": 502}
+2026-07-21 23:22:36,947 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:22:38,914 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:22:48,557 ERROR app.ai.agents.base: Tool prepare_email failed
+Traceback (most recent call last):
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\base.py", line 177, in _execute_tool
+    result = await spec.handler(runtime, **(call.args or {}))
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\proposal_agent.py", line 266, in _prepare_email
+    contact = await resolve_contact(runtime, lead, to_contact)
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\resolvers.py", line 145, in resolve_contact
+    raise ValidationFailedError(
+app.core.exceptions.ValidationFailedError: No contact matching 'Telaverge Solutions' at Telaverge Solutions. Known: EKAGHNI MUKHERJEE (PRINCIPAL AI ARCHITECT - REAL-TIME SYSTEMS)
+2026-07-21 23:22:48,894 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:22:52,474 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:27:12,884 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:27:14,127 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:27:15,405 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:30:41,922 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:44:11,766 INFO httpx: HTTP Request: POST https://oauth2.googleapis.com/token "HTTP/1.1 200 OK"
+2026-07-21 23:44:12,502 INFO httpx: HTTP Request: POST https://www.googleapis.com/calendar/v3/calendars/ekaghni.mukherjee@gmail.com/events "HTTP/1.1 200 OK"
+2026-07-21 23:46:34,246 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 23:52:45,739 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-22 00:14:54,531 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"

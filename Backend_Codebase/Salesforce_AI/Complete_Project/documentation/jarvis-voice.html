@@ -1,0 +1,1333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="A proposal to give Jarvis a natural voice mode and to let it drive every feature of the app: what works today, what it takes, what it costs.">
+<title>Jarvis Voice Mode</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a3d7c'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='%23f5a623' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* Design tokens and components taken from /documentation/pre-sales so the
+   pages read as one set. Additions for this page are marked "proposal". */
+:root{
+  --navy:#1a3d7c;
+  --navy-lift:#2f5eaf;
+  --amber:#f5a623;
+  --bg:#f6f7fb;
+  --surface:#ffffff;
+  --surface-2:#fbfcfe;
+  --border:#e2e6f0;
+  --border-strong:#cdd4e4;
+  --ink:#111827;
+  --ink-2:#4b5563;
+  --ink-3:#6b7280;
+  --hero-ink:#ffffff;
+  --hero-ink-2:#c3cee4;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 12px 28px -12px rgba(16,24,40,.16);
+  --ok:#15803d; --ok-bg:#dcfce7;
+  --warn:#92400e; --warn-bg:#fef3c7; --warn-br:#fcd34d;
+  --bad:#b91c1c; --bad-bg:#fee2e2;
+  --cold:#6a4fb6; --cold-bg:#efebfa; --cold-br:#d9cff4;
+  --open:#527080; --open-bg:#e8eef2;
+  --new:#b86e00; --new-bg:#fff4e0; --new-br:#f5c46b;
+  --radius:16px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#080c15; --surface:#121a2b; --surface-2:#161f33;
+    --border:#25314c; --border-strong:#33415f;
+    --ink:#eef2f9; --ink-2:#a9b4cb; --ink-3:#8592ad;
+    --hero-ink:#ffffff; --hero-ink-2:#b3c1de;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -12px rgba(0,0,0,.6);
+    --ok:#4ade80; --ok-bg:#052e16;
+    --warn:#fcd34d; --warn-bg:#2e1f05; --warn-br:#7c5e12;
+    --bad:#fca5a5; --bad-bg:#3f1010;
+    --cold:#a996ea; --cold-bg:#241d38; --cold-br:#3d3260;
+    --open:#93b0c2; --open-bg:#1a242a;
+    --new:#fbbf5a; --new-bg:#2b1d06; --new-br:#7c5a17;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#080c15; --surface:#121a2b; --surface-2:#161f33;
+  --border:#25314c; --border-strong:#33415f;
+  --ink:#eef2f9; --ink-2:#a9b4cb; --ink-3:#8592ad;
+  --hero-ink:#ffffff; --hero-ink-2:#b3c1de;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -12px rgba(0,0,0,.6);
+  --ok:#4ade80; --ok-bg:#052e16;
+  --warn:#fcd34d; --warn-bg:#2e1f05; --warn-br:#7c5e12;
+  --bad:#fca5a5; --bad-bg:#3f1010;
+  --cold:#a996ea; --cold-bg:#241d38; --cold-br:#3d3260;
+  --open:#93b0c2; --open-bg:#1a242a;
+  --new:#fbbf5a; --new-bg:#2b1d06; --new-br:#7c5a17;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img{max-width:100%}
+.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* ── hero ───────────────────────────────────────────── */
+.hero{
+  position:relative; color:var(--hero-ink); overflow:hidden;
+  background:
+    radial-gradient(900px 460px at 78% -12%, rgba(245,166,35,.30), transparent 62%),
+    radial-gradient(760px 420px at 8% 8%, rgba(80,130,220,.34), transparent 58%),
+    linear-gradient(158deg,#16305f 0%,#1a3d7c 46%,#12274f 100%);
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:radial-gradient(760px 400px at 50% 0%,#000,transparent 76%);
+  -webkit-mask-image:radial-gradient(760px 400px at 50% 0%,#000,transparent 76%);
+}
+.hero>*{position:relative;z-index:1}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:36px;height:36px;flex:none;border-radius:10px;background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.2);display:grid;place-items:center}
+.brand-name{font-weight:650;letter-spacing:-.01em;font-size:17px;white-space:nowrap}
+.pill{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+  color:#fff;white-space:nowrap}
+.hero-body{padding:clamp(28px,7vw,60px) 0 clamp(32px,6vw,56px);max-width:780px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--amber);margin:0 0 18px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--amber);border-radius:2px}
+h1{margin:0 0 18px;font-size:clamp(2rem,5.6vw,3.1rem);line-height:1.07;
+  letter-spacing:-.033em;font-weight:700;text-wrap:balance}
+.lede{margin:0;font-size:clamp(1rem,2.1vw,1.12rem);color:var(--hero-ink-2);max-width:64ch}
+.hero-facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.fact{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);
+  border-radius:11px;padding:10px 15px}
+.fact b{display:block;font-size:15px;font-weight:660;letter-spacing:-.01em}
+.fact span{font-size:12.5px;color:var(--hero-ink-2)}
+
+/* ── sections ───────────────────────────────────────── */
+main{padding:clamp(34px,6vw,56px) 0 10px}
+section{margin-bottom:clamp(38px,6vw,62px);scroll-margin-top:16px}
+h2{font-size:clamp(1.25rem,3.1vw,1.6rem);letter-spacing:-.02em;margin:0 0 6px;font-weight:680}
+h3{font-size:1.05rem;letter-spacing:-.015em;font-weight:660;margin:26px 0 10px}
+.section-sub{color:var(--ink-3);margin:0 0 22px;font-size:15px;max-width:72ch}
+p{margin:0 0 14px}
+p:last-child{margin-bottom:0}
+ul.plain{margin:0 0 14px;padding-left:20px}
+ul.plain li{margin-bottom:6px}
+
+/* ── figure shell ───────────────────────────────────── */
+figure{margin:0}
+.fig{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px;box-shadow:var(--shadow)}
+.fig + .fig{margin-top:18px}
+figcaption{margin-top:12px;font-size:13px;color:var(--ink-3);text-align:center}
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ── tables ─────────────────────────────────────────── */
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:14.5px}
+caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-3);padding-bottom:10px}
+th{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;padding:0 12px 10px 0;border-bottom:1px solid var(--border-strong)}
+th.c,td.c{text-align:center}
+th.r,td.r{text-align:right;font-variant-numeric:tabular-nums}
+td{padding:11px 12px 11px 0;border-bottom:1px solid var(--border);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+td b{font-weight:640}
+td small{display:block;color:var(--ink-3);font-size:12.5px;font-weight:400}
+tr.group td{padding-top:20px;font-size:11.5px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--border-strong)}
+tr.total td{font-weight:680;border-top:2px solid var(--border-strong)}
+
+.chip{display:inline-block;font-size:11px;font-weight:680;padding:3px 9px;border-radius:6px;
+  letter-spacing:.02em;white-space:nowrap}
+.chip-ok{background:var(--ok-bg);color:var(--ok)}
+.chip-bad{background:var(--bad-bg);color:var(--bad)}
+.chip-part{background:var(--warn-bg);color:var(--warn)}
+.chip-cold{background:var(--cold-bg);color:var(--cold)}
+.chip-open{background:var(--open-bg);color:var(--open)}
+
+/* proposal: provenance tags on every figure */
+.tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;padding:1px 7px;border-radius:5px;vertical-align:2px;white-space:nowrap}
+.tag.m{background:var(--ok-bg);color:var(--ok)}
+.tag.e{background:var(--cold-bg);color:var(--cold)}
+.tag.c{background:var(--open-bg);color:var(--open)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:13.5px;color:var(--ink-2);
+  background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-top:18px}
+
+/* proposal: table of contents */
+.toc{display:grid;gap:6px 22px;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));
+  margin:0;padding:0;list-style:none;counter-reset:t;font-size:14.5px}
+.toc li{counter-increment:t}
+.toc a{color:var(--ink-2);text-decoration:none;display:block;padding:4px 0;border-bottom:1px dashed var(--border)}
+.toc a::before{content:counter(t,decimal-leading-zero);color:var(--ink-3);font-size:12px;
+  font-weight:700;margin-right:9px;font-variant-numeric:tabular-nums}
+.toc a:hover{color:var(--navy)}
+
+/* ── cards (from the pre-sales outcomes / statuses) ─── */
+.outcomes{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:640px){.outcomes{grid-template-columns:1fr 1fr}}
+.outcomes.three{grid-template-columns:1fr}
+@media(min-width:860px){.outcomes.three{grid-template-columns:1fr 1fr 1fr}}
+.oc{background:var(--surface);border:1px solid var(--border);border-top:4px solid var(--ocb,var(--navy));
+  border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.oc h3{margin:0 0 4px;font-size:1.05rem;font-weight:660;letter-spacing:-.01em}
+.oc .oc-sub{font-size:13px;color:var(--ink-3);margin:0 0 12px}
+.oc p,.oc li{font-size:14px;color:var(--ink-2)}
+.oc ul{margin:0;padding-left:18px}
+.oc li{margin-bottom:5px}
+.big{font-size:1.9rem;font-weight:720;letter-spacing:-.03em;line-height:1.1;margin:2px 0 4px;
+  font-variant-numeric:tabular-nums}
+
+.statuses{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:640px){.statuses{grid-template-columns:1fr 1fr}}
+.st{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 20px}
+.st-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:660;
+  padding:4px 11px;border-radius:999px;margin-bottom:10px}
+.st-badge.live{background:var(--ok-bg);color:var(--ok)}
+.st-badge.soon{background:var(--cold-bg);color:var(--cold)}
+.st-badge.new{background:var(--new-bg);color:var(--new)}
+.st-badge.bad{background:var(--bad-bg);color:var(--bad)}
+.st-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.st b{display:block;font-size:14.5px;font-weight:650;margin-bottom:4px}
+.st p{margin:0;font-size:13.5px;color:var(--ink-2)}
+
+/* ── fan-out (agents) ───────────────────────────────── */
+.fan{display:grid;gap:18px;grid-template-columns:1fr;align-items:center}
+@media(min-width:720px){.fan{grid-template-columns:230px 1fr;gap:28px}}
+.fan-src{background:var(--open-bg);border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;text-align:center}
+.fan-src b{display:block;font-size:14.5px;font-weight:680;color:var(--open)}
+.fan-src span{font-size:12.5px;color:var(--ink-3)}
+.fan-out{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:560px){.fan-out{grid-template-columns:1fr 1fr}}
+.fan-item{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;
+  background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:13px 15px}
+.fan-ico{min-width:34px;height:34px;padding:0 6px;border-radius:10px;display:grid;place-items:center;flex:none;
+  background:var(--navy);color:#fff;font-weight:700;font-size:14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fan-ico{background:var(--navy-lift)}}
+:root[data-theme="dark"] .fan-ico{background:var(--navy-lift)}
+.fan-item b{display:block;font-size:14px;font-weight:650}
+.fan-item span{font-size:13px;color:var(--ink-2)}
+
+/* ── numbered steps ─────────────────────────────────── */
+.steps{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));
+  counter-reset:s;margin-top:8px}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 22px 22px;counter-increment:s;position:relative;box-shadow:var(--shadow);
+  display:flex;flex-direction:column}
+.step::before{content:counter(s);position:absolute;top:-13px;left:22px;width:29px;height:29px;
+  border-radius:9px;background:var(--navy);color:#fff;display:grid;place-items:center;
+  font-size:14px;font-weight:700;box-shadow:0 4px 10px -3px rgba(26,61,124,.6)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .step::before{background:var(--navy-lift)}}
+:root[data-theme="dark"] .step::before{background:var(--navy-lift)}
+.step-who{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);margin:8px 0 6px}
+.step h3{margin:0 0 8px;font-size:1.05rem;letter-spacing:-.015em;font-weight:660}
+.step p,.step li{color:var(--ink-2);font-size:14.5px}
+.step ul{margin:0 0 12px;padding-left:18px}
+.step .effort{margin-top:auto;padding-top:10px;border-top:1px solid var(--border);
+  font-size:13.5px;color:var(--ink-2)}
+.step .effort b{color:var(--ink);font-size:15px}
+
+/* ── example callout ────────────────────────────────── */
+.eg{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--amber);
+  border-radius:0 11px 11px 0;padding:13px 15px}
+.eg-l{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);display:block;margin-bottom:6px}
+.eg p{margin:0;font-size:14px;color:var(--ink-2)}
+.eg p+p{margin-top:7px}
+.q{font-style:italic}
+.who{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);
+  display:inline-block;min-width:62px}
+
+/* ── notices ────────────────────────────────────────── */
+.notice{background:var(--warn-bg);border:1px solid var(--warn-br);border-left-width:4px;
+  border-radius:var(--radius);padding:20px 22px}
+.notice + .notice{margin-top:14px}
+.notice h3{margin:0 0 8px;font-size:1.02rem;color:var(--warn);font-weight:660}
+.notice p{margin:0;color:var(--ink-2);font-size:14.5px}
+.notice p + p{margin-top:8px}
+
+/* proposal: latency bars */
+.bars{display:grid;gap:18px;min-width:640px}
+.bar-row{display:grid;grid-template-columns:170px 1fr 84px;gap:14px;align-items:center}
+.bar-label{font-size:13.5px;font-weight:640;line-height:1.3}
+.bar-label small{display:block;font-weight:400;color:var(--ink-3);font-size:12px}
+.bar{display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--surface-2);
+  border:1px solid var(--border)}
+.seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:11px;
+  font-weight:680;color:#fff;white-space:nowrap;overflow:hidden;border-right:1px solid rgba(255,255,255,.35)}
+.seg:last-child{border-right:0}
+.seg.eot{background:#8a94a8}
+.seg.stt{background:#3b82a6}
+.seg.route{background:#2f5eaf}
+.seg.agent{background:#1a3d7c}
+.seg.tts{background:#c47f10}
+.seg.net{background:#7a8599}
+.seg.hatch{background:repeating-linear-gradient(135deg,#9aa3b5 0 6px,#b9c0cf 6px 12px);color:#1f2937}
+.bar-total{font-size:14px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.key{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:18px;font-size:12.5px;color:var(--ink-2)}
+.key i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* proposal: architecture diagram */
+.arch{min-width:780px}
+.arch text{font-family:inherit}
+.arch .box{fill:var(--surface-2);stroke:var(--border-strong);stroke-width:1.2}
+.arch .box.new{fill:var(--new-bg);stroke:var(--new-br);stroke-width:1.6}
+.arch .zone{fill:none;stroke:var(--border-strong);stroke-dasharray:5 5;stroke-width:1.2}
+.arch .t{fill:var(--ink);font-size:13.5px;font-weight:650}
+.arch .s{fill:var(--ink-3);font-size:11.5px}
+.arch .z{fill:var(--ink-3);font-size:11px;font-weight:700;letter-spacing:.08em}
+.arch .ln{stroke:var(--ink-3);stroke-width:1.5;fill:none}
+.arch .ln.new{stroke:var(--new);stroke-width:2}
+.arch .ln.dash{stroke-dasharray:4 4}
+.arch .lbl{fill:var(--ink-2);font-size:11px}
+.arch .ah{fill:var(--ink-3)}
+.arch .ah.new{fill:var(--new)}
+
+footer{border-top:1px solid var(--border);margin-top:20px;padding:26px 0 44px;
+  color:var(--ink-3);font-size:13.5px}
+footer p{max-width:78ch}
+.refs{font-size:13px;color:var(--ink-2);padding-left:22px;margin:0}
+.refs li{margin-bottom:5px;word-break:break-word}
+.refs a{color:var(--ink-2)}
+
+@media (max-width:420px){.topbar .pill{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{
+  body{background:#fff}
+  .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .fig,.step,.oc,.st,.notice,tr{break-inside:avoid}
+  .scroller{overflow:visible}
+  .toc{display:none}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+            <path d="M9 21V11l7 6 7-6v10" stroke="#f5a623" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brand-name">Innodhara</span>
+      </div>
+      <span class="pill">Proposal &middot; September 2026</span>
+    </div>
+
+    <div class="hero-body">
+      <p class="eyebrow">Proposal for decision</p>
+      <h1>Jarvis, by voice &mdash; for everything the app can do</h1>
+      <p class="lede">
+        Turn the in-app assistant into a spoken, hands-free colleague that understands English,
+        Kannada and Hindi, answers in natural English, and can act on every feature a salesperson
+        uses &mdash; while keeping every approval exactly where it is today.
+      </p>
+      <div class="hero-facts">
+        <div class="fact"><b>20 of 42</b><span>app actions Jarvis can do today</span></div>
+        <div class="fact"><b>5.0 s median</b><span>a typical assistant turn today (measured)</span></div>
+        <div class="fact"><b>$0.0011</b><span>LLM cost of that turn (measured)</span></div>
+        <div class="fact"><b>RTX 3060, 12 GB</b><span>already in the server</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section aria-label="Contents">
+    <ol class="toc">
+      <li><a href="#summary">Executive summary</a></li>
+      <li><a href="#today">What Jarvis can do today</a></li>
+      <li><a href="#coverage">Coverage matrix</a></li>
+      <li><a href="#architecture">Proposed voice architecture</a></li>
+      <li><a href="#models">Speech models compared</a></li>
+      <li><a href="#latency">Latency budget</a></li>
+      <li><a href="#requirements">Hardware and installation</a></li>
+      <li><a href="#budget">LLM budget</a></li>
+      <li><a href="#plan">Delivery plan and effort</a></li>
+      <li><a href="#safety">Safety and approvals</a></li>
+      <li><a href="#risks">Risks</a></li>
+      <li><a href="#decisions">Decisions needed</a></li>
+      <li><a href="#refs">Method and references</a></li>
+    </ol>
+    <div class="legend">
+      <span><span class="tag m">Measured</span> taken from this system&rsquo;s own records</span>
+      <span><span class="tag c">Cited</span> published by a model&rsquo;s authors or a third party</span>
+      <span><span class="tag e">Estimate</span> our assumption, to be confirmed by the GPU benchmark</span>
+    </div>
+  </section>
+
+  <!-- ── 1. summary ─────────────────────────────────────────────────── -->
+  <section id="summary">
+    <h2>Executive summary</h2>
+    <p class="section-sub">
+      Jarvis already listens (server-side Whisper) and already talks (the phone&rsquo;s built-in
+      voice), but only one sentence at a time, and it can reach about half of what the app does.
+      This proposal closes both gaps in phases.
+    </p>
+
+    <div class="outcomes three">
+      <div class="oc" style="--ocb:var(--navy)">
+        <h3>The recommendation</h3>
+        <p class="oc-sub">Server-side voice, on the GPU we already have</p>
+        <ul>
+          <li>Phone streams audio to the server over a WebSocket through the existing HTTPS tunnel.</li>
+          <li>Speech-to-text moves from Whisper <i>tiny</i> to <b>faster-whisper large-v3-turbo</b> on the GPU.</li>
+          <li>Replies are spoken in English by <b>Kokoro-82M</b> (Apache-2.0, commercial use allowed), sentence by sentence.</li>
+          <li>The existing assistant, its tools and its approvals are reused unchanged.</li>
+        </ul>
+      </div>
+      <div class="oc" style="--ocb:var(--amber)">
+        <h3>What it takes</h3>
+        <p class="oc-sub">Derived from the coverage matrix <span class="tag e">Estimate</span></p>
+        <div class="big">60&ndash;104</div>
+        <p>developer-days for voice mode plus porting every in-scope feature. A usable voice mode
+          for the daily sales loop comes first, at <b>44&ndash;72</b> of those days.</p>
+      </div>
+      <div class="oc" style="--ocb:var(--ok)">
+        <h3>What it costs to run</h3>
+        <p class="oc-sub">LLM spend per user per month <span class="tag e">Estimate</span></p>
+        <div class="big">$0.76&ndash;$4.99</div>
+        <p>Expected <b>$1.80</b>. Speech runs on our own GPU, so voice adds no per-minute speech fees.
+          The per-organisation AI budget (default $3.00 a month) must be raised before rollout.</p>
+      </div>
+    </div>
+
+    <h3>What will not change</h3>
+    <div class="statuses">
+      <div class="st">
+        <span class="st-badge live"><span class="st-dot"></span>Kept as today</span>
+        <b>Nothing is sent without a human tap</b>
+        <p>Emails, WhatsApp messages and proposals still go through the approvals screen. Voice can
+          prepare them and tell you they are waiting; it cannot press send.</p>
+      </div>
+      <div class="st">
+        <span class="st-badge live"><span class="st-dot"></span>Kept as today</span>
+        <b>Replies stay in English</b>
+        <p>Jarvis understands English, Kannada and Hindi, including a mix of them in one sentence,
+          and always answers in English &mdash; the rule the assistant already follows.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2. today ───────────────────────────────────────────────────── -->
+  <section id="today">
+    <h2>What Jarvis can do today, and how</h2>
+    <p class="section-sub">
+      Every request goes through the same pipeline. Voice today is an input method bolted onto
+      the text box, not a conversation.
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="fan">
+          <div class="fan-src">
+            <b>Router</b>
+            <span>A fast model reads the request (and the last four turns) and picks one specialist.
+              An open document always keeps the conversation.</span>
+          </div>
+          <div class="fan-out">
+            <div class="fan-item"><div class="fan-ico">16</div><div><b>Proposal</b><span>Proposals and MOUs: create, fill, review, correct, prepare the email. Strong model.</span></div></div>
+            <div class="fan-item"><div class="fan-ico">9</div><div><b>Query</b><span>Clients, tasks, follow-ups, demos, approvals, project brief, &ldquo;why&rdquo;, note search.</span></div></div>
+            <div class="fan-item"><div class="fan-ico">5</div><div><b>Conversation</b><span>Client notes; create, reassign and close tasks.</span></div></div>
+            <div class="fan-item"><div class="fan-ico">5</div><div><b>Scheduling</b><span>Demo list, teams, calendar, book, cancel.</span></div></div>
+            <div class="fan-item"><div class="fan-ico">4</div><div><b>Follow-up</b><span>Due list, draft, schedule, complete.</span></div></div>
+            <div class="fan-item"><div class="fan-ico">2</div><div><b>Email</b><span>Introductory and custom emails, drafted for approval.</span></div></div>
+          </div>
+        </div>
+      </div>
+      <figcaption>6 specialists, 41 tools. Each tool runs with the user&rsquo;s own organisation and role injected &mdash; the model can never choose them.</figcaption>
+    </figure>
+
+    <h3>How a turn runs</h3>
+    <ul class="plain">
+      <li><b>Router call</b> on the fast tier (OpenAI gpt-5.4-nano via OpenRouter), then the chosen
+        agent&rsquo;s <b>tool loop</b>: up to 8 rounds of &ldquo;model decides &rarr; tool runs&rdquo;.</li>
+      <li>A tool that is unsure raises a <b>question</b> instead of guessing; the app draws it as a card
+        with one-tap answers. Anything outbound becomes a <b>pending approval</b>.</li>
+      <li>The conversation is stored per session, so &ldquo;send it&rdquo; or &ldquo;the second one&rdquo;
+        resolves against earlier turns.</li>
+    </ul>
+
+    <h3>Voice today</h3>
+    <div class="statuses">
+      <div class="st">
+        <span class="st-badge soon"><span class="st-dot"></span>Listening</span>
+        <b>Record a clip, then upload it</b>
+        <p>The phone records until it hears 2.5 seconds of silence, uploads the whole clip, and the
+          server runs Whisper <i>tiny</i>. No live words appear while speaking. A low-confidence
+          result is shown but not sent. Offline, the phone&rsquo;s own recogniser is used.</p>
+      </div>
+      <div class="st">
+        <span class="st-badge soon"><span class="st-dot"></span>Speaking</span>
+        <b>The phone&rsquo;s built-in voice</b>
+        <p>Off by default. Reads the first ~300 characters of a reply with Android&rsquo;s system
+          text-to-speech. It stops when the mic is tapped; it cannot be interrupted by speaking.</p>
+      </div>
+    </div>
+    <div class="notice" style="margin-top:14px">
+      <h3>Why tiny is not enough for Kannada</h3>
+      <p>Whisper <i>tiny</i> has a published word error rate of about <b>100% on Kannada and
+        Hindi</b> <span class="tag c">Cited</span> [1], and on real Kannada speech in this app its
+        transcripts matched only 6&ndash;12% of what was said <span class="tag m">Measured</span>.
+        That is why the app already refuses to auto-send a low-confidence transcript.</p>
+    </div>
+
+    <h3>Meeting recording today</h3>
+    <p>Recording runs <b>entirely on the phone</b>: a foreground service records the meeting, and an
+      upload worker sends the file to the server&rsquo;s meeting pipeline (Whisper <i>large</i>) once
+      it stops. So &ldquo;Jarvis, start recording&rdquo; cannot be a server tool alone &mdash; the
+      server must tell the app to start its own recorder.</p>
+  </section>
+
+  <!-- ── 3. coverage ────────────────────────────────────────────────── -->
+  <section id="coverage">
+    <h2>Coverage matrix</h2>
+    <p class="section-sub">
+      Every action a salesperson can take in the Android app, and the admin console, against the
+      tools Jarvis has today. Read from the app&rsquo;s API client, the backend routers and each
+      agent&rsquo;s tool list. <span class="tag m">Measured</span>
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr><th>Action</th><th class="c">Jarvis today</th><th>Agent</th><th>Plan</th></tr>
+            </thead>
+            <tbody>
+              <tr class="group"><td colspan="4">Clients and contacts</td></tr>
+              <tr><td>Find or list clients</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Query</td><td>&mdash;</td></tr>
+              <tr><td>Client overview: contacts, recent activity</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Query</td><td>&mdash;</td></tr>
+              <tr><td>Add a note about a client</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Conversation</td><td>&mdash;</td></tr>
+              <tr><td>Search past meeting notes</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Query</td><td>&mdash;</td></tr>
+              <tr><td>Create a lead and choose its owner</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase B</td></tr>
+              <tr><td>Edit a lead or move its stage</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase B</td></tr>
+              <tr><td>Add or edit a contact</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase B</td></tr>
+              <tr><td>Scan a business card into a contact</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Stays on screen <small>needs the camera</small></td></tr>
+              <tr><td>Record a contact&rsquo;s consent</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Stays on screen <small>a legal record</small></td></tr>
+
+              <tr class="group"><td colspan="4">Meetings</td></tr>
+              <tr><td>Start, pause or stop a meeting recording</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase B <small>the server tells the app to start its recorder</small></td></tr>
+              <tr><td>Write meeting notes</td><td class="c"><span class="chip chip-part">Partial</span></td><td>Conversation</td><td>Phase B <small>a client note can be saved; the meeting-notes flow is not reached</small></td></tr>
+              <tr><td>Review and confirm what a meeting produced</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase B</td></tr>
+              <tr><td>Schedule a meeting</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase B</td></tr>
+
+              <tr class="group"><td colspan="4">Tasks</td></tr>
+              <tr><td>List my tasks</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Query</td><td>&mdash;</td></tr>
+              <tr><td>Create a task</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Conversation</td><td>&mdash;</td></tr>
+              <tr><td>Reassign a task</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Conversation</td><td>&mdash;</td></tr>
+              <tr><td>Complete a task</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Conversation</td><td>&mdash;</td></tr>
+              <tr><td>Decline, block, unblock, report progress, new date, split, vendor promise or slip <small>8 actions</small></td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase B</td></tr>
+
+              <tr class="group"><td colspan="4">Follow-ups and demos</td></tr>
+              <tr><td>See due follow-ups</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Follow-up</td><td>&mdash;</td></tr>
+              <tr><td>Draft a follow-up message</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Follow-up</td><td>&mdash;</td></tr>
+              <tr><td>Schedule or complete a follow-up</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Follow-up</td><td>&mdash;</td></tr>
+              <tr><td>See demos and the calendar</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Scheduling</td><td>&mdash;</td></tr>
+              <tr><td>Book or cancel a demo</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Scheduling</td><td>&mdash;</td></tr>
+              <tr><td>Reschedule a demo</td><td class="c"><span class="chip chip-part">Partial</span></td><td>Scheduling</td><td>Phase B <small>today: cancel, then book again</small></td></tr>
+
+              <tr class="group"><td colspan="4">Proposals and contracts</td></tr>
+              <tr><td>Create a proposal; edit items, prices and wording; answer its questions</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Proposal</td><td>&mdash;</td></tr>
+              <tr><td>Create and fill an MOU</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Proposal</td><td>&mdash;</td></tr>
+              <tr><td>Prepare the proposal email for approval</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Proposal</td><td>&mdash;</td></tr>
+              <tr><td>Submit a proposal for review</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase D <small>uploading a revised file stays on screen</small></td></tr>
+              <tr><td>Open a proposal or MOU document</td><td class="c"><span class="chip chip-part">Partial</span></td><td>Proposal</td><td>&mdash; <small>the reply card opens it</small></td></tr>
+
+              <tr class="group"><td colspan="4">Messages, approvals and inbox</td></tr>
+              <tr><td>Draft an introduction or a custom email</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Email</td><td>&mdash;</td></tr>
+              <tr><td>List pending approvals</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Query</td><td>&mdash;</td></tr>
+              <tr><td>Approve or reject a drafted message; approve and send a proposal</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Stays a tap <small>by design, see Safety</small></td></tr>
+              <tr><td>Inbound replies: triage, resolve, log a client&rsquo;s reply</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase D</td></tr>
+              <tr><td>Confirm proposed task assignments</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase D</td></tr>
+
+              <tr class="group"><td colspan="4">Projects, relationships, notifications</td></tr>
+              <tr><td>Project brief</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Query</td><td>&mdash;</td></tr>
+              <tr><td>Explain why something happened</td><td class="c"><span class="chip chip-ok">Yes</span></td><td>Query</td><td>&mdash;</td></tr>
+              <tr><td>What is blocking, timeline, plan versions, weekly report, conflicts</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase C</td></tr>
+              <tr><td>Project status, phase shift, members, stakeholders, sub-projects, resolve a conflict</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase C</td></tr>
+              <tr><td>Relationship manager: handover, reassign, opportunities, cycles</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase C</td></tr>
+              <tr><td>Daily digest and notifications (&ldquo;what&rsquo;s new today?&rdquo;)</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Phase B</td></tr>
+
+              <tr class="group"><td colspan="4">Admin console</td></tr>
+              <tr><td>Users, programmes, pricing, templates, integrations, settings, audit</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Out of scope <small>configuration belongs on a screen</small></td></tr>
+              <tr><td>Operations: invoices, vendors, bookings, deliverables, playbooks, approval rules, skills, leave</td><td class="c"><span class="chip chip-bad">No</span></td><td>&mdash;</td><td>Out of scope for v1</td></tr>
+
+              <tr class="total"><td>42 action groups</td><td class="c">20 yes &middot; 3 partial &middot; 19 no</td><td></td><td>16 to port &middot; 5 deliberately not</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>Admin and operations screens exist in the product but are left out of the voice scope: they change configuration or money, and a spoken mistake there is expensive.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 4. architecture ────────────────────────────────────────────── -->
+  <section id="architecture">
+    <h2>Proposed voice architecture</h2>
+    <p class="section-sub">
+      Amber is new. Everything grey already exists and is reused as it is &mdash; including every
+      tool, question card and approval.
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <svg class="arch" viewBox="0 0 1000 470" role="img" aria-labelledby="archT">
+            <title id="archT">Voice mode architecture: phone streams audio to a voice session on the server, which runs speech-to-text, the existing assistant, and text-to-speech, and streams speech back.</title>
+            <defs>
+              <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0 0L10 5L0 10z"/></marker>
+              <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah new" d="M0 0L10 5L0 10z"/></marker>
+            </defs>
+
+            <!-- phone zone -->
+            <rect class="zone" x="12" y="24" width="238" height="430" rx="16"/>
+            <text class="z" x="30" y="46">ANDROID APP</text>
+            <rect class="box new" x="30" y="62" width="202" height="62" rx="10"/>
+            <text class="t" x="44" y="86">Mic + echo cancelling</text>
+            <text class="s" x="44" y="106">speaks and listens at once</text>
+            <rect class="box new" x="30" y="136" width="202" height="62" rx="10"/>
+            <text class="t" x="44" y="160">Voice activity + Opus</text>
+            <text class="s" x="44" y="180">end of turn, interruption</text>
+            <rect class="box new" x="30" y="210" width="202" height="62" rx="10"/>
+            <text class="t" x="44" y="234">Streaming player</text>
+            <text class="s" x="44" y="254">stops the moment you talk</text>
+            <rect class="box" x="30" y="296" width="202" height="62" rx="10"/>
+            <text class="t" x="44" y="320">Jarvis screen + cards</text>
+            <text class="s" x="44" y="340">questions, approvals, links</text>
+            <rect class="box" x="30" y="370" width="202" height="62" rx="10"/>
+            <text class="t" x="44" y="394">Meeting recorder</text>
+            <text class="s" x="44" y="414">now startable by Jarvis</text>
+
+            <!-- server zone -->
+            <rect class="zone" x="300" y="24" width="688" height="430" rx="16"/>
+            <text class="z" x="318" y="46">SERVER &middot; ONE RTX 3060</text>
+
+            <rect class="box new" x="318" y="62" width="200" height="72" rx="10"/>
+            <text class="t" x="332" y="88">Voice session</text>
+            <text class="s" x="332" y="108">WebSocket endpoint,</text>
+            <text class="s" x="332" y="124">turn and interruption state</text>
+
+            <rect class="box new" x="552" y="62" width="200" height="72" rx="10"/>
+            <text class="t" x="566" y="88">Speech-to-text</text>
+            <text class="s" x="566" y="108">faster-whisper turbo, GPU</text>
+            <text class="s" x="566" y="124">English &middot; Kannada &middot; Hindi</text>
+
+            <rect class="box" x="786" y="62" width="186" height="72" rx="10"/>
+            <text class="t" x="800" y="88">Router</text>
+            <text class="s" x="800" y="108">fast model</text>
+            <text class="s" x="800" y="124">via OpenRouter</text>
+
+            <rect class="box" x="786" y="196" width="186" height="72" rx="10"/>
+            <text class="t" x="800" y="222">Agent tool loop</text>
+            <text class="s" x="800" y="242">6 agents &rarr; more</text>
+            <text class="s" x="800" y="258">after porting</text>
+
+            <rect class="box" x="552" y="196" width="200" height="72" rx="10"/>
+            <text class="t" x="566" y="222">Tools + approvals</text>
+            <text class="s" x="566" y="242">database, question cards,</text>
+            <text class="s" x="566" y="258">pending approvals</text>
+
+            <rect class="box new" x="786" y="332" width="186" height="72" rx="10"/>
+            <text class="t" x="800" y="358">Speakable reply</text>
+            <text class="s" x="800" y="378">acknowledgement, then</text>
+            <text class="s" x="800" y="394">sentence-by-sentence</text>
+
+            <rect class="box new" x="552" y="332" width="200" height="72" rx="10"/>
+            <text class="t" x="566" y="358">Text-to-speech</text>
+            <text class="s" x="566" y="378">Kokoro-82M, GPU,</text>
+            <text class="s" x="566" y="394">streamed in chunks</text>
+
+            <rect class="box new" x="318" y="332" width="200" height="72" rx="10"/>
+            <text class="t" x="332" y="358">Spoken confirmation</text>
+            <text class="s" x="332" y="378">reads back names and</text>
+            <text class="s" x="332" y="394">figures, waits for &ldquo;yes&rdquo;</text>
+
+            <!-- links phone <-> server -->
+            <path class="ln new" d="M232 150 H318" marker-end="url(#a2)"/>
+            <path class="ln new" d="M318 118 C 280 118, 270 240, 232 240" marker-end="url(#a2)"/>
+            <text class="lbl" x="246" y="142">audio up</text>
+            <text class="lbl" x="250" y="262">speech</text>
+            <text class="lbl" x="250" y="276">down</text>
+            <path class="ln dash" d="M318 380 C 280 380, 270 400, 232 400" marker-end="url(#a1)"/>
+            <text class="lbl" x="238" y="446">&ldquo;start recording&rdquo;</text>
+
+            <!-- server flow -->
+            <path class="ln new" d="M518 98 H552" marker-end="url(#a2)"/>
+            <path class="ln" d="M752 98 H786" marker-end="url(#a1)"/>
+            <path class="ln" d="M879 134 V196" marker-end="url(#a1)"/>
+            <path class="ln" d="M786 232 H752" marker-end="url(#a1)"/>
+            <path class="ln" d="M752 244 H786" marker-start="url(#a1)"/>
+            <path class="ln" d="M879 268 V332" marker-end="url(#a1)"/>
+            <path class="ln new" d="M786 368 H752" marker-end="url(#a2)"/>
+            <path class="ln new" d="M552 368 C 530 368, 530 150, 518 130" marker-end="url(#a2)"/>
+            <path class="ln dash" d="M552 250 C 470 250, 470 330, 418 332" marker-end="url(#a1)"/>
+            <text class="lbl" x="418" y="300">a write needs</text>
+            <text class="lbl" x="418" y="314">confirmation</text>
+          </svg>
+        </div>
+      </div>
+      <figcaption>The transport is a WebSocket inside the existing HTTPS tunnel. The tunnel carries WebSockets but not UDP, so WebRTC would need an extra public relay (see Decisions).</figcaption>
+    </figure>
+
+    <h3>How a spoken turn works</h3>
+    <div class="steps">
+      <article class="step">
+        <p class="step-who">Listening</p>
+        <h3>The phone streams while you talk</h3>
+        <p>Audio leaves the phone in 20 ms Opus frames while you speak, instead of as one clip after
+          you stop. Voice-activity detection ends the turn after about 0.6 s of silence instead of
+          today&rsquo;s 2.5 s.</p>
+      </article>
+      <article class="step">
+        <p class="step-who">Understanding</p>
+        <h3>Transcribe, then run the assistant as today</h3>
+        <p>faster-whisper transcribes in the language spoken. The transcript goes into the same
+          router and agent that typed text uses &mdash; so every fix already made to tool choice
+          applies to voice too.</p>
+      </article>
+      <article class="step">
+        <p class="step-who">Answering</p>
+        <h3>Say something at once, then the answer</h3>
+        <p>As soon as the router has picked an agent, Jarvis says a short acknowledgement
+          (&ldquo;Checking your follow-ups&rdquo;) from a fixed template &mdash; no extra model call.
+          The reply is then spoken sentence by sentence, and cards still appear on screen.</p>
+      </article>
+      <article class="step">
+        <p class="step-who">Interrupting</p>
+        <h3>Talk over it and it stops</h3>
+        <p>While Jarvis speaks, the phone keeps listening with echo cancelling on. If you start
+          talking, playback stops within a frame and the new turn begins. Speech is cancelled;
+          an action already carried out is not silently undone.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 5. models ──────────────────────────────────────────────────── -->
+  <section id="models">
+    <h2>Speech models compared</h2>
+    <p class="section-sub">
+      Checked against primary sources on 14 September 2026. Licence is a hard filter: several of
+      the best-known open voices do not allow commercial use. No model has been benchmarked on our
+      GPU yet &mdash; that is the first task of Phase A.
+    </p>
+
+    <h3>Text-to-speech &mdash; English replies</h3>
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr><th>Model</th><th>Licence &rarr; commercial use</th><th>Size</th><th>Naturalness evidence</th><th>Streaming / speed</th><th>Voice cloning</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Kokoro-82M</b> <span class="chip chip-ok">Recommended</span><small>last weights Jan 2025; last commit Aug 2025</small></td>
+                <td>Apache-2.0, code and weights &rarr; <b>Yes</b> [2]</td><td>82M</td>
+                <td>Arena Elo 1061 <span class="tag c">Cited</span> [3]</td>
+                <td>Chunked output [2]; small enough to also run on a phone</td><td>No, preset voices</td></tr>
+              <tr><td><b>NVIDIA Magpie-TTS Multilingual</b><small>runner-up; Jul 2026</small></td>
+                <td>NVIDIA Open Model License, &ldquo;ready for commercial use&rdquo; &rarr; <b>Yes</b> (read terms) [4]</td><td>357M</td>
+                <td>Arena Elo 1061 <span class="tag c">Cited</span> [3]</td><td>Not stated</td><td>Removed on purpose</td></tr>
+              <tr><td><b>Chatterbox</b> (Resemble AI)<small>most expressive; active 2026</small></td>
+                <td>MIT &rarr; <b>Yes</b> [5]</td><td>500M</td>
+                <td>Arena Elo 1020 <span class="tag c">Cited</span> [3]</td><td>Not stated for open weights</td><td>Yes &mdash; with a built-in audio watermark</td></tr>
+              <tr><td><b>CosyVoice 3</b> (0.5B)</td>
+                <td>Apache-2.0 &rarr; <b>Yes</b> [6]</td><td>0.5B</td>
+                <td>English error rate 1.68% <span class="tag c">Cited, authors</span></td><td>Two-way streaming, &ldquo;as low as 150 ms&rdquo; <span class="tag c">Cited, authors</span></td><td>Yes, zero-shot</td></tr>
+              <tr><td><b>Indic-Parler-TTS</b> (AI4Bharat)<small>option if Indian-accented English is wanted</small></td>
+                <td>Apache-2.0 &rarr; <b>Yes</b> [7]</td><td>0.9B</td>
+                <td>Authors&rsquo; own scores only</td><td>Library supports streaming; no speed figures</td><td>No, 69 described voices</td></tr>
+              <tr><td><b>Piper</b><small>CPU fallback</small></td>
+                <td>GPL-3.0 (current fork); per-voice licences vary &rarr; <b>Conditional</b> [8]</td><td>small</td>
+                <td>None published</td><td>Runs on CPU</td><td>No</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>Arena Elo is the Artificial Analysis TTS leaderboard, built from blind listener votes in English.</figcaption>
+    </figure>
+
+    <div class="outcomes" style="margin-top:18px">
+      <div class="oc" style="--ocb:var(--bad)">
+        <h3>Ruled out by licence</h3>
+        <p class="oc-sub">Weights are non-commercial or need a separate contract</p>
+        <ul>
+          <li><b>XTTS-v2</b> &mdash; Coqui Public Model License, non-commercial only; company closed [9]</li>
+          <li><b>F5-TTS</b> &mdash; CC-BY-NC weights [10]</li>
+          <li><b>Fish Speech</b> S1-mini (CC-BY-NC-SA) and S2 Pro (research licence) [11]</li>
+          <li><b>Breeze TTS 2</b> &mdash; highest open Elo (1203), but non-commercial [3]</li>
+          <li><b>Voxtral TTS</b> and <b>Higgs Audio v3</b> &mdash; non-commercial</li>
+          <li><b>VibeVoice</b> &mdash; authors advise against commercial use</li>
+        </ul>
+      </div>
+      <div class="oc" style="--ocb:var(--amber)">
+        <h3>Why Kokoro first</h3>
+        <p class="oc-sub">Our reasoning, to be confirmed by listening tests</p>
+        <ul>
+          <li>Joint-best independent listener score among the commercially usable models.</li>
+          <li>Smallest by far &mdash; leaves the GPU for speech-to-text and meeting transcription.</li>
+          <li>No voice cloning, so no question of whose voice it is.</li>
+          <li>The app already names it as the planned on-device voice, so the same voice can serve offline.</li>
+          <li><b>To check:</b> how it pronounces Indian names and places, and its slower maintenance pace. Magpie is the fallback.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Speech-to-text &mdash; understanding English, Kannada and Hindi</h3>
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <caption>Word error rate (lower is better). Different test sets are not directly comparable.</caption>
+            <thead>
+              <tr><th>Model</th><th>Licence</th><th class="r">Kannada</th><th class="r">Hindi</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Whisper tiny</b> <span class="chip chip-open">today</span></td><td>MIT</td><td class="r">100.7%</td><td class="r">102.3%</td><td>FLEURS <span class="tag c">Cited</span> [1]</td></tr>
+              <tr><td><b>Whisper large-v2</b></td><td>MIT</td><td class="r">37.0%</td><td class="r">21.5%</td><td>FLEURS <span class="tag c">Cited</span> [1]; the meeting pipeline runs large-v3</td></tr>
+              <tr><td><b>faster-whisper large-v3-turbo</b> <span class="chip chip-ok">Recommended start</span></td><td>MIT</td><td class="r">not published</td><td class="r">not published</td><td>809M; one model for all three languages and mixed speech; the card warns quality drops on lower-resource languages [12]</td></tr>
+              <tr><td><b>IndicConformer 600M</b> (AI4Bharat)</td><td>MIT</td><td class="r">21.4%</td><td class="r">8.2%</td><td>22 Indian languages, no English; Voice of India 2026 benchmark <span class="tag c">Cited</span> [13]</td></tr>
+              <tr><td><b>IndicWhisper</b> (Vistaar)</td><td>MIT</td><td class="r">18.6%</td><td class="r">15.0%</td><td>FLEURS, authors&rsquo; figures <span class="tag c">Cited</span> [14]</td></tr>
+              <tr><td>distil-whisper, Parakeet, Canary</td><td>&mdash;</td><td class="r">&mdash;</td><td class="r">&mdash;</td><td>Ruled out: English-only or no Indian languages [12]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>Start with one multilingual model; add IndicConformer for Kannada and Hindi only if the benchmark on our own recordings shows turbo is not good enough.</figcaption>
+    </figure>
+
+    <h3>Turn-taking and transport</h3>
+    <ul class="plain">
+      <li><b>Voice activity detection:</b> Silero VAD (MIT), under 1 ms per 30 ms of audio on one CPU
+        thread <span class="tag c">Cited</span> [15]. Production voice agents end a turn after
+        0.5&ndash;0.8 s of silence [16][17]; we propose 0.6 s, tuned in testing.</li>
+      <li><b>Smarter end of turn (later):</b> Pipecat Smart Turn (BSD-2) handles Hindi but not
+        Kannada [18], so it is optional.</li>
+      <li><b>Interruption:</b> Android&rsquo;s echo canceller with the voice-communication
+        microphone source; it varies by handset, so playback is ducked while listening on devices
+        without it [19].</li>
+      <li><b>Transport:</b> WebSocket with Opus at 16&ndash;24 kbps [20]. The tunnel supports
+        WebSockets without configuration [21]; WebRTC would be smoother on bad networks but needs a
+        public relay.</li>
+    </ul>
+  </section>
+
+  <!-- ── 6. latency ─────────────────────────────────────────────────── -->
+  <section id="latency">
+    <h2>Latency budget</h2>
+    <p class="section-sub">
+      The time from the moment you stop speaking to the first word of the answer. Today&rsquo;s
+      figures come from 47 non-proposal assistant turns recorded between 7 August and 13 September
+      2026 (medians). Proposal and contract turns are slower &mdash; median 9.8 s &mdash; because
+      they use the strong model and several rounds.
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <div class="bars">
+            <div class="bar-row">
+              <div class="bar-label">Typed today<small>send tap &rarr; reply text</small></div>
+              <div class="bar">
+                <div class="seg route" style="width:21.6%">router 1.6 s</div>
+                <div class="seg agent" style="width:43.2%">agent 3.2 s</div>
+                <div class="seg" style="width:35.2%;background:transparent"></div>
+              </div>
+              <div class="bar-total">5.0 s <span class="tag m">M</span></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">Spoken today<small>stop talking &rarr; phone voice</small></div>
+              <div class="bar">
+                <div class="seg eot" style="width:34.2%">silence wait 2.5 s</div>
+                <div class="seg hatch" style="width:6%">?</div>
+                <div class="seg route" style="width:21.6%">1.6 s</div>
+                <div class="seg agent" style="width:38.2%">3.2 s</div>
+              </div>
+              <div class="bar-total">&gt; 7.3 s</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">Voice mode v1<small>answer, first word</small></div>
+              <div class="bar">
+                <div class="seg eot" style="width:8.2%">0.6</div>
+                <div class="seg stt" style="width:7.5%">STT</div>
+                <div class="seg route" style="width:21.6%">1.6 s</div>
+                <div class="seg agent" style="width:43.2%">agent 3.2 s</div>
+                <div class="seg tts" style="width:5.8%">TTS</div>
+              </div>
+              <div class="bar-total">5.9&ndash;6.7 s <span class="tag e">E</span></div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">Voice mode v1<small>first thing you hear</small></div>
+              <div class="bar">
+                <div class="seg eot" style="width:8.2%">0.6</div>
+                <div class="seg stt" style="width:7.5%">STT</div>
+                <div class="seg route" style="width:21.6%">1.6 s</div>
+                <div class="seg tts" style="width:5.8%">ack</div>
+                <div class="seg" style="width:56.9%;background:transparent"></div>
+              </div>
+              <div class="bar-total">2.6&ndash;3.3 s <span class="tag e">E</span></div>
+            </div>
+          </div>
+          <div class="key">
+            <span><i style="background:#8a94a8"></i>End-of-turn wait</span>
+            <span><i style="background:#3b82a6"></i>Upload + speech-to-text</span>
+            <span><i style="background:#2f5eaf"></i>Router model call</span>
+            <span><i style="background:#1a3d7c"></i>Agent model calls</span>
+            <span><i style="background:#c47f10"></i>Text-to-speech + playback</span>
+            <span><i style="background:repeating-linear-gradient(135deg,#9aa3b5 0 3px,#b9c0cf 3px 6px)"></i>Not measured today</span>
+          </div>
+        </div>
+      </div>
+      <figcaption>Bars are drawn close to scale (full width is about 7.3 s). The language model is two thirds of every turn; voice cannot make it faster, only fill the wait honestly.</figcaption>
+    </figure>
+
+    <figure style="margin-top:18px">
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr><th>Stage</th><th class="r">Today</th><th class="r">Voice mode v1</th><th>Basis</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>End-of-turn silence wait</td><td class="r">2,500 ms</td><td class="r">600 ms</td><td><span class="tag m">Measured</span> app setting &rarr; <span class="tag c">Cited</span> industry range 500&ndash;800 ms</td></tr>
+              <tr><td>Audio upload</td><td class="r">not recorded</td><td class="r">50&ndash;150 ms</td><td><span class="tag e">Estimate</span> audio is already on the server when speech ends</td></tr>
+              <tr><td>Speech-to-text</td><td class="r">not recorded</td><td class="r">300&ndash;600 ms</td><td><span class="tag e">Estimate</span> turbo on an RTX 3060, a 5-second request</td></tr>
+              <tr><td>Router model call</td><td class="r">1,577 ms</td><td class="r">1,577 ms</td><td><span class="tag m">Measured</span> median, n = 47</td></tr>
+              <tr><td>Agent model calls</td><td class="r">3,155 ms</td><td class="r">3,155 ms</td><td><span class="tag m">Measured</span> median, n = 47; p90 5,069 ms</td></tr>
+              <tr><td>Tools and database</td><td class="r">17 ms</td><td class="r">17 ms</td><td><span class="tag m">Measured</span> median, n = 47</td></tr>
+              <tr><td>Text-to-speech, first audio</td><td class="r">phone engine</td><td class="r">150&ndash;400 ms</td><td><span class="tag e">Estimate</span> Kokoro, first sentence</td></tr>
+              <tr><td>Download and playback start</td><td class="r">&mdash;</td><td class="r">100&ndash;200 ms</td><td><span class="tag e">Estimate</span></td></tr>
+              <tr class="total"><td>First word of the answer</td><td class="r">&gt; 7.3 s</td><td class="r">5.9&ndash;6.7 s</td><td>Target after optimisation: <b>&le; 5 s</b> median for everyday requests</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </figure>
+
+    <h3>Where the remaining time can come from</h3>
+    <ul class="plain">
+      <li><b>Spoken acknowledgement</b> after routing: first sound at about 3 s, with no extra model cost.</li>
+      <li><b>Stream the final answer</b> from the model instead of waiting for all of it: saves part of the
+        agent time. <span class="tag e">Estimate</span> 0.5&ndash;1.5 s.</li>
+      <li><b>Skip the router</b> when a short follow-up clearly continues the same agent&rsquo;s work
+        (&ldquo;yes&rdquo;, &ldquo;the second one&rdquo;): saves the 1.6 s router call on those turns.</li>
+      <li><b>A different fast model or provider</b> for routing: a 537-token question taking 1.6 s is mostly
+        network and queueing, which is worth a timed comparison.</li>
+    </ul>
+  </section>
+
+  <!-- ── 7. requirements ────────────────────────────────────────────── -->
+  <section id="requirements">
+    <h2>Hardware and installation requirements</h2>
+    <p class="section-sub">What the server has today, and what voice mode adds.</p>
+
+    <div class="statuses">
+      <div class="st">
+        <span class="st-badge live"><span class="st-dot"></span>Already in place <span class="tag m">Measured</span></span>
+        <b>Server</b>
+        <p>NVIDIA RTX 3060 with 12 GB, driver 590 / CUDA 13.1, of which 364 MiB is in use.
+          12-core Ryzen 9 5900X, 31 GB RAM. PyTorch 2.13 sees the GPU. FastAPI, uvicorn and the
+          websockets library are installed. Whisper large-v3 and tiny are already downloaded (3.0 GB).</p>
+      </div>
+      <div class="st">
+        <span class="st-badge bad"><span class="st-dot"></span>Constraint <span class="tag m">Measured</span></span>
+        <b>Disk is 93% full</b>
+        <p>35 GB free. Voice models add roughly 3&ndash;6 GB <span class="tag e">Estimate</span>,
+          which fits, but the meeting audio and document stores keep growing on the same disk.</p>
+      </div>
+    </div>
+
+    <h3>Sharing 12 GB of GPU memory</h3>
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <thead><tr><th>On the GPU</th><th class="r">Memory</th><th>Basis</th></tr></thead>
+            <tbody>
+              <tr><td>The backend as it runs today</td><td class="r">0.36 GB</td><td><span class="tag m">Measured</span></td></tr>
+              <tr><td>Meeting transcription, Whisper large (only while a meeting is processing)</td><td class="r">~4.7 GB</td><td><span class="tag c">Cited</span> openai-whisper at fp16 [22]</td></tr>
+              <tr><td>Voice speech-to-text, large-v3-turbo at int8</td><td class="r">1.5&ndash;2.5 GB</td><td><span class="tag e">Estimate</span></td></tr>
+              <tr><td>Kokoro-82M text-to-speech</td><td class="r">0.5&ndash;1.0 GB</td><td><span class="tag e">Estimate</span></td></tr>
+              <tr><td>CUDA overhead for the new work</td><td class="r">~0.5&ndash;1.0 GB</td><td><span class="tag e">Estimate</span></td></tr>
+              <tr class="total"><td>Peak, with a meeting being transcribed at the same time</td><td class="r">7.6&ndash;9.6 GB</td><td>leaves 2.4&ndash;4.4 GB</td></tr>
+              <tr><td>Without a meeting in progress</td><td class="r">2.9&ndash;4.9 GB</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>It fits. Swapping the meeting pipeline to faster-whisper at int8 (2.9 GB, cited [22]) would widen the margin. A larger voice such as Chatterbox would make the peak tight. A separate local model runtime (Ollama) is also installed on this card and must stay idle.</figcaption>
+    </figure>
+
+    <h3>What gets installed</h3>
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Where</th><th>Component</th><th>Licence</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>Server</td><td>faster-whisper (CTranslate2)</td><td>MIT</td><td>GPU speech-to-text. Wheel compatibility with CUDA 13 must be checked first.</td></tr>
+              <tr><td>Server</td><td>large-v3-turbo model</td><td>MIT</td><td>~1.6 GB download <span class="tag e">Estimate</span></td></tr>
+              <tr><td>Server</td><td>kokoro + its English phonemiser</td><td>Apache-2.0</td><td>Text-to-speech; check whether the espeak-ng fallback (GPL-3.0) is needed for unknown words</td></tr>
+              <tr><td>Server</td><td>silero-vad</td><td>MIT</td><td>End of turn and interruption, ~2 MB</td></tr>
+              <tr><td>Server</td><td>Opus codec (libopus)</td><td>BSD</td><td>Decode audio up, encode speech down</td></tr>
+              <tr><td>Android</td><td>OkHttp WebSocket</td><td>Apache-2.0</td><td>Already in the app through Retrofit</td></tr>
+              <tr><td>Android</td><td>AudioRecord, AcousticEchoCanceler, AudioTrack, MediaCodec (Opus)</td><td>Platform</td><td>Full-duplex capture and playback</td></tr>
+              <tr><td>Android, optional</td><td>sherpa-onnx</td><td>Apache-2.0</td><td>On-phone voice activity detection; Kokoro offline fallback</td></tr>
+              <tr><td>Network</td><td>WebSocket through the existing tunnel</td><td>&mdash;</td><td>~2&ndash;3 kB/s up while talking <span class="tag e">Estimate</span>; the tunnel plan&rsquo;s connection limits still to check</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </figure>
+
+    <h3>On the phone instead?</h3>
+    <p>The owner&rsquo;s preference is the server, and the numbers agree. On-device speech-to-text
+      options either have no Kannada model or are Whisper tiny again [12]. An on-device voice is
+      free, private and works offline, but a small voice on a mid-range phone sounds worse and
+      drains the battery. The proposal keeps the <b>server as the main path</b> and the phone&rsquo;s
+      own recogniser and voice as the <b>offline fallback</b> &mdash; exactly how dictation already
+      behaves.</p>
+  </section>
+
+  <!-- ── 8. budget ──────────────────────────────────────────────────── -->
+  <section id="budget">
+    <h2>LLM budget</h2>
+    <p class="section-sub">
+      Speech-to-text and text-to-speech run on our own hardware and add nothing per minute. The
+      language-model bill is what changes. Costs below are calculated by the app from its own
+      price table for each model, not taken from provider invoices.
+    </p>
+
+    <h3>Spend today <span class="tag m">Measured</span></h3>
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <caption>7 August &ndash; 13 September 2026: 878 model calls, $1.08 in total. Mostly internal testing, so the mix is not a production mix.</caption>
+            <thead><tr><th>Slice</th><th class="r">Turns / calls</th><th class="r">Median per turn</th><th class="r">Mean per turn</th><th class="r">p90 per turn</th></tr></thead>
+            <tbody>
+              <tr><td><b>All assistant turns</b></td><td class="r">119 turns</td><td class="r">$0.0017</td><td class="r">$0.0041</td><td class="r">$0.0093</td></tr>
+              <tr><td>Everyday turns (query, notes, tasks, follow-ups, demos)</td><td class="r">47 turns</td><td class="r">$0.0010</td><td class="r">$0.0011</td><td class="r">$0.0012</td></tr>
+              <tr><td>Proposal and MOU turns</td><td class="r">72 turns</td><td class="r">$0.0059</td><td class="r">$0.0061</td><td class="r">$0.0112</td></tr>
+              <tr class="group"><td colspan="5">By model</td></tr>
+              <tr><td>Fast tier &mdash; gpt-5.4-nano</td><td class="r">738 calls</td><td colspan="3" class="r">1.42 M tokens in, 52 k out &middot; <b>$0.35</b></td></tr>
+              <tr><td>Strong tier &mdash; Gemini 2.5 Flash</td><td class="r">140 calls</td><td colspan="3" class="r">1.42 M tokens in, 121 k out &middot; <b>$0.73</b></td></tr>
+              <tr class="group"><td colspan="5">One routing call</td></tr>
+              <tr><td>Router</td><td class="r">188 calls</td><td colspan="3" class="r">537 tokens in, 37 out on average &middot; $0.00016</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </figure>
+
+    <h3>With voice and every feature ported <span class="tag e">Estimate</span></h3>
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Assumption</th><th class="r">Low</th><th class="r">Expected</th><th class="r">High</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Share of turns about proposals or contracts</td><td class="r">20%</td><td class="r">20%</td><td class="r">20%</td><td>Voice is used for quick everyday requests; today&rsquo;s 60% reflects contract testing</td></tr>
+              <tr><td>Blended cost per turn before changes</td><td class="r" colspan="3">0.8 &times; $0.0011 + 0.2 &times; $0.0061 = <b>$0.0021</b></td><td>From the measured means</td></tr>
+              <tr><td>Growth in prompt size from ~40 more tools</td><td class="r">+10%</td><td class="r">+30%</td><td class="r">+80%</td><td>Low if tools are split into new agents; high if merged into few</td></tr>
+              <tr><td>Cost per turn</td><td class="r">$0.0023</td><td class="r">$0.0027</td><td class="r">$0.0038</td><td></td></tr>
+              <tr><td>Voice turns per user per working day</td><td class="r">15</td><td class="r">30</td><td class="r">60</td><td>Includes the short &ldquo;yes&rdquo; turns that spoken confirmation adds</td></tr>
+              <tr><td>Working days per month</td><td class="r">22</td><td class="r">22</td><td class="r">22</td><td></td></tr>
+              <tr class="total"><td>Per user per month</td><td class="r">$0.76</td><td class="r">$1.80</td><td class="r">$4.99</td><td></td></tr>
+              <tr class="total"><td>Ten users per month</td><td class="r">$7.60</td><td class="r">$18.00</td><td class="r">$49.90</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>Moving the router to the strong model for reliability would add about $0.0001 per turn at today&rsquo;s token counts.</figcaption>
+    </figure>
+
+    <div class="notice" style="margin-top:18px">
+      <h3>The budget guard will switch Jarvis off</h3>
+      <p>Each organisation has a monthly AI budget, <b>$3.00 by default</b>, and the assistant refuses
+        every request once it is spent. Ten users at the expected rate would reach it on about the
+        fourth working day of the month. The budget needs to be set deliberately before voice mode
+        is switched on.</p>
+    </div>
+  </section>
+
+  <!-- ── 9. plan ────────────────────────────────────────────────────── -->
+  <section id="plan">
+    <h2>Delivery plan and effort</h2>
+    <p class="section-sub">
+      Effort is counted from the coverage matrix, tool by tool, using this project&rsquo;s own
+      standard of a tested change: <b>0.5&ndash;1 day</b> for a read tool, <b>1&ndash;2 days</b> for a
+      write tool with confirmation, approvals and tests, <b>3&ndash;5 days</b> for an action the phone
+      must carry out. <span class="tag e">Estimate</span>, in developer-days.
+    </p>
+
+    <div class="steps">
+      <article class="step">
+        <p class="step-who">Phase A &middot; foundation</p>
+        <h3>Voice mode itself</h3>
+        <ul>
+          <li>GPU benchmark: turbo, IndicConformer, Kokoro, Magpie on our recordings &mdash; 2&ndash;3</li>
+          <li>Voice session WebSocket and turn state &mdash; 3&ndash;5</li>
+          <li>End of turn and interruption (Silero) &mdash; 2&ndash;3</li>
+          <li>Streaming speech-to-text service &mdash; 2&ndash;3</li>
+          <li>Streaming text-to-speech and acknowledgements &mdash; 3&ndash;4</li>
+          <li>Android: full-duplex audio, echo cancelling, voice screen &mdash; 6&ndash;9</li>
+          <li>Spoken confirmation flow &mdash; 3&ndash;4</li>
+        </ul>
+        <p class="effort"><b>21&ndash;31 days</b> &middot; needs: benchmark first</p>
+      </article>
+      <article class="step">
+        <p class="step-who">Phase A2 &middot; structure</p>
+        <h3>Room for more tools</h3>
+        <p>Add agents for leads and contacts, meetings, and projects, so no single prompt carries every
+          tool. Extend the router and the tool-choice tests (the decisions behind D46&ndash;D51 apply).</p>
+        <p class="effort"><b>4&ndash;6 days</b> &middot; needs: nothing</p>
+      </article>
+      <article class="step">
+        <p class="step-who">Phase B &middot; the daily sales loop</p>
+        <h3>What a salesperson does in the car</h3>
+        <ul>
+          <li>2 read tools: daily digest, notifications &mdash; 1&ndash;2</li>
+          <li>9 write tools: create lead, edit lead/stage, contact, meeting notes, meeting review,
+            schedule meeting, task status, task date/split, demo reschedule &mdash; 9&ndash;18</li>
+          <li>1 phone action: start, pause, stop recording &mdash; 3&ndash;5</li>
+        </ul>
+        <p class="effort"><b>13&ndash;25 days</b> &middot; needs: A, A2</p>
+      </article>
+      <article class="step">
+        <p class="step-who">Evaluation</p>
+        <h3>Prove it on real speech</h3>
+        <p>A recorded test set in English, Kannada, Hindi and mixed speech, replayed against the live
+          models, as the assistant fixes so far have been measured. Covers mis-heard names and figures.</p>
+        <p class="effort"><b>6&ndash;10 days</b> &middot; runs alongside B</p>
+      </article>
+      <article class="step">
+        <p class="step-who">Phase C &middot; managers</p>
+        <h3>Projects and relationships</h3>
+        <ul>
+          <li>6 read tools: what&rsquo;s blocking, timeline, plans, weekly report, conflicts, relationship &mdash; 3&ndash;6</li>
+          <li>8 write tools: status, phase shift, members, stakeholders, sub-projects, resolve conflict,
+            handover and RM change, opportunities &mdash; 8&ndash;16</li>
+        </ul>
+        <p class="effort"><b>11&ndash;22 days</b> &middot; needs: A2</p>
+      </article>
+      <article class="step">
+        <p class="step-who">Phase D &middot; the inbox</p>
+        <h3>Replies, reviews, assignments</h3>
+        <ul>
+          <li>2 read tools: inbound triage queue, proposed assignments &mdash; 1&ndash;2</li>
+          <li>4 write tools: resolve inbound, log a client reply, confirm assignments, submit a
+            proposal for review &mdash; 4&ndash;8</li>
+        </ul>
+        <p class="effort"><b>5&ndash;10 days</b> &middot; needs: A2</p>
+      </article>
+    </div>
+
+    <figure style="margin-top:22px">
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Milestone</th><th>Phases</th><th class="r">Developer-days</th></tr></thead>
+            <tbody>
+              <tr><td><b>Voice mode for the daily sales loop</b></td><td>A + A2 + B + evaluation</td><td class="r">44&ndash;72</td></tr>
+              <tr><td>Everything in scope</td><td>+ C + D</td><td class="r">60&ndash;104</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>Not included: business-card scanning, consent capture, approve-and-send, admin and operations screens &mdash; left on screen on purpose.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 10. safety ─────────────────────────────────────────────────── -->
+  <section id="safety">
+    <h2>Safety and approvals</h2>
+    <p class="section-sub">
+      Voice makes two things easier to get wrong: acting on a word that was mis-heard, and acting
+      without anyone looking at a screen. The existing gates stay, and one is added.
+    </p>
+
+    <div class="outcomes">
+      <div class="oc" style="--ocb:var(--ok)">
+        <h3>Reads answer straight away</h3>
+        <p class="oc-sub">Nothing changes in the system</p>
+        <p>&ldquo;Which follow-ups are due today?&rdquo; is answered and spoken with no confirmation.
+          A wrong guess costs a repeated question, not a wrong record.</p>
+      </div>
+      <div class="oc" style="--ocb:var(--amber)">
+        <h3>Writes are read back first</h3>
+        <p class="oc-sub">New for voice</p>
+        <p>Every create, edit or schedule is read back &mdash; names, dates and figures &mdash; and is
+          only carried out after an explicit &ldquo;yes&rdquo;. It reuses the existing question
+          mechanism, so the card also appears on screen.</p>
+      </div>
+      <div class="oc" style="--ocb:var(--bad)">
+        <h3>Sends stay a tap</h3>
+        <p class="oc-sub">Unchanged</p>
+        <p>An email, WhatsApp message or proposal can be drafted by voice. Jarvis then says it is
+          waiting in approvals; sending needs the approver&rsquo;s tap, as it does today.</p>
+      </div>
+      <div class="oc" style="--ocb:var(--cold)">
+        <h3>Doubt means ask, never act</h3>
+        <p class="oc-sub">Extends a rule already in the app</p>
+        <p>A low-confidence transcript is never acted on: Jarvis says what it heard and asks again.
+          Two clients with similar names produce a spoken choice, not a guess.</p>
+      </div>
+    </div>
+
+    <figure style="margin-top:22px">
+      <div class="eg">
+        <span class="eg-l">Example &mdash; invented names</span>
+        <p><span class="who">You</span> <span class="q">&ldquo;Book a demo for ABC School next Tuesday with the north team.&rdquo;</span></p>
+        <p><span class="who">Jarvis</span> <span class="q">&ldquo;A demo for ABC School on Tuesday the 22nd of September, north team. Shall I book it?&rdquo;</span></p>
+        <p><span class="who">You</span> <span class="q">&ldquo;Yes.&rdquo;</span></p>
+        <p><span class="who">Jarvis</span> <span class="q">&ldquo;Booked. The north team has been told.&rdquo;</span></p>
+      </div>
+    </figure>
+
+    <h3>Rules the confirmation must follow</h3>
+    <ul class="plain">
+      <li><b>Figures are said as words and digits</b> (&ldquo;four lakh &mdash; 4,00,000&rdquo;) and dates
+        with the weekday, because &ldquo;fifteen&rdquo; and &ldquo;fifty&rdquo; are the classic
+        mis-hearing.</li>
+      <li><b>&ldquo;Yes&rdquo; only confirms what was just read back.</b> The same lesson as the recent
+        contract fixes (D46, D50): an agreement reaches the question on screen and nothing else.</li>
+      <li><b>No confirmation, no action.</b> Silence, &ldquo;hmm&rdquo; or a new request cancels the pending
+        write.</li>
+      <li><b>Recording a meeting</b> keeps its on-screen notice and consent step; Jarvis can open the
+        recorder and start it after a spoken yes.</li>
+      <li><b>Audio is not kept.</b> Like dictation today, voice audio is transcribed and discarded; the
+        transcript is stored as the conversation already is.</li>
+      <li><b>No cloned voices.</b> Jarvis speaks with a preset voice; no employee&rsquo;s voice is
+        recorded to imitate.</li>
+    </ul>
+  </section>
+
+  <!-- ── 11. risks ──────────────────────────────────────────────────── -->
+  <section id="risks">
+    <h2>Risks</h2>
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Risk</th><th class="c">Likelihood</th><th class="c">Impact</th><th>Mitigation</th></tr></thead>
+            <tbody>
+              <tr><td><b>Kannada understanding is not good enough</b><small>no published Kannada score for turbo</small></td><td class="c"><span class="chip chip-part">Medium</span></td><td class="c"><span class="chip chip-bad">High</span></td><td>Benchmark first; add IndicConformer for Kannada and Hindi; never act on low confidence.</td></tr>
+              <tr><td><b>The fast model picks the wrong tool</b><small>already seen with typed text (D46&ndash;D51)</small></td><td class="c"><span class="chip chip-bad">High</span></td><td class="c"><span class="chip chip-part">Medium</span></td><td>Read-back before every write; split tools across agents; tool-choice tests on spoken phrasing.</td></tr>
+              <tr><td><b>Answers still take 5&ndash;7 seconds</b><small>the language model dominates</small></td><td class="c"><span class="chip chip-bad">High</span></td><td class="c"><span class="chip chip-part">Medium</span></td><td>Instant acknowledgement; stream the final answer; skip the router on follow-ups; compare providers.</td></tr>
+              <tr><td><b>One GPU shared by voice and meetings</b></td><td class="c"><span class="chip chip-part">Medium</span></td><td class="c"><span class="chip chip-part">Medium</span></td><td>Measured memory plan; queue meeting transcription; move meetings to int8; fall back to text and phone voice if the GPU is busy or down.</td></tr>
+              <tr><td><b>Disk space</b><small>93% used</small></td><td class="c"><span class="chip chip-part">Medium</span></td><td class="c"><span class="chip chip-part">Medium</span></td><td>Extend the disk or move stored files before installing models.</td></tr>
+              <tr><td><b>Poor mobile networks</b><small>WebSocket over TCP stalls on packet loss</small></td><td class="c"><span class="chip chip-part">Medium</span></td><td class="c"><span class="chip chip-part">Medium</span></td><td>Low-bitrate Opus; show the transcript as it arrives; WebRTC later with a public relay.</td></tr>
+              <tr><td><b>Indian names pronounced badly</b></td><td class="c"><span class="chip chip-part">Medium</span></td><td class="c"><span class="chip chip-open">Low</span></td><td>Listening test in the benchmark; a pronunciation list; Magpie or Indic-Parler as alternatives.</td></tr>
+              <tr><td><b>Echo cancelling varies by handset</b></td><td class="c"><span class="chip chip-part">Medium</span></td><td class="c"><span class="chip chip-open">Low</span></td><td>Test on the team&rsquo;s actual phones; where it fails, pause listening while Jarvis speaks.</td></tr>
+              <tr><td><b>Model licence or maintenance changes</b><small>Kokoro&rsquo;s last commit was Aug 2025</small></td><td class="c"><span class="chip chip-open">Low</span></td><td class="c"><span class="chip chip-part">Medium</span></td><td>Keep the voice behind one interface (the app already does); keep a vetted second choice.</td></tr>
+              <tr><td><b>AI budget runs out mid-month</b></td><td class="c"><span class="chip chip-bad">High</span></td><td class="c"><span class="chip chip-part">Medium</span></td><td>Set the organisation budget from the estimate above before rollout; watch the usage records weekly.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </figure>
+  </section>
+
+  <!-- ── 12. decisions ──────────────────────────────────────────────── -->
+  <section id="decisions">
+    <h2>Decisions needed</h2>
+    <p class="section-sub">Replies in English, with English, Kannada and Hindi understood, is already decided.</p>
+
+    <div class="notice">
+      <h3>1 &middot; Approve Phase A, starting with the GPU benchmark</h3>
+      <p>About 2&ndash;3 days to measure the shortlisted models on our own GPU and recordings, and
+        roughly 5&ndash;8 GB of downloads. Every estimate on this page becomes a measurement, and the
+        final voice and speech-to-text choice is made from it.</p>
+    </div>
+    <div class="notice">
+      <h3>2 &middot; Set the monthly AI budget per organisation</h3>
+      <p>The $3.00 default would stop Jarvis within the first week for a team of ten. The expected
+        figure is about $1.80 per user per month; the high case is about $5.</p>
+    </div>
+    <div class="notice">
+      <h3>3 &middot; Confirm what voice may do after a spoken &ldquo;yes&rdquo;</h3>
+      <p>Proposed: create and edit records, schedule, and start a recording &mdash; yes. Send anything,
+        record consent, change configuration or touch money &mdash; always a tap on screen.</p>
+    </div>
+    <div class="notice">
+      <h3>4 &middot; Infrastructure</h3>
+      <p>Extend the server disk before models are installed. Decide later whether to add a public
+        relay so voice can use WebRTC instead of the WebSocket, which matters mostly on weak mobile
+        networks.</p>
+    </div>
+  </section>
+
+  <!-- ── 13. method + references ────────────────────────────────────── -->
+  <section id="refs">
+    <h2>Method and references</h2>
+    <h3>How the measured figures were taken</h3>
+    <ul class="plain">
+      <li><b>Latency and cost per turn:</b> every model call is recorded with its purpose, tokens,
+        cost and duration. Calls were grouped into the assistant turn they served (a routing call plus
+        the agent calls that followed, up to the stored reply) for 119 turns between 7 August and
+        13 September 2026. Medians and 90th percentiles are over those turns. Turns without a routing
+        call were excluded.</li>
+      <li><b>Cost:</b> calculated by the app from its price table (last read 22 July 2026), not from
+        invoices.</li>
+      <li><b>Coverage:</b> the Android app&rsquo;s API client, the backend routers (169 endpoints) and
+        the six agents&rsquo; 41 tools, read on 14 September 2026.</li>
+      <li><b>Hardware:</b> read from the server on 14 September 2026.</li>
+      <li><b>Not measured:</b> dictation latency today (not recorded anywhere), and any model on our GPU.</li>
+    </ul>
+
+    <h3>References</h3>
+    <ol class="refs">
+      <li>Radford et al., <i>Robust Speech Recognition via Large-Scale Weak Supervision</i> (Whisper), FLEURS results table &mdash; arxiv.org/pdf/2212.04356</li>
+      <li>Kokoro-82M model card and licence &mdash; huggingface.co/hexgrad/Kokoro-82M; github.com/hexgrad/kokoro</li>
+      <li>Artificial Analysis text-to-speech leaderboard &mdash; artificialanalysis.ai/text-to-speech/leaderboard</li>
+      <li>NVIDIA Magpie-TTS Multilingual 357M &mdash; huggingface.co/nvidia/magpie_tts_multilingual_357m</li>
+      <li>Chatterbox &mdash; github.com/resemble-ai/chatterbox</li>
+      <li>CosyVoice &mdash; github.com/FunAudioLLM/CosyVoice; huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512</li>
+      <li>Indic-Parler-TTS &mdash; huggingface.co/ai4bharat/indic-parler-tts</li>
+      <li>Piper &mdash; github.com/OHF-Voice/piper1-gpl</li>
+      <li>XTTS-v2 licence &mdash; huggingface.co/coqui/XTTS-v2/blob/main/LICENSE.txt</li>
+      <li>F5-TTS &mdash; github.com/SWivid/F5-TTS</li>
+      <li>Fish Speech &mdash; github.com/fishaudio/fish-speech; huggingface.co/fishaudio/s2-pro</li>
+      <li>Whisper large-v3-turbo &mdash; huggingface.co/openai/whisper-large-v3-turbo; distil-whisper &mdash; github.com/huggingface/distil-whisper; sherpa-onnx &mdash; github.com/k2-fsa/sherpa-onnx</li>
+      <li>Voice of India benchmark (2026) &mdash; arxiv.org/html/2604.19151v1; IndicConformer &mdash; huggingface.co/ai4bharat/indic-conformer-600m-multilingual</li>
+      <li>Vistaar / IndicWhisper &mdash; github.com/AI4Bharat/vistaar</li>
+      <li>Silero VAD &mdash; github.com/snakers4/silero-vad</li>
+      <li>OpenAI Realtime API, server VAD defaults &mdash; developers.openai.com/api/reference/resources/realtime</li>
+      <li>LiveKit Agents turn handling &mdash; docs.livekit.io/reference/agents/turn-handling-options/</li>
+      <li>Pipecat Smart Turn &mdash; github.com/pipecat-ai/smart-turn</li>
+      <li>Android AcousticEchoCanceler &mdash; developer.android.com/reference/android/media/audiofx/AcousticEchoCanceler</li>
+      <li>Opus codec, RFC 6716 &mdash; rfc-editor.org/rfc/rfc6716</li>
+      <li>ngrok and WebSockets &mdash; ngrok.com/docs/using-ngrok-with/websockets</li>
+      <li>faster-whisper benchmarks &mdash; github.com/SYSTRAN/faster-whisper</li>
+    </ol>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p>
+    A proposal, not a release: nothing on this page has been built yet. Every figure is marked as
+    measured, cited or estimated, and the estimates are replaced by measurements in Phase A.
+    Examples use invented names.
+  </p>
+</footer>
+</body>
+</html>

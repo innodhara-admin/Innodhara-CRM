@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand defaults (06_DESIGN_SYSTEM §1): deep indigo + warm amber.
+         Org branding from /auth/me tints components at runtime; these are
+         the professional defaults. -->
+    <color name="brand_primary">#1F3A5F</color>
+    <color name="brand_accent">#E8A13D</color>
+
+    <!-- Light palette -->
+    <color name="md_light_primary">#1F3A5F</color>
+    <color name="md_light_onPrimary">#FFFFFF</color>
+    <color name="md_light_primaryContainer">#D6E3F7</color>
+    <color name="md_light_onPrimaryContainer">#0A1F38</color>
+    <color name="md_light_secondary">#815512</color>
+    <color name="md_light_onSecondary">#FFFFFF</color>
+    <color name="md_light_secondaryContainer">#FFDDB3</color>
+    <color name="md_light_onSecondaryContainer">#2A1800</color>
+    <color name="md_light_tertiary">#4A6367</color>
+    <color name="md_light_onTertiary">#FFFFFF</color>
+    <color name="md_light_error">#B3261E</color>
+    <color name="md_light_onError">#FFFFFF</color>
+    <color name="md_light_errorContainer">#F9DEDC</color>
+    <color name="md_light_onErrorContainer">#410E0B</color>
+    <color name="md_light_surface">#FBF9F7</color>
+    <color name="md_light_onSurface">#1B1B1F</color>
+    <color name="md_light_surfaceVariant">#E1E2EC</color>
+    <color name="md_light_onSurfaceVariant">#44474F</color>
+    <color name="md_light_outline">#74777F</color>
+
+    <!-- Dark palette -->
+    <color name="md_dark_primary">#A9C7FF</color>
+    <color name="md_dark_onPrimary">#0A3060</color>
+    <color name="md_dark_primaryContainer">#143C68</color>
+    <color name="md_dark_onPrimaryContainer">#D6E3FF</color>
+    <color name="md_dark_secondary">#F8BB71</color>
+    <color name="md_dark_onSecondary">#452B00</color>
+    <color name="md_dark_secondaryContainer">#614400</color>
+    <color name="md_dark_onSecondaryContainer">#FFDDB3</color>
+    <color name="md_dark_tertiary">#B1CBD0</color>
+    <color name="md_dark_onTertiary">#1C3438</color>
+    <color name="md_dark_error">#F2B8B5</color>
+    <color name="md_dark_onError">#601410</color>
+    <color name="md_dark_errorContainer">#8C1D18</color>
+    <color name="md_dark_onErrorContainer">#F9DEDC</color>
+    <color name="md_dark_surface">#131316</color>
+    <color name="md_dark_onSurface">#E4E2E6</color>
+    <color name="md_dark_surfaceVariant">#44474F</color>
+    <color name="md_dark_onSurfaceVariant">#C4C6D0</color>
+    <color name="md_dark_outline">#8E9099</color>
+
+    <!-- Health badge colors (HealthBadge component, later phases) -->
+    <color name="health_on_track">#2E7D32</color>
+    <color name="health_at_risk">#B26A00</color>
+    <color name="health_delayed">#C62828</color>
+
+    <!-- Lead state dots (labels come from the backend; the app maps state
+         strings to colors only — 01 §4) -->
+    <!-- Pre-sales: deliberately unlike lead_cold (#90A4AE), which sits at
+         the other end of the lifecycle and reads far too similarly. -->
+    <color name="lead_cold_calling">#6A4FB6</color>
+    <color name="lead_open">#607D8B</color>
+    <color name="lead_active">#2E7D32</color>
+    <color name="lead_cold">#90A4AE</color>
+    <color name="lead_execution">#B26A00</color>
+    <color name="lead_client_execution">#00695C</color>
+    <color name="lead_closed">#1F3A5F</color>
+    <color name="lead_lost">#C62828</color>
+
+    <!-- Amber "verify before send" surfaces (card scan needs_review) -->
+    <color name="amber_container">#FFF3E0</color>
+    <color name="amber_on_container">#7A4F01</color>
+    <color name="recording_red">#D32F2F</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+
+    <!-- Jarvis voice screen: always dark, whatever the system mode. -->
+    <color name="stage_bg_top">#070D1C</color>
+    <color name="stage_bg_bottom">#0D1830</color>
+    <color name="stage_glass">#1FFFFFFF</color>
+    <color name="stage_on">#FFFFFFFF</color>
+    <color name="stage_on_muted">#B3FFFFFF</color>
+    <color name="stage_on_faint">#66FFFFFF</color>
+    <color name="stage_end">#E53935</color>
+    <color name="stage_accent">#4FC3F7</color>
+</resources>

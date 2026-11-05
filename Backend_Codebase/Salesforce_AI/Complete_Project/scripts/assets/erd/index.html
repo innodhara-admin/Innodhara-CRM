@@ -1,0 +1,790 @@
+<title>YuviPep Sales Platform — Schema ER Diagram</title>
+<style>
+  :root{
+    --bg: #eef1f4;
+    --bg-canvas: #e6eaee;
+    --grid-dot: #d2d9e0;
+    --ink: #1a2230;
+    --ink-soft: #4a5568;
+    --muted: #7c8798;
+    --card-bg: #ffffff;
+    --card-border: #d5dbe2;
+    --line-muted: #c7cdd6;
+    --accent: #3a6ea5;
+    --accent-soft: #a9c2dc;
+    --brass: #a97418;
+    --brass-soft: #e4c58c;
+    --soft-ref: #9aa4b2;
+    --shadow: 0 1px 2px rgba(20,30,45,.06), 0 6px 18px rgba(20,30,45,.05);
+
+    --z-identity: #5b7fa6;
+    --z-leads:    #a97418;
+    --z-meetings: #3f8f86;
+    --z-artifacts:#7d6fa0;
+    --z-follow:   #5f8f5a;
+    --z-comms:    #ad6b78;
+    --z-ai:       #3d97ad;
+    --z-ops:      #838da0;
+    --z-projects: #7d6fa0;
+    --z-work: #5f8f5a;
+    --z-catalogue: #a97418;
+
+    --font-head: "DIN Alternate", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Roboto Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: #10151d;
+      --bg-canvas: #0c1017;
+      --grid-dot: #1d2531;
+      --ink: #e4e9f0;
+      --ink-soft: #b7c1cf;
+      --muted: #7d8898;
+      --card-bg: #161d27;
+      --card-border: #2a3442;
+      --line-muted: #2a3442;
+      --accent: #6fa8d8;
+      --accent-soft: #2c4661;
+      --brass: #d9a94a;
+      --brass-soft: #4a3c1e;
+      --soft-ref: #6b7686;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #10151d; --bg-canvas: #0c1017; --grid-dot: #1d2531;
+    --ink: #e4e9f0; --ink-soft: #b7c1cf; --muted: #7d8898;
+    --card-bg: #161d27; --card-border: #2a3442; --line-muted: #2a3442;
+    --accent: #6fa8d8; --accent-soft: #2c4661; --brass: #d9a94a; --brass-soft: #4a3c1e;
+    --soft-ref: #6b7686; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --bg: #eef1f4; --bg-canvas: #e6eaee; --grid-dot: #d2d9e0;
+    --ink: #1a2230; --ink-soft: #4a5568; --muted: #7c8798;
+    --card-bg: #ffffff; --card-border: #d5dbe2; --line-muted: #c7cdd6;
+    --accent: #3a6ea5; --accent-soft: #a9c2dc; --brass: #a97418; --brass-soft: #e4c58c;
+    --soft-ref: #9aa4b2; --shadow: 0 1px 2px rgba(20,30,45,.06), 0 6px 18px rgba(20,30,45,.05);
+  }
+
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page{ max-width: 1720px; margin: 0 auto; padding: 40px 28px 80px; }
+
+  header.top{ margin-bottom: 26px; }
+  .eyebrow{
+    font-family: var(--font-head); font-size: 12.5px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 6px;
+  }
+  h1{
+    font-family: var(--font-head); font-weight: 700; letter-spacing: .01em;
+    font-size: clamp(28px, 4vw, 42px); margin: 0 0 10px; text-wrap: balance;
+    color: var(--ink);
+  }
+  .dek{
+    font-size: 15px; line-height: 1.6; color: var(--ink-soft); max-width: 62ch; margin: 0 0 18px;
+  }
+  .stats{
+    display:flex; gap: 22px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 13px;
+    color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+  .stats b{ color: var(--ink); font-weight: 700; }
+
+  .legend{
+    margin-top: 22px; display:flex; flex-wrap: wrap; gap: 18px 28px;
+    padding: 14px 18px; background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 6px; box-shadow: var(--shadow);
+    font-size: 12.5px; color: var(--ink-soft); align-items:center;
+  }
+  .legend .item{ display:flex; align-items:center; gap: 8px; white-space: nowrap; }
+  .legend .swatch{ width:10px; height:10px; flex:none; border-radius:2px; }
+  .legend .line-sample{ width: 26px; height: 2px; background: var(--accent); flex:none; opacity:.8; }
+  .legend .line-sample.dashed{ background: none; border-top: 2px dashed var(--soft-ref); }
+  .legend .hint{ margin-left:auto; font-style: italic; color: var(--muted); }
+
+  .canvas-wrap{
+    margin-top: 26px; overflow-x: auto; overflow-y: visible;
+    border: 1px solid var(--card-border); border-radius: 8px;
+    background: var(--bg-canvas);
+  }
+  .canvas{
+    position: relative; min-width: 100%; width: max-content;
+    padding: 30px 34px 40px;
+    background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  svg.connections{ position:absolute; inset:0; pointer-events:none; overflow: visible; }
+  .conn{
+    fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: .38;
+    transition: opacity .15s ease, stroke-width .15s ease;
+  }
+  .conn.soft-line{ stroke: var(--soft-ref); stroke-dasharray: 4 4; opacity:.5; }
+  .conn.hl{ opacity: 1; stroke-width: 2.6; }
+
+  .lane{ display:flex; gap: 18px; margin-bottom: 30px; align-items: stretch; }
+  .lane:last-child{ margin-bottom: 0; }
+  .lane-label{
+    flex: 0 0 160px; padding-top: 4px; border-left: 3px solid var(--zc);
+    padding-left: 12px;
+  }
+  .lane-name{
+    font-family: var(--font-head); font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; font-size: 13px; color: var(--zc); margin:0 0 4px;
+  }
+  .lane-desc{ font-size: 12px; line-height:1.45; color: var(--muted); max-width: 22ch; }
+  .lane-tables{ display:flex; gap: 20px; flex-wrap: nowrap; align-items:flex-start; }
+
+  .table-card{
+    position: relative; z-index: 1;
+    width: 262px; flex: none;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 7px; box-shadow: var(--shadow); overflow: hidden;
+  }
+  .table-head{
+    display:flex; align-items:center; gap:7px;
+    padding: 8px 10px; border-bottom: 1px solid var(--card-border);
+    background: color-mix(in srgb, var(--zc) 10%, var(--card-bg));
+  }
+  .org-badge{
+    width:7px; height:7px; border-radius:50%; flex:none;
+    background: var(--zc); opacity:.55;
+  }
+  .table-name{
+    font-family: var(--font-mono); font-weight:700; font-size: 12.5px;
+    color: var(--ink); letter-spacing: .01em; flex:1;
+  }
+  .field-count{ font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); }
+  .table-body{ padding: 3px 0; }
+  .field-row{
+    display:flex; align-items:center; gap:7px; padding: 2.5px 10px;
+    font-family: var(--font-mono); font-size: 11px; line-height: 1.6;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-border) 55%, transparent);
+  }
+  .field-row:last-child{ border-bottom:none; }
+  .fname{ color: var(--ink-soft); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ftype{ color: var(--muted); font-size: 10px; white-space:nowrap; }
+  .dot{ width:6px; height:6px; border-radius:2px; flex:none; }
+  .dot--pk{ background: var(--brass); }
+  .dot--fk{ background: var(--accent); }
+  .dot--soft{ background: none; border: 1.4px solid var(--soft-ref); border-radius:50%; }
+  .dot--org{ background: none; border: 1.4px solid var(--muted); border-radius:50%; opacity:.6; }
+  .field-row.is-pk .fname{ color: var(--ink); font-weight: 700; }
+  .field-row.is-fk .fname{ color: var(--accent); font-weight: 600; cursor: help; }
+  .field-row.is-fk, .field-row.is-pk{ cursor: help; }
+  .field-row.hl{ background: color-mix(in srgb, var(--accent) 16%, transparent); }
+  .field-row.is-soft .fname, .field-row.is-org .fname, .field-row.is-orgsoft .fname{ font-style: italic; }
+
+  footer.note{
+    margin-top: 22px; font-size: 12px; color: var(--muted); line-height:1.6; max-width: 78ch;
+  }
+  footer.note code{ font-family: var(--font-mono); background: color-mix(in srgb, var(--ink) 6%, transparent); padding: 1px 5px; border-radius:3px; }
+</style>
+
+<div class="page">
+  <header class="top">
+    <p class="eyebrow">Complete_Project · SQLAlchemy models · generated 11 August 2026</p>
+    <h1>Schema — Entity Relationship Diagram</h1>
+    <p class="dek">All <b>55 tables</b> and <b>755 columns</b> drawn to scale, grouped into the 8 domains that make up the platform. Brass marks a primary key, steel-blue traces a foreign key back to the row it points at — hover any key to follow the wire.</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="legend">
+    <div class="item"><span class="swatch" style="background:var(--brass)"></span>Primary key</div>
+    <div class="item"><span class="swatch" style="background:var(--accent)"></span>Foreign key (constraint enforced)</div>
+    <div class="item"><span class="line-sample"></span>Drawn relationship</div>
+    <div class="item"><span class="line-sample dashed"></span>org_id present, not DB-enforced (users, nullable for Super&nbsp;Admin)</div>
+    <div class="item"><span class="dot dot--soft" style="display:inline-block;position:static"></span>Soft reference — id stored, no FK constraint</div>
+    <div class="item"><span class="dot dot--org" style="display:inline-block;position:static"></span>org_id → organisations (badge only, not drawn — every domain table carries it)</div>
+    <span class="hint">hover a key field to trace it</span>
+  </div>
+
+  <div class="canvas-wrap">
+    <div class="canvas" id="canvas">
+      <svg class="connections" id="svg"></svg>
+    </div>
+  </div>
+
+  <footer class="note">
+    Lines connect only columns declared with SQLAlchemy <code>ForeignKey(...)</code>. The tenant relationship (<code>org_id → organisations.id</code>) exists on every domain table via <code>OrgScopedMixin</code> but is shown as a badge, not a wire, to keep the diagram readable — drawing all 54 of those lines would bury the relationships that actually tell the story of how a client moves from first contact to closure.
+  </footer>
+</div>
+
+<script>
+const T = (name, fields) => ({ name, fields });
+
+const ZONES = [
+  { id:'identity', label:'Tenancy &amp; Identity', desc:'The tenant, the staff who work it, and what each of them can do.', tables:[
+    T('organisations', [
+      ['name','str(200)',''],['slug','str(100)',''],['email_domain','str(200)',''],
+      ['logo_url','str(500)?',''],['brand_colors','JSON?',''],['is_active','bool',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('org_settings', [
+      ['org_id','str(32)','fk:organisations'],['require_action_item_review','bool',''],
+      ['auto_suggest_lead_state','bool',''],['audio_retention_days','int',''],
+      ['transcript_retention_days','int',''],['llm_monthly_budget_usd','float',''],
+      ['timezone','str(50)',''],['currency','str(10)',''],['followup_cadence_days','int',''],
+      ['email_integration','JSON?',''],['whatsapp_integration','JSON?',''],
+      ['calendar_integration','JSON?',''],['assignment_mode','str(20)',''],
+      ['working_days','JSON',''],['workday_start','str(5)',''],['workday_end','str(5)',''],
+      ['quiet_hours_override_priority','str(5)',''],['nudge_gap_days','JSON',''],
+      ['max_unanswered_nudges','int',''],['max_client_messages_per_week','int',''],
+      ['lead_cold_after_days','int',''],['high_load_caution_pct','int',''],
+      ['delivery_requires_advance','bool',''],['scope_change_requires_confirmation','bool',''],
+      ['client_report_day','str(10)',''],['client_report_time','str(5)',''],
+      ['payment_reminder_schedule','JSON',''],['reply_nudge_after_days','JSON',''],
+      ['ai_confidence_threshold','float',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],
+    ]),
+    T('users', [
+      ['org_id','str(32)?','org'],['email','str(320)',''],['name','str(200)',''],
+      ['phone','str(30)?',''],['role','str(30)',''],['password_hash','str(300)',''],
+      ['is_active','bool',''],['must_change_password','bool',''],
+      ['smtp_app_password_enc','text?',''],['require_action_item_review','bool?',''],
+      ['last_login_at','datetime?',''],['designation','str(100)?',''],
+      ['department','str(20)?',''],['whatsapp_number','str(30)?',''],['max_open_tasks','int',''],
+      ['working_days','JSON?',''],['on_leave_from','date?',''],['on_leave_to','date?',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('user_skills', [
+      ['user_id','str(32)','soft'],['skill','str(100)',''],['level','str(10)',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('device_tokens', [
+      ['org_id','str(32)','org'],['user_id','str(32)','soft'],['fcm_token','str(512)',''],
+      ['platform','str(20)',''],['app_version','str(30)?',''],['last_seen_at','datetime?',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('notifications', [
+      ['org_id','str(32)','org'],['user_id','str(32)','soft'],['title','str(300)',''],
+      ['body','text?',''],['kind','str(50)',''],['entity_type','str(50)?',''],
+      ['entity_id','str(32)?','soft'],['is_read','bool',''],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+  ]},
+  { id:'leads', label:'Clients &amp; Relationships', desc:'Clients in the pipeline, the people at them, and the consent trail.', tables:[
+    T('leads', [
+      ['name','str(300)',''],['state','str(50)',''],['is_important','bool',''],
+      ['owner_id','str(32)?','fk-soft:users'],['address','text?',''],['city','str(100)?',''],
+      ['region','str(100)?',''],['website','str(300)?',''],['source','str(100)?',''],
+      ['notes','text?',''],['last_activity_at','datetime?',''],['suggested_state','str(50)?',''],
+      ['suggested_state_reason','text?',''],['lost_reason','str(30)?',''],
+      ['revival_date','datetime?',''],['revival_context','text?',''],
+      ['revival_fired_at','datetime?',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('lead_state_history', [
+      ['lead_id','str(32)','fk:leads'],['from_state','str(50)?',''],['to_state','str(50)',''],
+      ['reason','text?',''],['changed_by','str(32)?','soft'],['changed_at','datetime',''],
+      ['id','str(32)','pk'],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('contacts', [
+      ['lead_id','str(32)','fk:leads'],['name','str(200)',''],['title','str(200)?',''],
+      ['email','str(320)?',''],['phone','str(30)?',''],['is_primary','bool',''],
+      ['source','str(20)',''],['card_image_path','str(500)?',''],['needs_review','bool',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('consent_records', [
+      ['lead_id','str(32)','fk:leads'],['meeting_id','str(32)?','soft'],['method','str(50)',''],
+      ['note','text?',''],['captured_by','str(32)?','soft'],['captured_at','datetime',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('client_intelligence', [
+      ['lead_id','str(32)','fk:leads'],['note','text',''],['category','str(100)?',''],
+      ['source','str(20)',''],['added_by','str(32)?','soft'],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+  ]},
+  { id:'meetings', label:'Meetings &amp; Memory', desc:'Recorded and typed conversations, and what the organisation remembers.', tables:[
+    T('meetings', [
+      ['lead_id','str(32)','fk:leads'],['agent_id','str(32)','fk:users'],
+      ['title','str(300)?',''],['status','str(30)',''],['audio_path','str(500)?',''],
+      ['audio_mime','str(100)?',''],['audio_deleted_at','datetime?',''],
+      ['duration_seconds','int?',''],['started_at','datetime?',''],
+      ['consent_captured','bool',''],['error','text?',''],['state_suggestion','str(50)?',''],
+      ['project_id','str(32)?','soft'],['meeting_no','int?',''],['meeting_type','str(20)?',''],
+      ['attendee_stakeholder_ids','JSON',''],['attendee_user_ids','JSON',''],
+      ['notes_text','text?',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('transcripts', [
+      ['meeting_id','str(32)','fk:meetings'],['text','text',''],['summary','text?',''],
+      ['language','str(30)?',''],['confidence','float?',''],['low_confidence','bool',''],
+      ['word_count','int?',''],['archived_at','datetime?',''],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('memory_chunks', [
+      ['lead_id','str(32)?','fk-soft:leads'],['source_type','str(30)',''],
+      ['source_id','str(32)?','soft'],['text','text',''],['embedding','JSON',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+  ]},
+  { id:'projects', label:'The Project Layer', desc:'One concrete piece of work: its versioned plan, its people, its promises.', tables:[
+    T('projects', [
+      ['lead_id','str(32)','fk:leads'],['program_id','str(32)?','fk-soft:programs'],
+      ['name','str(300)',''],['objective','text?',''],['status','str(30)',''],
+      ['status_reason','text?',''],['health','str(20)',''],['health_reason','text?',''],
+      ['sales_owner_id','str(32)?','fk-soft:users'],['ops_owner_id','str(32)?','fk-soft:users'],
+      ['current_plan_version','int',''],['start_date','datetime?',''],
+      ['target_end_date','datetime?',''],['value_estimate','float?',''],
+      ['currency','str(10)',''],['parent_project_id','str(32)?','soft'],
+      ['invoicing_mode','str(20)?',''],['created_from_meeting_id','str(32)?','soft'],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('project_members', [
+      ['project_id','str(32)','fk:projects'],['user_id','str(32)','fk:users'],
+      ['role_in_project','str(50)?',''],['added_by','str(32)?','soft'],
+      ['joined_at','datetime?',''],['left_at','datetime?',''],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('stakeholders', [
+      ['project_id','str(32)','fk:projects'],['contact_id','str(32)','fk:contacts'],
+      ['role_at_client','str(50)?',''],['influence','str(20)?',''],
+      ['preferred_channel','str(20)',''],['preferred_language','str(30)',''],
+      ['receives_progress_updates','bool',''],['do_not_contact','bool',''],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('action_plans', [
+      ['project_id','str(32)','fk:projects'],['version','int',''],['summary','text?',''],
+      ['trigger','str(30)?',''],['trigger_ref','str(32)?',''],
+      ['changes_from_previous','text?',''],['status','str(20)',''],
+      ['approved_by','str(32)?','soft'],['approved_at','datetime?',''],['pending_ops','JSON',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('client_commitments', [
+      ['project_id','str(32)','fk:projects'],['text','text',''],['direction','str(10)',''],
+      ['promised_to','str(32)?',''],['promised_by','str(32)?','soft'],
+      ['due_date','datetime?',''],['linked_action_item_id','str(32)?','soft'],
+      ['status','str(20)',''],['source_type','str(30)?',''],['source','str(32)?',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('conflicts', [
+      ['project_id','str(32)','fk:projects'],['description','text',''],
+      ['source_a_type','str(30)?',''],['source_a','str(32)?',''],['source_b_type','str(30)?',''],
+      ['source_b','str(32)?',''],['raised_to_user_id','str(32)?','soft'],['status','str(20)',''],
+      ['resolution_note','text?',''],['resolved_by','str(32)?','soft'],
+      ['resolved_at','datetime?',''],['held_plan_id','str(32)?','soft'],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('playbooks', [
+      ['program_id','str(32)','fk:programs'],['phase','str(20)',''],['entries','JSON',''],
+      ['version','int',''],['is_current','bool',''],['updated_by','str(32)?','soft'],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('playbook_suggestions', [
+      ['program_id','str(32)','soft'],['phase','str(20)',''],['entry','JSON',''],
+      ['reason','text?',''],['source_incident_id','str(32)?','soft'],['status','str(20)',''],
+      ['decided_by','str(32)?','soft'],['decided_at','datetime?',''],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+  ]},
+  { id:'work', label:'Work Management', desc:'Tasks and everything the engines do about them.', tables:[
+    T('action_items', [
+      ['lead_id','str(32)?','fk-soft:leads'],['meeting_id','str(32)?','fk-soft:meetings'],
+      ['title','str(500)',''],['description','text?',''],
+      ['assignee_id','str(32)?','fk-soft:users'],['status','str(30)',''],
+      ['due_date','datetime?',''],['result_note','text?',''],['completed_at','datetime?',''],
+      ['created_by','str(32)?','soft'],['project_id','str(32)?','soft'],
+      ['plan_version_added','int?',''],['phase','str(20)?',''],['required_skill','str(100)?',''],
+      ['assigned_by','str(32)?','soft'],['assignment_reason','text?',''],
+      ['priority','str(5)',''],['depends_on_ids','JSON',''],['assign_on','str(20)',''],
+      ['blocked','bool',''],['blocked_reason','text?',''],['external_wait','JSON?',''],
+      ['progress_percent','int',''],['visible_to_client','bool',''],
+      ['client_commitment_id','str(32)?','soft'],['reminder_level','int',''],
+      ['source','str(20)',''],['completion_method','str(20)?',''],
+      ['superseded_by','str(32)?','soft'],['parent_item_id','str(32)?','soft'],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('assignments', [
+      ['action_item_id','str(32)','soft'],['from_user_id','str(32)?','soft'],
+      ['to_user_id','str(32)?','soft'],['assigned_by','str(32)?','soft'],['reason','text?',''],
+      ['status','str(20)',''],['decline_reason','str(30)?',''],['decline_note','text?',''],
+      ['decided_at','datetime?',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('reminders', [
+      ['target_type','str(30)',''],['target_id','str(32)','soft'],
+      ['remind_user_id','str(32)','soft'],['level','int',''],['channel','str(20)',''],
+      ['scheduled_at','datetime',''],['sent_at','datetime?',''],['cancelled_at','datetime?',''],
+      ['note','text?',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('progress_events', [
+      ['project_id','str(32)?','soft'],['event_type','str(50)',''],['entity_type','str(50)?',''],
+      ['entity_id','str(32)?','soft'],['actor','str(32)?',''],['at','datetime',''],
+      ['details','JSON',''],['id','str(32)','pk'],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('incidents', [
+      ['project_id','str(32)','soft'],['source_type','str(30)?',''],['source','str(32)?',''],
+      ['severity','str(10)',''],['description','text',''],['owner_user_id','str(32)?','soft'],
+      ['fix_task_ids','JSON',''],['status','str(20)',''],['resolved_at','datetime?',''],
+      ['lesson','text?',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('ai_decisions', [
+      ['project_id','str(32)?','soft'],['decision_type','str(30)',''],['engine','str(40)?',''],
+      ['input_summary','text?',''],['decision','text?',''],['reason','text?',''],
+      ['confidence','float',''],['needs_human','bool',''],['human_override','text?',''],
+      ['entity_type','str(50)?',''],['entity_id','str(32)?','soft'],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('digests', [
+      ['kind','str(40)',''],['for_user_id','str(32)?','soft'],['project_id','str(32)?','soft'],
+      ['content_md','text',''],['generated_at','datetime',''],
+      ['sent_message_id','str(32)?','soft'],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('resource_bookings', [
+      ['user_id','str(32)','soft'],['project_id','str(32)?','soft'],['kind','str(20)',''],
+      ['date_from','datetime',''],['date_to','datetime',''],['source_type','str(30)?',''],
+      ['source','str(32)?',''],['calendar_event_id','str(300)?','soft'],['note','text?',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+  ]},
+  { id:'catalogue', label:'Catalogue &amp; Commercials', desc:'What is sold, at what price, and every document and rupee that follows.', tables:[
+    T('programs', [
+      ['name','str(200)',''],['code','str(50)',''],['description','text?',''],
+      ['is_active','bool',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('pricing_tables', [
+      ['program_id','str(32)','fk:programs'],['version','int',''],['currency','str(10)',''],
+      ['items','JSON',''],['effective_from','datetime',''],['is_current','bool',''],
+      ['created_by','str(32)?','soft'],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('proposal_templates', [
+      ['program_id','str(32)','fk:programs'],['name','str(200)',''],['version','int',''],
+      ['body_md','text',''],['is_current','bool',''],['created_by','str(32)?','soft'],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('message_templates', [
+      ['kind','str(30)',''],['channel','str(20)',''],['name','str(200)',''],['version','int',''],
+      ['subject','str(300)?',''],['body','text',''],['is_current','bool',''],
+      ['created_by','str(32)?','soft'],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('proposals', [
+      ['lead_id','str(32)','fk:leads'],['program_id','str(32)','fk:programs'],
+      ['title','str(300)',''],['status','str(30)',''],
+      ['template_id','str(32)','fk:proposal_templates'],['template_version','int',''],
+      ['pricing_table_id','str(32)','fk:pricing_tables'],['pricing_version','int',''],
+      ['content_md','text',''],['variables','JSON',''],['line_items','JSON',''],
+      ['total_amount','float',''],['currency','str(10)',''],['docx_path','str(500)?',''],
+      ['pdf_path','str(500)?',''],['created_by','str(32)','fk:users'],['sent_at','datetime?',''],
+      ['sent_message_id','str(32)?','soft'],['project_id','str(32)?','soft'],
+      ['amends_proposal_id','str(32)?','soft'],['special_price_approval_id','str(32)?','soft'],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('proposal_revisions', [
+      ['proposal_id','str(32)','fk:proposals'],['revision_no','int',''],
+      ['instruction','text?',''],['content_md','text',''],['line_items','JSON',''],
+      ['total_amount','float',''],['edited_by','str(32)?','soft'],['edited_at','datetime',''],
+      ['id','str(32)','pk'],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('deliverables', [
+      ['project_id','str(32)','soft'],['type','str(30)',''],['title','str(300)?',''],
+      ['file_path','str(500)?',''],['content_md','text?',''],['version','int',''],
+      ['source','str(20)',''],['uploaded_by','str(32)?','soft'],['status','str(20)',''],
+      ['linked_action_item_id','str(32)?','soft'],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('invoices', [
+      ['project_id','str(32)','soft'],['kind','str(10)',''],['amount','float',''],
+      ['currency','str(10)',''],['computation','text?',''],['due_date','datetime?',''],
+      ['status','str(20)',''],['sent_to_stakeholder_id','str(32)?','soft'],
+      ['pdf_path','str(500)?',''],['sent_message_id','str(32)?','soft'],
+      ['sent_at','datetime?',''],['ladder_fired','JSON',''],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('payments', [
+      ['invoice_id','str(32)','soft'],['amount','float',''],['received_on','datetime?',''],
+      ['method','str(20)?',''],['recorded_by','str(32)?','soft'],['note','text?',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('vendors', [
+      ['name','str(200)',''],['contact_name','str(200)?',''],['phone','str(30)?',''],
+      ['email','str(320)?',''],['category','str(100)?',''],['notes','text?',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+  ]},
+  { id:'comms', label:'Communication &amp; Approvals', desc:'Everything said to a client, everything they said back, and the human gate.', tables:[
+    T('threads', [
+      ['lead_id','str(32)','soft'],['project_id','str(32)?','soft'],
+      ['contact_id','str(32)','soft'],['stakeholder_id','str(32)?','soft'],
+      ['channel','str(20)',''],['subject','str(500)?',''],['last_message_at','datetime?',''],
+      ['last_direction','str(10)?',''],['status','str(20)',''],
+      ['owner_user_id','str(32)?','soft'],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('inbound_messages', [
+      ['channel','str(20)',''],['from_address','str(320)?',''],['to_address','str(320)?',''],
+      ['subject','str(500)?',''],['body','text',''],['received_at','datetime?',''],
+      ['matched_contact_id','str(32)?','soft'],['matched_lead_id','str(32)?','soft'],
+      ['matched_project_id','str(32)?','soft'],['related_project_ids','JSON',''],
+      ['thread_id','str(32)?','soft'],['intent','str(30)?',''],['change_type','str(20)?',''],
+      ['sentiment','str(10)?',''],['ai_summary','text?',''],['extracted_points','JSON',''],
+      ['status','str(20)',''],['linked_plan_version','int?',''],
+      ['needs_human_reason','text?',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('outbound_messages', [
+      ['kind','str(30)',''],['channel','str(20)',''],['status','str(30)',''],
+      ['lead_id','str(32)?','fk-soft:leads'],['contact_id','str(32)?','soft'],
+      ['proposal_id','str(32)?','soft'],['followup_id','str(32)?','soft'],
+      ['sender_user_id','str(32)','fk:users'],['to_address','str(320)',''],['cc','JSON',''],
+      ['subject','str(500)?',''],['body','text',''],['attachments','JSON',''],
+      ['idempotency_key','str(100)',''],['attempts','int',''],['last_error','text?',''],
+      ['approved_by','str(32)?','soft'],['approved_at','datetime?',''],
+      ['queued_at','datetime?',''],['sent_at','datetime?',''],
+      ['provider_message_id','str(300)?','soft'],['project_id','str(32)?','soft'],
+      ['thread_id','str(32)?','soft'],['triggered_by','str(30)?','soft'],
+      ['approval_id','str(32)?','soft'],['scheduled_send_at','datetime?',''],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('message_delivery_log', [
+      ['message_id','str(32)','fk:outbound_messages'],['event','str(50)',''],
+      ['detail','text?',''],['at','datetime',''],['id','str(32)','pk'],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('approvals', [
+      ['project_id','str(32)?','soft'],['entity_type','str(30)',''],
+      ['entity_id','str(32)?','soft'],['requested_from_user_id','str(32)?','soft'],
+      ['requested_from_role','str(30)?',''],['stage','str(15)',''],
+      ['chain_parent_id','str(32)?','soft'],['recommendation','text?',''],
+      ['joint_with_user_id','str(32)?','soft'],['joint_status','str(15)?',''],
+      ['joint_decision_note','text?',''],['joint_decided_at','datetime?',''],
+      ['bundled_entities','JSON',''],['reason','text?',''],['status','str(20)',''],
+      ['decision_note','text?',''],['requested_at','datetime?',''],['decided_at','datetime?',''],
+      ['expires_at','datetime?',''],['escalated_to_user_id','str(32)?','soft'],
+      ['reminded_at','datetime?',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('approval_rules', [
+      ['entity_type','str(30)',''],['condition','JSON',''],['rank','int',''],
+      ['approver_role','str(30)',''],['fallback_role','str(30)?',''],
+      ['recommender_role','str(30)?',''],['joint_with_role','str(30)?',''],
+      ['joint_condition','JSON?',''],['auto_approve','bool',''],['expires_hours','float',''],
+      ['description','str(300)?',''],['id','str(32)','pk'],['created_at','datetime',''],
+      ['updated_at','datetime',''],['org_id','str(32)','fk:organisations'],
+    ]),
+    T('followups', [
+      ['lead_id','str(32)','fk:leads'],['owner_id','str(32)?','fk-soft:users'],
+      ['due_date','date',''],['channel','str(20)',''],['status','str(20)',''],
+      ['note','text?',''],['message_id','str(32)?','soft'],['completed_at','datetime?',''],
+      ['created_by','str(32)?','soft'],['reminded','bool',''],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('demos', [
+      ['lead_id','str(32)','fk:leads'],['team_id','str(32)?','fk-soft:demo_teams'],
+      ['scheduled_date','date',''],['scheduled_time','str(10)?',''],['status','str(30)',''],
+      ['notes','text?',''],['calendar_event_id','str(200)?','soft'],
+      ['created_by','str(32)?','soft'],['completed_at','datetime?',''],
+      ['project_id','str(32)?','soft'],['action_item_id','str(32)?','soft'],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('demo_teams', [
+      ['name','str(200)',''],['lead_user_id','str(32)?','fk-soft:users'],
+      ['media_rep_id','str(32)?','fk-soft:users'],['sales_rep_id','str(32)?','fk-soft:users'],
+      ['id','str(32)','pk'],['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+    T('demo_team_members', [
+      ['team_id','str(32)','fk:demo_teams'],['user_id','str(32)','fk:users'],
+      ['role_in_team','str(50)',''],['id','str(32)','pk'],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+  ]},
+  { id:'ops', label:'Platform &amp; Audit', desc:'The machinery, and the four trails that make every action explainable.', tables:[
+    T('jobs', [
+      ['org_id','str(32)?','org'],['type','str(100)',''],['payload','JSON',''],
+      ['status','str(30)',''],['priority','int',''],['attempts','int',''],
+      ['max_attempts','int',''],['next_run_at','datetime',''],['last_error','text?',''],
+      ['result','JSON?',''],['created_at','datetime',''],['started_at','datetime?',''],
+      ['finished_at','datetime?',''],['id','str(32)','pk'],
+    ]),
+    T('audit_log', [
+      ['org_id','str(32)?','org'],['user_id','str(32)?','soft'],['action','str(100)',''],
+      ['entity_type','str(50)?',''],['entity_id','str(32)?','soft'],['detail','JSON?',''],
+      ['at','datetime',''],['id','str(32)','pk'],
+    ]),
+    T('idempotency_records', [
+      ['org_id','str(32)','org'],['key','str(200)',''],['endpoint','str(200)',''],
+      ['entity_id','str(32)?','soft'],['at','datetime',''],['id','str(32)','pk'],
+    ]),
+    T('llm_usage', [
+      ['org_id','str(32)?','org'],['user_id','str(32)?','soft'],['provider','str(30)',''],
+      ['model','str(100)',''],['purpose','str(100)',''],['input_tokens','int',''],
+      ['output_tokens','int',''],['cost_usd','float',''],['duration_ms','int',''],
+      ['error','text?',''],['at','datetime',''],['id','str(32)','pk'],
+    ]),
+    T('assistant_turns', [
+      ['session_id','str(64)','soft'],['user_id','str(32)','fk:users'],['seq','int',''],
+      ['role','str(16)',''],['content','text',''],['agent','str(30)?',''],['id','str(32)','pk'],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+      ['org_id','str(32)','fk:organisations'],
+    ]),
+  ]},
+];
+
+function fieldRowHtml(tableName, f){
+  const [name, type, flag] = f;
+  const id = `f-${tableName}-${name}`;
+  let cls = 'field-row', dotCls = '', ref = '';
+  if(flag === 'pk'){ cls += ' is-pk'; dotCls = 'pk'; }
+  else if(flag.startsWith('fk-soft:')){ cls += ' is-orgsoft'; dotCls = 'org'; ref = `f-${flag.slice(8)}-id`; }
+  else if(flag.startsWith('fk:')){ cls += ' is-fk'; dotCls = 'fk'; ref = `f-${flag.slice(3)}-id`; }
+  else if(flag === 'soft'){ cls += ' is-soft'; dotCls = 'soft'; }
+  else if(flag === 'org'){ cls += ' is-org'; dotCls = 'org'; }
+  const refAttr = ref ? ` data-ref="${ref}" data-dashed="${flag.startsWith('fk-soft:')}"` : '';
+  return `<div class="${cls}" id="${id}"${refAttr}><span class="dot dot--${dotCls}"></span><span class="fname">${name}</span><span class="ftype">${type}</span></div>`;
+}
+
+function tableCardHtml(t){
+  const orgScoped = t.fields.some(f => f[2] === 'org' || f[2].startsWith('fk-soft:organisations') || (t.name==='org_settings'));
+  return `<div class="table-card" id="t-${t.name}">
+    <div class="table-head">${orgScoped ? '<span class="org-badge" title="tenant-scoped"></span>' : ''}<span class="table-name">${t.name}</span><span class="field-count">${t.fields.length}</span></div>
+    <div class="table-body">${t.fields.map(f => fieldRowHtml(t.name, f)).join('')}</div>
+  </div>`;
+}
+
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('svg');
+
+let bodyHtml = '';
+let tableCount = 0;
+ZONES.forEach(z => {
+  tableCount += z.tables.length;
+  bodyHtml += `<div class="lane" style="--zc: var(--z-${z.id})">
+    <div class="lane-label">
+      <p class="lane-name">${z.label}</p>
+      <p class="lane-desc">${z.desc}</p>
+    </div>
+    <div class="lane-tables">${z.tables.map(tableCardHtml).join('')}</div>
+  </div>`;
+});
+canvas.insertAdjacentHTML('beforeend', bodyHtml);
+
+svg.innerHTML = `<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"></path>
+  </marker>
+  <marker id="arrow-soft" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="var(--soft-ref)"></path>
+  </marker>
+</defs>`;
+
+const refRows = Array.from(document.querySelectorAll('.field-row[data-ref]'));
+const byFrom = {}, byTo = {};
+const pathEls = [];
+
+function buildPaths(){
+  pathEls.forEach(p => p.el.remove());
+  pathEls.length = 0;
+
+  refRows.forEach(row => {
+    const targetEl = document.getElementById(row.dataset.ref);
+    if(!targetEl) return;
+    const dashed = row.dataset.dashed === 'true';
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class', 'conn' + (dashed ? ' soft-line' : ''));
+    path.setAttribute('marker-end', dashed ? 'url(#arrow-soft)' : 'url(#arrow)');
+    path.dataset.from = row.id;
+    path.dataset.to = targetEl.id;
+    svg.appendChild(path);
+    const rec = { el: path, from: row, to: targetEl };
+    pathEls.push(rec);
+    (byFrom[row.id] ||= []).push(rec);
+    (byTo[targetEl.id] ||= []).push(rec);
+  });
+  layoutPaths();
+}
+
+function layoutPaths(){
+  const cRect = canvas.getBoundingClientRect();
+  svg.setAttribute('width', canvas.scrollWidth);
+  svg.setAttribute('height', canvas.scrollHeight);
+
+  pathEls.forEach(({el, from, to}) => {
+    const fCardRect = from.closest('.table-card').getBoundingClientRect();
+    const tCardRect = to.closest('.table-card').getBoundingClientRect();
+    const fRect = from.getBoundingClientRect();
+    const tRect = to.getBoundingClientRect();
+    const goingRight = (tCardRect.left + tCardRect.width/2) > (fCardRect.left + fCardRect.width/2);
+
+    const x1 = (goingRight ? fRect.right : fRect.left) - cRect.left;
+    const y1 = fRect.top + fRect.height/2 - cRect.top;
+    const x2 = (goingRight ? tRect.left : tRect.right) - cRect.left;
+    const y2 = tRect.top + tRect.height/2 - cRect.top;
+
+    let d;
+    const dx = x2 - x1;
+    if(Math.abs(dx) > 30){
+      const mx = x1 + dx/2;
+      d = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+    } else {
+      const dy = y2 - y1;
+      const my = y1 + dy/2;
+      const bow = goingRight ? 40 : -40;
+      d = `M ${x1} ${y1} C ${x1+bow} ${my}, ${x2+bow} ${my}, ${x2} ${y2}`;
+    }
+    el.setAttribute('d', d);
+  });
+}
+
+buildPaths();
+window.addEventListener('resize', () => layoutPaths());
+
+function setHighlight(rowId, on){
+  const rec = (byFrom[rowId] || []).concat(byTo[rowId] || []);
+  rec.forEach(({el, from, to}) => {
+    el.classList.toggle('hl', on);
+    from.classList.toggle('hl', on);
+    to.classList.toggle('hl', on);
+    if(on) svg.appendChild(el);
+  });
+}
+
+document.querySelectorAll('.field-row').forEach(row => {
+  if(byFrom[row.id] || byTo[row.id]){
+    row.addEventListener('mouseenter', () => setHighlight(row.id, true));
+    row.addEventListener('mouseleave', () => setHighlight(row.id, false));
+  }
+});
+
+document.getElementById('stats').innerHTML =
+  `<span><b>${tableCount}</b> tables</span>` +
+  `<span><b>${pathEls.length}</b> enforced relationships drawn</span>` +
+  `<span><b>${ZONES.length}</b> domains</span>` +
+  `<span>multi-tenant via <b>org_id</b> on every domain table</span>`;
+</script>

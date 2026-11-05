@@ -1,0 +1,544 @@
+<title>YuviPep Sales Platform — Schema ER Diagram</title>
+<style>
+  :root{
+    --bg: #eef1f4;
+    --bg-canvas: #e6eaee;
+    --grid-dot: #d2d9e0;
+    --ink: #1a2230;
+    --ink-soft: #4a5568;
+    --muted: #7c8798;
+    --card-bg: #ffffff;
+    --card-border: #d5dbe2;
+    --line-muted: #c7cdd6;
+    --accent: #3a6ea5;
+    --accent-soft: #a9c2dc;
+    --brass: #a97418;
+    --brass-soft: #e4c58c;
+    --soft-ref: #9aa4b2;
+    --shadow: 0 1px 2px rgba(20,30,45,.06), 0 6px 18px rgba(20,30,45,.05);
+
+    --z-identity: #5b7fa6;
+    --z-leads:    #a97418;
+    --z-meetings: #3f8f86;
+    --z-artifacts:#7d6fa0;
+    --z-follow:   #5f8f5a;
+    --z-comms:    #ad6b78;
+    --z-ai:       #3d97ad;
+    --z-ops:      #838da0;
+
+    --font-head: "DIN Alternate", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Roboto Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: #10151d;
+      --bg-canvas: #0c1017;
+      --grid-dot: #1d2531;
+      --ink: #e4e9f0;
+      --ink-soft: #b7c1cf;
+      --muted: #7d8898;
+      --card-bg: #161d27;
+      --card-border: #2a3442;
+      --line-muted: #2a3442;
+      --accent: #6fa8d8;
+      --accent-soft: #2c4661;
+      --brass: #d9a94a;
+      --brass-soft: #4a3c1e;
+      --soft-ref: #6b7686;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #10151d; --bg-canvas: #0c1017; --grid-dot: #1d2531;
+    --ink: #e4e9f0; --ink-soft: #b7c1cf; --muted: #7d8898;
+    --card-bg: #161d27; --card-border: #2a3442; --line-muted: #2a3442;
+    --accent: #6fa8d8; --accent-soft: #2c4661; --brass: #d9a94a; --brass-soft: #4a3c1e;
+    --soft-ref: #6b7686; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --bg: #eef1f4; --bg-canvas: #e6eaee; --grid-dot: #d2d9e0;
+    --ink: #1a2230; --ink-soft: #4a5568; --muted: #7c8798;
+    --card-bg: #ffffff; --card-border: #d5dbe2; --line-muted: #c7cdd6;
+    --accent: #3a6ea5; --accent-soft: #a9c2dc; --brass: #a97418; --brass-soft: #e4c58c;
+    --soft-ref: #9aa4b2; --shadow: 0 1px 2px rgba(20,30,45,.06), 0 6px 18px rgba(20,30,45,.05);
+  }
+
+  *{ box-sizing: border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page{ max-width: 1720px; margin: 0 auto; padding: 40px 28px 80px; }
+
+  header.top{ margin-bottom: 26px; }
+  .eyebrow{
+    font-family: var(--font-head); font-size: 12.5px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 6px;
+  }
+  h1{
+    font-family: var(--font-head); font-weight: 700; letter-spacing: .01em;
+    font-size: clamp(28px, 4vw, 42px); margin: 0 0 10px; text-wrap: balance;
+    color: var(--ink);
+  }
+  .dek{
+    font-size: 15px; line-height: 1.6; color: var(--ink-soft); max-width: 62ch; margin: 0 0 18px;
+  }
+  .stats{
+    display:flex; gap: 22px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 13px;
+    color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+  .stats b{ color: var(--ink); font-weight: 700; }
+
+  .legend{
+    margin-top: 22px; display:flex; flex-wrap: wrap; gap: 18px 28px;
+    padding: 14px 18px; background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 6px; box-shadow: var(--shadow);
+    font-size: 12.5px; color: var(--ink-soft); align-items:center;
+  }
+  .legend .item{ display:flex; align-items:center; gap: 8px; white-space: nowrap; }
+  .legend .swatch{ width:10px; height:10px; flex:none; border-radius:2px; }
+  .legend .line-sample{ width: 26px; height: 2px; background: var(--accent); flex:none; opacity:.8; }
+  .legend .line-sample.dashed{ background: none; border-top: 2px dashed var(--soft-ref); }
+  .legend .hint{ margin-left:auto; font-style: italic; color: var(--muted); }
+
+  .canvas-wrap{
+    margin-top: 26px; overflow-x: auto; overflow-y: visible;
+    border: 1px solid var(--card-border); border-radius: 8px;
+    background: var(--bg-canvas);
+  }
+  .canvas{
+    position: relative; min-width: 100%; width: max-content;
+    padding: 30px 34px 40px;
+    background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  svg.connections{ position:absolute; inset:0; pointer-events:none; overflow: visible; }
+  .conn{
+    fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: .38;
+    transition: opacity .15s ease, stroke-width .15s ease;
+  }
+  .conn.soft-line{ stroke: var(--soft-ref); stroke-dasharray: 4 4; opacity:.5; }
+  .conn.hl{ opacity: 1; stroke-width: 2.6; }
+
+  .lane{ display:flex; gap: 18px; margin-bottom: 30px; align-items: stretch; }
+  .lane:last-child{ margin-bottom: 0; }
+  .lane-label{
+    flex: 0 0 160px; padding-top: 4px; border-left: 3px solid var(--zc);
+    padding-left: 12px;
+  }
+  .lane-name{
+    font-family: var(--font-head); font-weight:700; text-transform:uppercase;
+    letter-spacing:.08em; font-size: 13px; color: var(--zc); margin:0 0 4px;
+  }
+  .lane-desc{ font-size: 12px; line-height:1.45; color: var(--muted); max-width: 22ch; }
+  .lane-tables{ display:flex; gap: 20px; flex-wrap: nowrap; align-items:flex-start; }
+
+  .table-card{
+    position: relative; z-index: 1;
+    width: 262px; flex: none;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: 7px; box-shadow: var(--shadow); overflow: hidden;
+  }
+  .table-head{
+    display:flex; align-items:center; gap:7px;
+    padding: 8px 10px; border-bottom: 1px solid var(--card-border);
+    background: color-mix(in srgb, var(--zc) 10%, var(--card-bg));
+  }
+  .org-badge{
+    width:7px; height:7px; border-radius:50%; flex:none;
+    background: var(--zc); opacity:.55;
+  }
+  .table-name{
+    font-family: var(--font-mono); font-weight:700; font-size: 12.5px;
+    color: var(--ink); letter-spacing: .01em; flex:1;
+  }
+  .field-count{ font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); }
+  .table-body{ padding: 3px 0; }
+  .field-row{
+    display:flex; align-items:center; gap:7px; padding: 2.5px 10px;
+    font-family: var(--font-mono); font-size: 11px; line-height: 1.6;
+    border-bottom: 1px solid color-mix(in srgb, var(--card-border) 55%, transparent);
+  }
+  .field-row:last-child{ border-bottom:none; }
+  .fname{ color: var(--ink-soft); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ftype{ color: var(--muted); font-size: 10px; white-space:nowrap; }
+  .dot{ width:6px; height:6px; border-radius:2px; flex:none; }
+  .dot--pk{ background: var(--brass); }
+  .dot--fk{ background: var(--accent); }
+  .dot--soft{ background: none; border: 1.4px solid var(--soft-ref); border-radius:50%; }
+  .dot--org{ background: none; border: 1.4px solid var(--muted); border-radius:50%; opacity:.6; }
+  .field-row.is-pk .fname{ color: var(--ink); font-weight: 700; }
+  .field-row.is-fk .fname{ color: var(--accent); font-weight: 600; cursor: help; }
+  .field-row.is-fk, .field-row.is-pk{ cursor: help; }
+  .field-row.hl{ background: color-mix(in srgb, var(--accent) 16%, transparent); }
+  .field-row.is-soft .fname, .field-row.is-org .fname, .field-row.is-orgsoft .fname{ font-style: italic; }
+
+  footer.note{
+    margin-top: 22px; font-size: 12px; color: var(--muted); line-height:1.6; max-width: 78ch;
+  }
+  footer.note code{ font-family: var(--font-mono); background: color-mix(in srgb, var(--ink) 6%, transparent); padding: 1px 5px; border-radius:3px; }
+</style>
+
+<div class="page">
+  <header class="top">
+    <p class="eyebrow">Complete_Project · SQLAlchemy models</p>
+    <h1>Schema — Entity Relationship Diagram</h1>
+    <p class="dek">Every table drawn to scale with its fields, grouped into the eight domains that make up the sales platform. Brass marks a primary key, steel-blue traces a foreign key back to the row it points at — hover any key to follow the wire.</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="legend">
+    <div class="item"><span class="swatch" style="background:var(--brass)"></span>Primary key</div>
+    <div class="item"><span class="swatch" style="background:var(--accent)"></span>Foreign key (constraint enforced)</div>
+    <div class="item"><span class="line-sample"></span>Drawn relationship</div>
+    <div class="item"><span class="line-sample dashed"></span>org_id present, not DB-enforced (users, nullable for Super&nbsp;Admin)</div>
+    <div class="item"><span class="dot dot--soft" style="display:inline-block;position:static"></span>Soft reference — id stored, no FK constraint</div>
+    <div class="item"><span class="dot dot--org" style="display:inline-block;position:static"></span>org_id → organisations (badge only, not drawn — every domain table carries it)</div>
+    <span class="hint">hover a key field to trace it</span>
+  </div>
+
+  <div class="canvas-wrap">
+    <div class="canvas" id="canvas">
+      <svg class="connections" id="svg"></svg>
+    </div>
+  </div>
+
+  <footer class="note">
+    Lines connect only columns declared with SQLAlchemy <code>ForeignKey(...)</code>. The tenant relationship (<code>org_id → organisations.id</code>) exists on every domain table via <code>OrgScopedMixin</code> but is shown as a badge, not a wire, to keep the diagram readable — drawing all 20+ of those lines would bury the relationships that actually tell the story of how a lead moves through the pipeline.
+  </footer>
+</div>
+
+<script>
+const T = (name, fields) => ({ name, fields });
+
+const ZONES = [
+  { id:'identity', label:'Tenancy & Identity', desc:'The tenant and the staff who work it.', tables:[
+    T('organisations', [
+      ['id','str(32)','pk'],['name','str(200)',''],['slug','str(100)',''],
+      ['email_domain','str(200)',''],['logo_url','str(500)?',''],['brand_colors','JSON?',''],
+      ['is_active','bool',''],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('org_settings', [
+      ['id','str(32)','pk'],['org_id','str(32)','fk:organisations'],
+      ['require_action_item_review','bool',''],['auto_suggest_lead_state','bool',''],
+      ['audio_retention_days','int',''],['transcript_retention_days','int',''],
+      ['llm_monthly_budget_usd','float',''],['timezone','str(50)',''],['currency','str(10)',''],
+      ['followup_cadence_days','int',''],['email_integration','JSON?',''],
+      ['whatsapp_integration','JSON?',''],['calendar_integration','JSON?',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('users', [
+      ['id','str(32)','pk'],['org_id','str(32)?','fk-soft:organisations'],['email','str(320)',''],
+      ['name','str(200)',''],['phone','str(30)?',''],['role','str(30)',''],
+      ['password_hash','str(300)',''],['is_active','bool',''],['must_change_password','bool',''],
+      ['smtp_app_password_enc','text?',''],['require_action_item_review','bool?',''],
+      ['last_login_at','datetime?',''],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('notifications', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['user_id','str(32)','soft'],
+      ['title','str(300)',''],['body','text?',''],['kind','str(50)',''],
+      ['entity_type','str(50)?',''],['entity_id','str(32)?',''],['is_read','bool',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+  ]},
+  { id:'leads', label:'Leads (Schools)', desc:'Schools in the pipeline, their contacts and consent trail.', tables:[
+    T('leads', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['name','str(300)',''],['state','str(50)',''],
+      ['is_important','bool',''],['owner_id','str(32)?','fk:users'],['address','text?',''],
+      ['city','str(100)?',''],['region','str(100)?',''],['website','str(300)?',''],
+      ['source','str(100)?',''],['notes','text?',''],['last_activity_at','datetime?',''],
+      ['suggested_state','str(50)?',''],['suggested_state_reason','text?',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('lead_state_history', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)','fk:leads'],
+      ['from_state','str(50)?',''],['to_state','str(50)',''],['reason','text?',''],
+      ['changed_by','str(32)?',''],['changed_at','datetime',''],
+    ]),
+    T('contacts', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)','fk:leads'],
+      ['name','str(200)',''],['title','str(200)?',''],['email','str(320)?',''],
+      ['phone','str(30)?',''],['is_primary','bool',''],['source','str(20)',''],
+      ['card_image_path','str(500)?',''],['needs_review','bool',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('consent_records', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)','fk:leads'],
+      ['meeting_id','str(32)?','soft'],['method','str(50)',''],['note','text?',''],
+      ['captured_by','str(32)?',''],['captured_at','datetime',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('school_intelligence', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)','fk:leads'],
+      ['note','text',''],['category','str(100)?',''],['source','str(20)',''],
+      ['added_by','str(32)?',''],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+  ]},
+  { id:'meetings', label:'Meetings', desc:'Recordings and their transcripts.', tables:[
+    T('meetings', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)','fk:leads'],
+      ['agent_id','str(32)','fk:users'],['title','str(300)?',''],['status','str(30)',''],
+      ['audio_path','str(500)?',''],['audio_mime','str(100)?',''],['audio_deleted_at','datetime?',''],
+      ['duration_seconds','int?',''],['started_at','datetime?',''],['consent_captured','bool',''],
+      ['error','text?',''],['state_suggestion','str(50)?',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('transcripts', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['meeting_id','str(32)','fk:meetings'],
+      ['text','text',''],['summary','text?',''],['language','str(30)?',''],
+      ['confidence','float?',''],['low_confidence','bool',''],['word_count','int?',''],
+      ['archived_at','datetime?',''],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+  ]},
+  { id:'artifacts', label:'Sales Artifacts', desc:'Products, versioned pricing, and the proposals built from them.', tables:[
+    T('programs', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['name','str(200)',''],['code','str(50)',''],
+      ['description','text?',''],['is_active','bool',''],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('pricing_tables', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['program_id','str(32)','fk:programs'],
+      ['version','int',''],['currency','str(10)',''],['items','JSON',''],
+      ['effective_from','datetime',''],['is_current','bool',''],['created_by','str(32)?',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('proposal_templates', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['program_id','str(32)','fk:programs'],
+      ['name','str(200)',''],['version','int',''],['body_md','text',''],['is_current','bool',''],
+      ['created_by','str(32)?',''],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('message_templates', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['kind','str(30)',''],['channel','str(20)',''],
+      ['name','str(200)',''],['version','int',''],['subject','str(300)?',''],['body','text',''],
+      ['is_current','bool',''],['created_by','str(32)?',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('proposals', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)','fk:leads'],
+      ['program_id','str(32)','fk:programs'],['title','str(300)',''],['status','str(30)',''],
+      ['template_id','str(32)','fk:proposal_templates'],['template_version','int',''],
+      ['pricing_table_id','str(32)','fk:pricing_tables'],['pricing_version','int',''],
+      ['content_md','text',''],['variables','JSON',''],['line_items','JSON',''],
+      ['total_amount','float',''],['currency','str(10)',''],['docx_path','str(500)?',''],
+      ['pdf_path','str(500)?',''],['created_by','str(32)','fk:users'],['sent_at','datetime?',''],
+      ['sent_message_id','str(32)?','soft'],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('proposal_revisions', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['proposal_id','str(32)','fk:proposals'],
+      ['revision_no','int',''],['instruction','text?',''],['content_md','text',''],
+      ['line_items','JSON',''],['total_amount','float',''],['edited_by','str(32)?',''],
+      ['edited_at','datetime',''],
+    ]),
+  ]},
+  { id:'follow', label:'Follow-through', desc:'Tasks, reminders, and demo scheduling.', tables:[
+    T('action_items', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)?','fk:leads'],
+      ['meeting_id','str(32)?','fk:meetings'],['title','str(500)',''],['description','text?',''],
+      ['owner_id','str(32)?','fk:users'],['status','str(30)',''],['due_date','datetime?',''],
+      ['result_note','text?',''],['completed_at','datetime?',''],['created_by','str(32)?',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('followups', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)','fk:leads'],
+      ['owner_id','str(32)?','fk:users'],['due_date','date',''],['channel','str(20)',''],
+      ['status','str(20)',''],['note','text?',''],['message_id','str(32)?','soft'],
+      ['completed_at','datetime?',''],['created_by','str(32)?',''],['reminded','bool',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('demo_teams', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['name','str(200)',''],
+      ['lead_user_id','str(32)?','fk:users'],['media_rep_id','str(32)?','fk:users'],
+      ['sales_rep_id','str(32)?','fk:users'],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('demo_team_members', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['team_id','str(32)','fk:demo_teams'],
+      ['user_id','str(32)','fk:users'],['role_in_team','str(50)',''],
+    ]),
+    T('demos', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)','fk:leads'],
+      ['team_id','str(32)?','fk:demo_teams'],['scheduled_date','date',''],['scheduled_time','str(10)?',''],
+      ['status','str(30)',''],['notes','text?',''],['calendar_event_id','str(200)?',''],
+      ['created_by','str(32)?',''],['completed_at','datetime?',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+  ]},
+  { id:'comms', label:'Outbound Comms', desc:'Approved sends and delivery tracking.', tables:[
+    T('outbound_messages', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['kind','str(30)',''],['channel','str(20)',''],
+      ['status','str(30)',''],['lead_id','str(32)?','fk:leads'],['contact_id','str(32)?','soft'],
+      ['proposal_id','str(32)?','soft'],['followup_id','str(32)?','soft'],
+      ['sender_user_id','str(32)','fk:users'],['to_address','str(320)',''],['cc','JSON',''],
+      ['subject','str(500)?',''],['body','text',''],['attachments','JSON',''],
+      ['idempotency_key','str(100)',''],['attempts','int',''],['last_error','text?',''],
+      ['approved_by','str(32)?',''],['approved_at','datetime?',''],['queued_at','datetime?',''],
+      ['sent_at','datetime?',''],['provider_message_id','str(300)?',''],
+      ['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('message_delivery_log', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['message_id','str(32)','fk:outbound_messages'],
+      ['event','str(50)',''],['detail','text?',''],['at','datetime',''],
+    ]),
+  ]},
+  { id:'ai', label:'AI Infrastructure', desc:'RAG memory and per-call LLM cost tracking.', tables:[
+    T('memory_chunks', [
+      ['id','str(32)','pk'],['org_id','str(32)','org'],['lead_id','str(32)?','fk:leads'],
+      ['source_type','str(30)',''],['source_id','str(32)?',''],['text','text',''],
+      ['embedding','JSON',''],['created_at','datetime',''],['updated_at','datetime',''],
+    ]),
+    T('llm_usage', [
+      ['id','str(32)','pk'],['org_id','str(32)?',''],['user_id','str(32)?',''],['provider','str(30)',''],
+      ['model','str(100)',''],['purpose','str(100)',''],['input_tokens','int',''],
+      ['output_tokens','int',''],['cost_usd','float',''],['duration_ms','int',''],
+      ['error','text?',''],['at','datetime',''],
+    ]),
+  ]},
+  { id:'ops', label:'Ops & Audit', desc:'Jobs, audit trail, retry dedupe — no lead/user FKs.', tables:[
+    T('jobs', [
+      ['id','str(32)','pk'],['org_id','str(32)?',''],['type','str(100)',''],['payload','JSON',''],
+      ['status','str(30)',''],['priority','int',''],['attempts','int',''],['max_attempts','int',''],
+      ['next_run_at','datetime',''],['last_error','text?',''],['result','JSON?',''],
+      ['created_at','datetime',''],['started_at','datetime?',''],['finished_at','datetime?',''],
+    ]),
+    T('audit_log', [
+      ['id','str(32)','pk'],['org_id','str(32)?',''],['user_id','str(32)?',''],['action','str(100)',''],
+      ['entity_type','str(50)?',''],['entity_id','str(32)?',''],['detail','JSON?',''],['at','datetime',''],
+    ]),
+    T('idempotency_records', [
+      ['id','str(32)','pk'],['org_id','str(32)',''],['key','str(200)',''],['endpoint','str(200)',''],
+      ['entity_id','str(32)?',''],['at','datetime',''],
+    ]),
+  ]},
+];
+
+function fieldRowHtml(tableName, f){
+  const [name, type, flag] = f;
+  const id = `f-${tableName}-${name}`;
+  let cls = 'field-row', dotCls = '', ref = '';
+  if(flag === 'pk'){ cls += ' is-pk'; dotCls = 'pk'; }
+  else if(flag.startsWith('fk-soft:')){ cls += ' is-orgsoft'; dotCls = 'org'; ref = `f-${flag.slice(8)}-id`; }
+  else if(flag.startsWith('fk:')){ cls += ' is-fk'; dotCls = 'fk'; ref = `f-${flag.slice(3)}-id`; }
+  else if(flag === 'soft'){ cls += ' is-soft'; dotCls = 'soft'; }
+  else if(flag === 'org'){ cls += ' is-org'; dotCls = 'org'; }
+  const refAttr = ref ? ` data-ref="${ref}" data-dashed="${flag.startsWith('fk-soft:')}"` : '';
+  return `<div class="${cls}" id="${id}"${refAttr}><span class="dot dot--${dotCls}"></span><span class="fname">${name}</span><span class="ftype">${type}</span></div>`;
+}
+
+function tableCardHtml(t){
+  const orgScoped = t.fields.some(f => f[2] === 'org' || f[2].startsWith('fk-soft:organisations') || (t.name==='org_settings'));
+  return `<div class="table-card" id="t-${t.name}">
+    <div class="table-head">${orgScoped ? '<span class="org-badge" title="tenant-scoped"></span>' : ''}<span class="table-name">${t.name}</span><span class="field-count">${t.fields.length}</span></div>
+    <div class="table-body">${t.fields.map(f => fieldRowHtml(t.name, f)).join('')}</div>
+  </div>`;
+}
+
+const canvas = document.getElementById('canvas');
+const svg = document.getElementById('svg');
+
+let bodyHtml = '';
+let tableCount = 0;
+ZONES.forEach(z => {
+  tableCount += z.tables.length;
+  bodyHtml += `<div class="lane" style="--zc: var(--z-${z.id})">
+    <div class="lane-label">
+      <p class="lane-name">${z.label}</p>
+      <p class="lane-desc">${z.desc}</p>
+    </div>
+    <div class="lane-tables">${z.tables.map(tableCardHtml).join('')}</div>
+  </div>`;
+});
+canvas.insertAdjacentHTML('beforeend', bodyHtml);
+
+svg.innerHTML = `<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"></path>
+  </marker>
+  <marker id="arrow-soft" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M0,0 L10,5 L0,10 z" fill="var(--soft-ref)"></path>
+  </marker>
+</defs>`;
+
+const refRows = Array.from(document.querySelectorAll('.field-row[data-ref]'));
+const byFrom = {}, byTo = {};
+const pathEls = [];
+
+function buildPaths(){
+  pathEls.forEach(p => p.el.remove());
+  pathEls.length = 0;
+
+  refRows.forEach(row => {
+    const targetEl = document.getElementById(row.dataset.ref);
+    if(!targetEl) return;
+    const dashed = row.dataset.dashed === 'true';
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('class', 'conn' + (dashed ? ' soft-line' : ''));
+    path.setAttribute('marker-end', dashed ? 'url(#arrow-soft)' : 'url(#arrow)');
+    path.dataset.from = row.id;
+    path.dataset.to = targetEl.id;
+    svg.appendChild(path);
+    const rec = { el: path, from: row, to: targetEl };
+    pathEls.push(rec);
+    (byFrom[row.id] ||= []).push(rec);
+    (byTo[targetEl.id] ||= []).push(rec);
+  });
+  layoutPaths();
+}
+
+function layoutPaths(){
+  const cRect = canvas.getBoundingClientRect();
+  svg.setAttribute('width', canvas.scrollWidth);
+  svg.setAttribute('height', canvas.scrollHeight);
+
+  pathEls.forEach(({el, from, to}) => {
+    const fCardRect = from.closest('.table-card').getBoundingClientRect();
+    const tCardRect = to.closest('.table-card').getBoundingClientRect();
+    const fRect = from.getBoundingClientRect();
+    const tRect = to.getBoundingClientRect();
+    const goingRight = (tCardRect.left + tCardRect.width/2) > (fCardRect.left + fCardRect.width/2);
+
+    const x1 = (goingRight ? fRect.right : fRect.left) - cRect.left;
+    const y1 = fRect.top + fRect.height/2 - cRect.top;
+    const x2 = (goingRight ? tRect.left : tRect.right) - cRect.left;
+    const y2 = tRect.top + tRect.height/2 - cRect.top;
+
+    let d;
+    const dx = x2 - x1;
+    if(Math.abs(dx) > 30){
+      const mx = x1 + dx/2;
+      d = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+    } else {
+      const dy = y2 - y1;
+      const my = y1 + dy/2;
+      const bow = goingRight ? 40 : -40;
+      d = `M ${x1} ${y1} C ${x1+bow} ${my}, ${x2+bow} ${my}, ${x2} ${y2}`;
+    }
+    el.setAttribute('d', d);
+  });
+}
+
+buildPaths();
+window.addEventListener('resize', () => layoutPaths());
+
+function setHighlight(rowId, on){
+  const rec = (byFrom[rowId] || []).concat(byTo[rowId] || []);
+  rec.forEach(({el, from, to}) => {
+    el.classList.toggle('hl', on);
+    from.classList.toggle('hl', on);
+    to.classList.toggle('hl', on);
+    if(on) svg.appendChild(el);
+  });
+}
+
+document.querySelectorAll('.field-row').forEach(row => {
+  if(byFrom[row.id] || byTo[row.id]){
+    row.addEventListener('mouseenter', () => setHighlight(row.id, true));
+    row.addEventListener('mouseleave', () => setHighlight(row.id, false));
+  }
+});
+
+document.getElementById('stats').innerHTML =
+  `<span><b>${tableCount}</b> tables</span>` +
+  `<span><b>${pathEls.length}</b> enforced relationships drawn</span>` +
+  `<span><b>${ZONES.length}</b> domains</span>` +
+  `<span>multi-tenant via <b>org_id</b> on every domain table</span>`;
+</script>

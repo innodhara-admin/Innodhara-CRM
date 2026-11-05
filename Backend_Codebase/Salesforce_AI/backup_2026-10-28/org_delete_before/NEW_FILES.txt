@@ -1,0 +1,9 @@
+app/services/org_delete.py
+scripts/delete_organisation.py
+tests/test_org_delete.py
+tests/test_org_delete_api.py
+tests/test_org_delete_script.py
+Dashboard/src/bundle/orgDelete.ts
+Dashboard/src/bundle/orgDelete.test.ts
+Dashboard/src/screens/DeleteOrganisation.tsx
+Dashboard/dist/assets/index-Byq_wW7g.js

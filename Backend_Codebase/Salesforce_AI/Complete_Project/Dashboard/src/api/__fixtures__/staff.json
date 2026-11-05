@@ -1,0 +1,36 @@
+[
+  {
+    "id": "ac77885e1e1543a9837926238ae88962",
+    "email": "lead@fixtures1786930355-example.com",
+    "name": "Ravi Menon",
+    "role": "operations_lead",
+    "phone": null,
+    "is_active": true,
+    "department": "operations",
+    "designation": "Commissioning lead",
+    "whatsapp_number": "+919000000001",
+    "max_open_tasks": 12,
+    "working_days": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri"
+    ],
+    "require_action_item_review": null
+  },
+  {
+    "id": "995e19238e2342bf93629506ede31af4",
+    "email": "admin@fixtures1786930355-example.com",
+    "name": "Fixture Admin",
+    "role": "org_admin",
+    "phone": null,
+    "is_active": true,
+    "department": null,
+    "designation": null,
+    "whatsapp_number": null,
+    "max_open_tasks": 8,
+    "working_days": null,
+    "require_action_item_review": null
+  }
+]

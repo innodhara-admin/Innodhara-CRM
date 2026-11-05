@@ -1,0 +1,175 @@
+# Review package: 727758e..HEAD
+
+## Commits
+7704eef Add conditional StaticFiles mount for the setup console (change #8, T9)
+
+## Files changed
+ Dashboard/READMEs/09_BACKEND_CHANGES.md |  3 +-
+ app/main.py                             | 22 +++++++++++++
+ tests/test_dashboard_mount.py           | 56 +++++++++++++++++++++++++++++++++
+ 3 files changed, 80 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/Dashboard/READMEs/09_BACKEND_CHANGES.md b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+index 87c4c12..5410436 100644
+--- a/Dashboard/READMEs/09_BACKEND_CHANGES.md
++++ b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+@@ -18,21 +18,21 @@ is fully ticked.
+ 
+ | # | Change | Files | Task | State | Tests | Guards green |
+ |---|---|---|---|---|---|---|
+ | 1 | 5 staff fields on `CreateUserRequest` / `UpdateUserRequest` / `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 4 | `GET /admin/users/{user_id}` + widened `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 2 | Delivery mode read-only on `GET /admin/settings`; honest `*_configured` | `app/api/admin.py` | T2 | ✅ | ✅ | ⬜ |
+ | 3 | `GET /playbooks` | `app/api/ops.py` | T3 | ✅ | ✅ | ⬜ |
+ | 7 | `contact_name` / `phone` / `email` on `GET /vendors` | `app/api/ops.py` | T4 | ✅ | ✅ | ⬜ |
+ | 5 | `POST /admin/reset` (dry-run + apply) | `app/api/admin.py`, `app/core/reset_taxonomy.py` *(new)* | T5, T6 | ✅ | ✅ | ⬜ |
+ | 6 | 8 guarded DELETE routes | `app/api/ops.py` (3), `app/api/admin.py` (5) | T7, T8 | ✅ (T7 ✅, T8 ✅) | ✅ T7 7/7, T8 6/6 | ⬜ |
+-| 8 | Conditional `StaticFiles` mount at `/dashboard` | `app/main.py` | T9 | ⬜ | ⬜ | ⬜ |
++| 8 | Conditional `StaticFiles` mount at `/dashboard` | `app/main.py` | T9 | ✅ | ✅ | ⬜ |
+ 
+ **Amendments accepted after the list closed** — none of these is a ninth change:
+ 
+ | Amends | Amendment | Decision |
+ |---|---|---|
+ | #5 | `audit_log` moves WIPE → KEEP | D16 |
+ | #5 | `user_skills` + `approval_rules` move KEEP → a new CONFIG bucket, reached by a third flag `wipe_org_config` | D16 |
+ | #5 | Every delete is org-scoped (`WHERE org_id = :org`), unlike the script it replaces | `06_DESIGN.md` §7.3 |
+ | #8 | The mount is conditional on the directory existing; a missing bundle logs a warning and the API still starts | D20 |
+ 
+@@ -145,10 +145,11 @@ outside this project's closed change list.
+ 
+ | Date | # | What landed | Tests | Guards |
+ |---|---|---|---|---|
+ | 2026-08-13 | 1, 4 | 5 staff fields (`department`, `designation`, `whatsapp_number`, `max_open_tasks`, `working_days`) added to `CreateUserRequest`/`UpdateUserRequest`/`UserResponse`; `GET /admin/users/{user_id}` added (declared after `GET /users`) | `tests/test_dashboard_staff.py` new, 4/4 pass; full suite 219 passed / 3 failed (222 total; count of passing rose 215→219 as expected); the 3 failures are pre-existing `test_what_is_late.py` date-boundary failures, confirmed present before this change via `git stash` | `check_docs_in_sync.py` still fails as expected (route count now 141, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 2 | `_settings_response` gains `email_mode`/`whatsapp_mode`/`calendar_mode`/`inbound_email_mode` (from `get_settings()`) plus `email_credentials_stored`/`whatsapp_credentials_stored`/`calendar_credentials_stored`; the three `*_integration_configured` booleans now require credentials **AND** the matching process-wide mode (`email_mode=="smtp"`, `whatsapp_mode=="cloud_api"`, `calendar_mode=="google"`) | `tests/test_dashboard_settings_honesty.py` new, 2/2 pass; full suite 221 passed / 3 failed (224 total; passing rose 219→221 as expected, same 3 pre-existing `test_what_is_late.py` failures); no existing test asserted the old meaning, so none needed updating | `check_docs_in_sync.py` still fails as expected (resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 3 | `GET /playbooks` added to `app/api/ops.py` (declared immediately before `GET /playbooks/suggestions`), gated on `get_org_context` (readable by any org member, matching its GET siblings); query params `program_id`, `phase`, `current_only` (default `True`); returns `id`/`program_id`/`phase`/`entries`/`version`/`is_current`/`updated_by` per row, org-scoped, ordered by `phase, version` | `tests/test_dashboard_reads.py` new, 3/3 pass; full suite 224 passed / 3 failed (227 total; passing rose 221→224 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count rose by 1 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 7 | `contact_name`/`phone`/`email` fields added to `GET /vendors` response in `app/api/ops.py` (widened return dict, no route signature change, gated on `get_org_context` unchanged) | `tests/test_dashboard_reads.py` appended 1 test (4th in file), 4/4 pass; full suite 225 passed / 3 failed (228 total; passing rose 224→225 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count unchanged, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 6 (part 1/2, T7) | 3 guarded DELETE routes added to `app/api/ops.py`: `DELETE /skills?user_id=&skill=` (natural key, matches `POST /skills`'s upsert key; refuses 409 when it is the last holder and open/in_progress/pending_review work needs the skill; role-gated identically to `POST /skills`, duplicated tuple kept deliberately per Part F #11 deferral), `DELETE /playbooks/{playbook_id}` (`manage_programs`; no reference guard — nothing points at a playbook; deleting the current version promotes the highest-version predecessor back to `is_current`, the API's only un-supersede path), `DELETE /vendors/{vendor_id}` (`manage_settings`; refuses 409 when a task's `external_wait` JSON blob references it — scanned explicitly since there is no FK; matches on `vendor_name`, not `vendor_id`, because the only writer of that blob, `POST /tasks/{id}/vendor-promise`, records a free-text name and never an id, and the `vendor_id` key in the model's own docstring comment is aspirational and never produced — `vendor_id` is still checked too, defensively). All three call `audit_service.record` (D13). Two of the brief's test setup calls didn't match the real API and were corrected: `POST /action-items` has no `required_skill` field (silently dropped; no route can set it, so the fixture task is built directly via `SessionLocal`, following the precedent already in `tests/test_assignment_skills.py`), and there is no `/tasks/{id}/external-wait` route (the real route is `POST /tasks/{id}/vendor-promise`, taking `vendor_name`/`promised_date`/optional `chase_contact_user_id`, not `vendor_id`) — no assertions were changed | `tests/test_dashboard_deletes_ops.py` new, 7/7 pass; full suite 254 passed / 0 failed (was 247 passed / 0 failed at this task's start — the 3 `test_what_is_late.py` clock-dependent tests noted in change #5's row are currently passing, not failing, at this run's time of day) | `check_docs_in_sync.py` still fails as expected (route count rose by 3 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 5 | `POST /admin/reset` added to `app/api/admin.py` (`ResetRequest` + `reset_organisation`), consuming `deletion_order`/`KEEP`/`CONFIG`/`REPLACE`/`WIPE` from `app/core/reset_taxonomy.py` (built in the prior task, T5, already committed/tested). Dry-run vs apply gated on `body.dry_run`; apply requires `confirm_org_name` to exactly match the org's name (422 otherwise); every count/delete is `WHERE org_id = :org` (`Base.metadata.tables[name]`, iterated in `deletion_order`'s child-before-parent order, never sorted/reversed); writes `admin.org_reset` to `audit_log` (KEEP) only on apply, with `counts`/`total`/the 3 flags as detail, before `db.commit()`; gated on `require_permission("manage_settings")` (org_admin only) | `tests/test_dashboard_reset.py` new, 7/7 pass (dry-run counts without deleting; apply requires echoed org name, both wrong-name 422 and missing-name 422; flags clear only their own bucket; KEEP survives a full reset and the session still works — `/auth/me`, `/admin/users`, `/admin/settings` all still 200; another org untouched by a reset scoped to a different org; audit row written and readable after its own bucket is gone; sales agent gets 403). Every test creates its own throwaway org via `create_org(...)` — none touches the session-scoped `org_a`/`org_b` fixtures except the permission test, which only needs a 403 and applies nothing. Full suite 238 passed / 3 failed (241 total; passing rose 231→238 as expected — 231 was this task's starting baseline, not 225, because T5's own tests (`tests/test_reset_taxonomy.py`) landed in the prior task and are already included); the 3 failures are the same pre-existing `test_what_is_late.py` timezone-boundary failures, untouched by this change | `check_docs_in_sync.py` still fails as expected (route count rose by 1 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 6 (part 2/2, T8, closes #6) | 5 guarded DELETE routes added to `app/api/admin.py`, plus a shared `_promote_predecessor(db, model, **scope)` helper used by three of them: `DELETE /programs/{id}` (`manage_programs`; refuses 409 when any project or proposal references the program via `program_id`; on success cascades — deletes the program's `pricing_tables`, `proposal_templates`, `playbooks` rows in the handler, since no FK carries `ondelete=`); `DELETE /programs/{id}/pricing/{version}` (`edit_pricing`; refuses 409 when a `Proposal.pricing_table_id` locks that version; deleting the current version promotes the highest remaining version via `_promote_predecessor(..., program_id=...)`); `DELETE /programs/{id}/proposal-templates/{template_id}` (`manage_templates`; refuses 409 when a `Proposal.template_id` locks it; same promotion, scoped by `program_id`); `DELETE /message-templates/{id}` (`manage_templates`; no reference guard — nothing points at a message template; promotion scoped by `(kind, channel)`, not `program_id`, since message templates aren't per-program); `DELETE /demo-teams/{id}` (`manage_teams`; refuses 409 when a `Demo.team_id` books the team; on success deletes its `demo_team_members` rows first, no `ondelete=` there either). All five call `audit_service.record` (D13). The brief's setup call `POST /api/v1/proposals` with body `{lead_id, program_id, title}` needed no correction: the real `BuildProposalRequest` (`app/api/proposals.py`) has no `title` field, but no model in this codebase sets `extra="forbid"`, so pydantic's default `extra="ignore"` silently drops it rather than rejecting the request — verified directly (`BuildProposalRequest(lead_id=..., program_id=..., title=...)` constructs cleanly) before trusting it, not assumed. All other setup calls (`POST /leads` with just `name`, `GET /auth/me` returning `user_id`) already matched. Guard columns were verified against the schema before trusting them: `Project.program_id`/`Proposal.program_id` (nullable, but populated whenever a project/proposal names a program), `Proposal.pricing_table_id`/`Proposal.template_id` (both `Mapped[str]`, non-nullable — every proposal built via `build_proposal` populates them, so the lock guards cannot be dead code), `Demo.team_id` (nullable, populated whenever a demo names a team). The brief's own 6-test suite only exercises refusal for the program-in-use guard; the other three guards (pricing-locked, template-locked, demo-booked) were proven live with a throwaway scratch test file (`tests/test_scratch_guard_verify.py`, not committed) that built a proposal locking a pricing/template version and a demo booked against a team, then asserted each DELETE returned 409 with the expected message — all three fired correctly, then the scratch file was deleted | `tests/test_dashboard_deletes_admin.py` new, 6/6 pass; full suite 260 passed / 0 failed (was 254 passed / 0 failed at this task's start) | `check_docs_in_sync.py` still fails as expected (route count rose by 5 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
++| 2026-08-13 | 8 (T9, closes #8, closes the list) | Conditional `StaticFiles` mount added to the end of `app/main.py`: `_DASHBOARD_DIST = Path(__file__).resolve().parent.parent / "Dashboard" / "dist"`; when that directory exists, `app.mount("/dashboard", StaticFiles(directory=_DASHBOARD_DIST, html=True), name="dashboard")`; when it doesn't, `logger.warning(...)` only — no exception, startup unaffected either way. `Path` and `StaticFiles` added to the existing import block; the module's existing `logger` was reused, no second one created. The bundle deliberately lives outside `app/` (D19) so `tests/test_genericity.py` (scans `app/**/*.py`) and `scripts/check_hardcoded_strings.py` (scans Android Java) never see it | `tests/test_dashboard_mount.py` new, 2/2 pass, run and confirmed green in **both** states: bundle present (a placeholder `Dashboard/dist/index.html` created for the red run, then deleted per the brief — `Dashboard/dist/` is absent again at task end) and bundle absent; full suite 265 passed / 0 failed in both states (was 263 passed / 0 failed at this task's start, per the brief; the previously-flaky `test_what_is_late.py` trio is currently passing at this run's time of day, consistent with change #6's note that it is time-of-day dependent, not this change) | `check_docs_in_sync.py` still fails, but its route count (151) is **identical** with the bundle present or absent — verified directly by running the checker in both states — confirming the `Mount` contributes 0 `APIRoute`s exactly as `test_api_route_count_is_identical_either_way` asserts; the 5 drifts it reports (README route-count text, §7.1 breakdown/heading/sums) are the same pre-existing drift already present on HEAD before this task (confirmed via `git stash`), unrelated to this change and left for Task 10's resync; `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+diff --git a/app/main.py b/app/main.py
+index 4639cef..8ee7e7b 100644
+--- a/app/main.py
++++ b/app/main.py
+@@ -1,24 +1,26 @@
+ """YuviPep AI Sales Platform — application entry point.
+ 
+ Layers (doc §5): this Backend API resolves the organisation context for every
+ request, applies business rules, and hands work to the AI orchestrator and
+ the background job queue. Nothing reaches the AI without passing through here.
+ """
+ from __future__ import annotations
+ 
+ import logging
+ from contextlib import asynccontextmanager
++from pathlib import Path
+ 
+ from fastapi import FastAPI, Request
+ from fastapi.middleware.cors import CORSMiddleware
+ from fastapi.responses import JSONResponse
++from fastapi.staticfiles import StaticFiles
+ from sqlalchemy import func, select
+ 
+ from app.api import (
+     action_items,
+     admin,
+     assistant,
+     auth,
+     demos,
+     followups,
+     leads,
+@@ -190,10 +192,30 @@ async def root():
+         "name": settings.app_name,
+         "status": "running",
+         "docs": "/docs",
+         "api": API_PREFIX,
+     }
+ 
+ 
+ @app.get("/health", tags=["health"])
+ async def health():
+     return {"status": "ok", "llm_provider": settings.llm_provider}
++
++
++# ── The setup console, when it has been built ────────────────────────────────
++# The bundle lives outside app/ on purpose: tests/test_genericity.py scans
++# app/**/*.py and scripts/check_hardcoded_strings.py scans Android Java, so a
++# bundle carrying the product manual's verbatim quotes must stay out of both
++# scan roots (05_DECISIONS.md D19).
++_DASHBOARD_DIST = Path(__file__).resolve().parent.parent / "Dashboard" / "dist"
++if _DASHBOARD_DIST.is_dir():
++    app.mount(
++        "/dashboard",
++        StaticFiles(directory=_DASHBOARD_DIST, html=True),
++        name="dashboard",
++    )
++else:
++    logger.warning(
++        "Setup console not mounted: no bundle at %s. Run `npm run build` in "
++        "Dashboard/ to serve it at /dashboard. The API is unaffected.",
++        _DASHBOARD_DIST,
++    )
+diff --git a/tests/test_dashboard_mount.py b/tests/test_dashboard_mount.py
+new file mode 100644
+index 0000000..fcf2320
+--- /dev/null
++++ b/tests/test_dashboard_mount.py
+@@ -0,0 +1,56 @@
++"""A missing console must never take down the API (D20)."""
++from __future__ import annotations
++
++from pathlib import Path
++
++from fastapi.routing import APIRoute
++from starlette.routing import Mount
++
++import app.main as main_mod
++
++
++BUNDLE = Path(main_mod.__file__).resolve().parent.parent / "Dashboard" / "dist"
++
++
++def _api_route_count() -> int:
++    return sum(
++        len(r.methods - {"HEAD", "OPTIONS"})
++        for r in main_mod.app.routes
++        if isinstance(r, APIRoute)
++    )
++
++
++def _dashboard_mounts() -> list:
++    return [
++        r for r in main_mod.app.routes
++        if isinstance(r, Mount) and r.path == "/dashboard"
++    ]
++
++
++def test_mount_matches_the_directory_in_both_states():
++    """A missing console must not take down the API, and a present one must
++    actually be served. Asserting only that the import did not raise would pass
++    even if the mount never appeared at all."""
++    if BUNDLE.is_dir():
++        assert len(_dashboard_mounts()) == 1, (
++            "the bundle exists, so /dashboard must be mounted"
++        )
++    else:
++        assert _dashboard_mounts() == [], (
++            "no bundle, so /dashboard must be absent — and the app must still "
++            "have imported, which it did or this module would not have loaded"
++        )
++
++
++def test_api_route_count_is_identical_either_way():
++    """check_docs_in_sync.py asserts the README's route count. Whether the
++    console happens to be built must not move that number."""
++    baseline = _api_route_count()
++    assert baseline > 0
++    assert not any(
++        r.path.startswith("/dashboard") for r in main_mod.app.routes
++        if isinstance(r, APIRoute)
++    )
++    # The mount contributes zero APIRoutes, so the count with a bundle present
++    # equals the count without one. Both states are exercised in Step 4.
++    assert _api_route_count() == baseline

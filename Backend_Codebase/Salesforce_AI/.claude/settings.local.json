@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /tmp/whoami.json -w '%{http_code}\\\\n' -H 'Authorization: token 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' https://api.github.com/user)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /tmp/pages.json -w '%{http_code}\\\\n' -X POST -H 'Authorization: token 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' -H 'Accept: application/vnd.github+json' https://api.github.com/repos/Ekaghni/yuvipep-schema-diagram/pages -d '{\"source\":{\"branch\":\"main\",\"path\":\"/\"}}')",
+      "Read(//c/Users/Ekaghni/.cache/whisper/**)",
+      "Read(//c/Users/Ekaghni/AndroidStudioProjects/YuvipepSalesforceAI/**)",
+      "Bash(JAVA_HOME=\"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\" ./gradlew.bat :app:assembleOrgDebug -q)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(pkill -f \"run.py\")",
+      "Bash(PORT=8010 python run.py)",
+      "Bash(curl -s 127.0.0.1:8010/health)",
+      "Read(//c/Users/Ekaghni/AppData/Local/Temp/claude/C--Users-Ekaghni-Downloads-Salesforce-AI/98f76480-a29d-4419-86ac-876e3660521a/scratchpad/**)",
+      "Bash(cp app/ai/agents/query_agent.py /tmp/qa.bak)",
+      "Bash(python -)",
+      "Bash(python -m pytest tests/test_assistant.py -q -k \"context_chip or priority\")",
+      "Read(//c/Users/Ekaghni/AppData/Local/Temp/**)",
+      "Bash(python -c ' *)",
+      "Bash(md5sum src/api/*)",
+      "Bash(npm run *)",
+      "Read(//c/Users/Ekaghni/.cache/huggingface/hub/**)",
+      "Read(//c/Users/Ekaghni/.cache/torch/**)"
+    ]
+  }
+}

@@ -1,0 +1,140 @@
+# Review package: 3d36b73..HEAD
+
+## Commits
+1b4bf2b Fix WIPE deletion ordering to satisfy every FK edge (Task 5, review round 1)
+
+## Files changed
+ app/core/reset_taxonomy.py   | 23 +++++++++++++++++------
+ tests/test_reset_taxonomy.py | 32 ++++++++++++++++++++++++++------
+ 2 files changed, 43 insertions(+), 12 deletions(-)
+
+## Diff
+diff --git a/app/core/reset_taxonomy.py b/app/core/reset_taxonomy.py
+index 4f000b9..d0a8863 100644
+--- a/app/core/reset_taxonomy.py
++++ b/app/core/reset_taxonomy.py
+@@ -6,22 +6,31 @@ Four buckets, not the script's three (05_DECISIONS.md D16):
+   KEEP     never removed, by any flag.  `users` because the reset runs under
+            the org_admin session it would otherwise destroy; `audit_log`
+            because D13 requires the reset to leave an audit row behind.
+   CONFIG   user_skills + approval_rules.  The reseed bundle exports both, so
+            the reset must be able to clear them or a re-import collides.
+   REPLACE  the catalogue.
+   WIPE     everything transactional.
+ 
+ Ordering is child-before-parent throughout, because the schema declares no
+ `ondelete=` rule anywhere and SQLite does not enforce foreign keys by default.
++WIPE's internal order is topologically sorted against every FK edge among its
++own 42 tables (five edges — stakeholders->projects/contacts, followups/demos/
++memory_chunks/client_intelligence->leads — are not in declaration order, so
++do not "tidy" this tuple back to something more alphabetical-looking).
++`deletion_order` then appends REPLACE and CONFIG, which is safe unchecked:
++every WIPE->REPLACE and WIPE->CONFIG edge already has the child earlier
++because WIPE precedes both in the returned list, and REPLACE's own internal
++order (catalogue tables) is child-before-parent by inspection too.
+ Nothing else may re-derive these lists: tests/test_reset_taxonomy.py asserts
+-this module is a complete partition of Base.metadata.
++this module is a complete partition of Base.metadata, and walks every FK edge
++among the tables `deletion_order` returns to prove the ordering is safe.
+ """
+ from __future__ import annotations
+ 
+ KEEP: tuple[str, ...] = (
+     "organisations",
+     "org_settings",
+     "users",
+     "audit_log",
+ )
+ 
+@@ -39,26 +48,28 @@ REPLACE: tuple[str, ...] = (
+     "demo_teams",
+     "vendors",
+ )
+ 
+ WIPE: tuple[str, ...] = (
+     "message_delivery_log", "outbound_messages", "inbound_messages", "threads",
+     "approvals", "proposal_revisions", "proposals",
+     "reminders", "assignments", "progress_events", "ai_decisions",
+     "action_items", "action_plans", "client_commitments", "conflicts",
+     "project_members", "resource_bookings", "deliverables",
+-    "payments", "invoices", "incidents", "projects",
++    "payments", "invoices", "incidents",
++    "stakeholders", "projects",
+     "transcripts", "meetings", "consent_records",
+-    "stakeholders", "contacts", "lead_state_history", "leads",
+-    "followups", "demos", "demo_team_members",
+-    "notifications", "digests", "assistant_turns", "memory_chunks",
+-    "client_intelligence", "playbook_suggestions",
++    "contacts", "lead_state_history",
++    "followups", "demos", "memory_chunks", "client_intelligence", "leads",
++    "demo_team_members",
++    "notifications", "digests", "assistant_turns",
++    "playbook_suggestions",
+     "idempotency_records", "jobs", "llm_usage", "device_tokens",
+ )
+ 
+ 
+ def deletion_order(
+     *, transactional: bool, catalogue: bool, org_config: bool
+ ) -> list[str]:
+     """Tables to delete, children first. KEEP is unreachable from here."""
+     order: list[str] = []
+     if transactional:
+diff --git a/tests/test_reset_taxonomy.py b/tests/test_reset_taxonomy.py
+index c65f6a8..b052aec 100644
+--- a/tests/test_reset_taxonomy.py
++++ b/tests/test_reset_taxonomy.py
+@@ -28,27 +28,47 @@ def test_users_and_audit_log_are_kept():
+     audit_log: D13 requires the reset to write an audit row."""
+     assert "users" in KEEP
+     assert "audit_log" in KEEP
+ 
+ 
+ def test_every_wipeable_table_can_be_org_scoped():
+     for table in list(CONFIG) + list(REPLACE) + list(WIPE):
+         assert "org_id" in Base.metadata.tables[table].columns, table
+ 
+ 
+-def test_deletion_order_puts_children_before_parents():
++def test_deletion_order_respects_every_foreign_key():
++    """Walk every FK on every table `deletion_order` returns, not a
++    hand-picked list of pairs. Cherry-picked pairs are exactly what let a
++    bad ordering through: five real violations existed here and none of
++    them overlapped an earlier, narrower version of this test."""
+     order = deletion_order(transactional=True, catalogue=True, org_config=True)
+-    assert order.index("action_items") < order.index("projects")
+-    assert order.index("payments") < order.index("invoices")
+-    assert order.index("contacts") < order.index("leads")
+-    assert order.index("pricing_tables") < order.index("programs")
+-    assert order.index("demo_team_members") < order.index("demo_teams")
++    index = {table: position for position, table in enumerate(order)}
++    order_set = set(order)
++
++    violations = []
++    for table_name in order:
++        table = Base.metadata.tables[table_name]
++        for column in table.columns:
++            for fk in column.foreign_keys:
++                parent = fk.column.table.name
++                if parent == table_name:
++                    continue  # self-reference
++                if parent not in order_set:
++                    continue  # parent is in KEEP, e.g. users/organisations
++                if index[table_name] > index[parent]:
++                    violations.append(
++                        f"{table_name} (idx {index[table_name]}) via "
++                        f"{table_name}.{column.name} -> {parent} "
++                        f"(idx {index[parent]}): child deleted after parent"
++                    )
++
++    assert violations == [], "FK ordering violations:\n" + "\n".join(violations)
+     assert "users" not in order
+     assert "audit_log" not in order
+ 
+ 
+ def test_flags_select_only_their_own_bucket():
+     assert deletion_order(
+         transactional=False, catalogue=False, org_config=True
+     ) == list(CONFIG)
+     assert set(
+         deletion_order(transactional=False, catalogue=True, org_config=False)

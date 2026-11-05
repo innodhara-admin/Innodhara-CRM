@@ -1,0 +1,870 @@
+<resources>
+    <string name="app_name">InnoDhara CRM</string>
+
+    <!-- Auth -->
+    <string name="login_title">Welcome back</string>
+    <string name="login_subtitle">Sign in with your work email</string>
+    <string name="hint_email">Work email</string>
+    <string name="hint_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="login_no_account">Don’t have an account?</string>
+    <string name="no_account_title">Accounts are created by your organisation</string>
+    <string name="no_account_body">There is no self-signup. Your organisation’s admin creates your account and shares a temporary password with you — you’ll be asked to set your own at first login.\n\nNew company? The platform team sets up organisations.</string>
+    <string name="no_account_copy_template">Copy request template</string>
+    <string name="no_account_template">Hi, could you please create a YuviPep account for me? My work email is: </string>
+    <string name="copied">Copied</string>
+
+    <string name="forced_change_title">Set your own password</string>
+    <string name="forced_change_subtitle">You’re using a temporary password. Choose a new one to continue.</string>
+    <string name="hint_current_password">Current (temporary) password</string>
+    <string name="hint_new_password">New password (min 8 characters)</string>
+    <string name="hint_confirm_password">Repeat new password</string>
+    <string name="action_save_password">Save and continue</string>
+    <string name="error_passwords_differ">The two passwords don’t match</string>
+
+    <!-- Environment sheet (debug) -->
+    <string name="env_sheet_title">Environment</string>
+    <string name="env_hint_base_url">Server base URL</string>
+    <string name="env_apply">Apply</string>
+    <string name="env_reset_default">Reset to default</string>
+    <string name="env_preset_emulator">Emulator localhost</string>
+    <string name="env_current">Current: %1$s</string>
+
+    <!-- Splash / session -->
+    <string name="splash_checking">Checking your session…</string>
+    <!-- %1$s = app version name, %2$s = short host of the configured server -->
+    <string name="splash_version">v%1$s · %2$s</string>
+    <!-- %1$s = short host of the configured server -->
+    <string name="login_server_chip">server: %1$s</string>
+    <string name="offline_cached_session">You’re offline — showing your last known session</string>
+    <string name="session_expired">Your session ended. Please sign in again.</string>
+
+    <!-- Home placeholders -->
+    <string name="home_greeting">Hello, %1$s</string>
+    <string name="phase_placeholder_title">On its way</string>
+    <!-- No build-phase numbers in user copy: they leak the roadmap and go stale
+         when it is renumbered (finding F14). The %2$s phase arg is now unused. -->
+    <string name="phase_placeholder_body">%1$s is coming in a future update. Your work stays safe on the server in the meantime.</string>
+    <string name="platform_note">Platform operators cannot read organisation data.</string>
+    <string name="action_logout">Sign out</string>
+    <string name="logout_confirm_title">Sign out?</string>
+    <string name="logout_confirm_body">Your cached data on this device will be wiped.</string>
+
+    <!-- StateView -->
+    <string name="state_retry">Retry</string>
+    <string name="state_offline">You’re offline</string>
+    <string name="state_error_generic">Something went wrong</string>
+    <string name="state_empty_generic">Nothing here yet</string>
+    <string name="state_loading">Loading…</string>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_empty_title">All caught up</string>
+    <string name="notifications_empty_body">Anything that concerns you lands here — approvals, tasks, replies, escalations.</string>
+    <string name="action_back">Back</string>
+    <string name="notification_no_screen_yet">This opens fully in a later phase — the work item is safe on the server.</string>
+    <!-- F58: digest notifications genuinely have no screen and never will — the
+         summary IS the body. Promising "a later phase" was the wrong thing to say. -->
+    <string name="notification_digest_is_the_content">That’s the whole digest — the summary is right here in the notification.</string>
+
+    <!-- Home / briefing -->
+    <string name="briefing_title">Your briefing</string>
+    <string name="briefing_updated">updated %1$s</string>
+    <string name="waiting_title">Waiting on you</string>
+    <string name="waiting_empty_title">You’re all caught up.</string>
+    <string name="waiting_empty_body">Approvals, assignment confirmations and reviews will appear here the moment they exist.</string>
+    <string name="waiting_assignments_title">%1$d task assignment(s) proposed</string>
+    <string name="waiting_assignments_body">The AI has matched people to tasks — review the reasons and confirm.</string>
+    <string name="waiting_review_title">Meeting needs your review</string>
+    <string name="waiting_triage_title">%1$d inbound message(s) need a human</string>
+    <string name="waiting_triage_body">The AI couldn’t place these — attach or mark them handled.</string>
+
+    <!-- Approvals -->
+    <string name="approvals_title">Approvals</string>
+    <string name="approvals_empty_title">No approvals waiting</string>
+    <string name="approvals_empty_body">When the AI needs your sign-off, it lands here.</string>
+    <string name="action_approve">Approve</string>
+    <string name="action_reject">Reject</string>
+    <string name="reject_note_title">Reject with a note</string>
+    <string name="reject_note_hint">Why? (goes back to the requester)</string>
+    <string name="action_send_rejection">Reject</string>
+    <string name="approval_queued_offline">Queued — will apply when you’re back online</string>
+    <string name="approval_queue_failed">Couldn’t apply: %1$s</string>
+    <string name="action_dismiss">Dismiss</string>
+    <string name="approval_stage_recommend">Recommend</string>
+    <string name="approval_stage_decide">Decide</string>
+    <string name="approval_detail_title">Approval</string>
+    <string name="approval_facts_title">What you’re deciding</string>
+    <string name="approval_recommendation_title">Recommendation</string>
+    <string name="message_preview_title">Draft message preview</string>
+    <string name="message_edit_first_note">To change this draft, reject it with a note describing the change and the AI will redraft it.</string>
+    <string name="approval_decided_toast">Done — %1$s</string>
+    <string name="approval_gone_title">Already decided</string>
+    <string name="approval_gone_body">Someone decided this one, or it expired. Nothing is waiting on you here.</string>
+    <string name="approval_gone_action">Back to approvals</string>
+
+    <!-- Assignments -->
+    <string name="assignments_title">Confirm assignments</string>
+    <string name="assignments_empty_title">No proposed assignments</string>
+    <string name="assignments_empty_body">When the AI proposes who should do what, the batch appears here.</string>
+    <string name="action_confirm_batch">Confirm %1$d assignment(s)</string>
+    <string name="assignment_override">Change person</string>
+    <string name="assignment_overridden_to">Overridden → %1$s</string>
+    <string name="assignment_override_unavailable">Changing the person needs the staff directory, which your role can’t read. Confirm as proposed, or reject via your admin.</string>
+    <string name="assignments_confirmed_toast">%1$d assignment(s) confirmed</string>
+
+    <!-- Meeting review -->
+    <string name="review_title">Review extracted tasks</string>
+    <string name="review_body">Edit or drop anything the AI got wrong — nothing goes live until you confirm.</string>
+    <string name="review_confirm">Confirm %1$d item(s)</string>
+    <string name="review_confirmed_toast">%1$d task(s) are live</string>
+    <string name="review_confirmed_planning_toast">%1$d task(s) are live. The Planner is building the plan from this meeting — the project and its approvals will appear shortly.</string>
+    <string name="review_edit_title">Edit item</string>
+    <string name="review_add_title">Add an item the AI missed</string>
+    <string name="review_item_title_hint">Item title</string>
+    <string name="review_possible_duplicate">⚠ Looks like “%1$s”%2$s — drop if it’s the same</string>
+    <string name="review_empty_title">Nothing pending review</string>
+    <string name="review_empty_body">This meeting has no extracted items waiting.</string>
+    <string name="review_kept">Keeping</string>
+    <string name="review_dropped">Dropped</string>
+
+    <!-- Triage -->
+    <string name="triage_title">Inbound triage</string>
+    <string name="triage_empty_title">Triage queue is clear</string>
+    <string name="triage_empty_body">Messages the AI can’t place will wait here for a human.</string>
+    <string name="action_mark_handled">Mark handled</string>
+    <string name="triage_handled_toast">Marked handled</string>
+
+    <!-- Bottom nav labels -->
+    <!-- ── Phase 2: leads ─────────────────────────────────────────── -->
+    <string name="leads_title">Leads</string>
+    <string name="leads_search_hint">Search leads</string>
+    <string name="leads_new">New lead</string>
+    <string name="leads_bulk_upload">Bulk upload leads</string>
+    <string name="leads_bulk_upload_progress">Uploading %1$d of %2$d…</string>
+    <string name="leads_bulk_upload_bad_file">Couldn\'t read that file: %1$s</string>
+    <string name="leads_bulk_upload_empty">This file has no leads to import.</string>
+    <string name="leads_bulk_upload_done_title">Bulk upload finished</string>
+    <string name="leads_bulk_upload_done_summary">%1$d of %2$d lead(s) created</string>
+    <string name="leads_bulk_upload_failures_title">Failed</string>
+    <string name="leads_bulk_upload_failure_row">%1$s — %2$s</string>
+    <string name="leads_important">Important</string>
+    <string name="leads_filter_mine">Mine</string>
+    <string name="leads_filter_important">Important</string>
+    <string name="leads_empty_title">No leads found</string>
+    <string name="leads_empty_body">Try clearing the filters, or create one with the button below.</string>
+    <string name="lead_name_hint">Organisation name</string>
+    <string name="lead_city_hint">City (optional)</string>
+    <string name="lead_source_hint">Source (optional — e.g. referral)</string>
+    <string name="lead_website_hint">Website (optional)</string>
+    <string name="lead_notes_hint">Notes (optional)</string>
+    <string name="lead_create">Create lead</string>
+    <string name="lead_name_required">A name of at least 2 characters is required.</string>
+    <string name="lead_tab_overview">Overview</string>
+    <string name="lead_tab_contacts">Contacts</string>
+    <string name="lead_tab_projects">Projects</string>
+    <string name="lead_tab_notebook">Notebook</string>
+    <string name="lead_tab_history">History</string>
+    <string name="lead_tab_meetings">Meetings</string>
+    <string name="lead_updated">updated %1$s</string>
+    <string name="lead_no_manage_permission">Your role can view leads but not change them — ask a sales colleague.</string>
+    <string name="lead_suggestion_text">AI suggests marking %1$s%2$s</string>
+    <string name="lead_suggestion_accept">Accept</string>
+    <string name="lead_suggestion_keep">Keep as is</string>
+    <string name="lead_suggestion_kept">Kept as is. The suggestion stays on the server until the state changes; this banner won\'t show again for it.</string>
+    <string name="lead_state_changed">Lead marked %1$s</string>
+    <string name="lead_change_state">Change state</string>
+    <string name="lead_scan_card">Scan card</string>
+    <string name="lead_add_contact">Add contact</string>
+    <string name="lead_add_note">Add note</string>
+    <string name="lead_add_note_hint">What did you learn about this client?</string>
+    <string name="lead_record_meeting">Record meeting</string>
+    <string name="lead_type_notes">Type notes</string>
+    <string name="lead_fact_address">Address</string>
+    <string name="lead_fact_city">City / region</string>
+    <string name="lead_fact_website">Website</string>
+    <string name="lead_fact_source">Source</string>
+    <string name="lead_fact_notes">Notes</string>
+    <string name="lead_next_step_meta">Task · %1$s · due %2$s</string>
+    <string name="lead_followup_title">Follow-up · %1$s</string>
+    <string name="lead_followup_meta">due %1$s</string>
+    <string name="lead_proposal">Proposal</string>
+    <string name="lead_proposal_meta">Proposal · %1$s</string>
+    <string name="lead_overview_empty">Nothing here yet — facts appear as the AI and your team learn about this lead.</string>
+    <string name="lead_contacts_empty">No contacts yet. Add one or scan a business card.</string>
+    <string name="lead_projects_empty">No projects for this lead yet.</string>
+    <string name="lead_notebook_empty">No notes yet. Anything you save here also feeds the AI\'s memory of this client.</string>
+    <string name="lead_history_empty">No state changes recorded yet.</string>
+    <string name="lead_history_created">Created</string>
+    <string name="lead_meetings_empty">No meetings yet. Record one or type the notes.</string>
+    <string name="meeting_review_badge">Review waiting</string>
+    <string name="action_save">Save</string>
+    <string name="action_done">Done</string>
+
+    <!-- Contacts & card scan -->
+    <string name="contact_primary">Primary</string>
+    <string name="contact_needs_review">Needs review</string>
+    <string name="contact_add_title">Add contact</string>
+    <string name="contact_edit_title">Edit contact</string>
+    <string name="contact_scan_title">Verify scanned contact</string>
+    <string name="contact_review_banner">The scan was unclear — verify these details. No message will go to this contact until a human saves them (the server enforces this too).</string>
+    <string name="contact_scan_confidence">Scan confidence %1$d%%</string>
+    <string name="contact_scan_org">Card says: %1$s</string>
+    <string name="contact_name_hint">Name</string>
+    <string name="contact_title_hint">Role / title (optional)</string>
+    <string name="contact_email_hint">Email (optional)</string>
+    <string name="contact_phone_hint">Phone (optional)</string>
+    <string name="contact_primary_switch">Primary contact</string>
+    <string name="contact_name_required">A name is required.</string>
+    <string name="contact_intro_drafted">An intro message to %1$s was drafted — it is waiting in Approvals, nothing was sent.</string>
+    <string name="contact_intro_error">The intro draft failed honestly: %1$s</string>
+    <!-- F38: the scan no longer queues anything. The intro is drafted from the
+         contact you SAVE, so a correction here is simply the address used. -->
+    <string name="contact_intro_pending">Check the details below. An intro message will be drafted from what you save — nothing has been queued yet.</string>
+    <string name="scan_hint">Fill the frame with the card</string>
+    <string name="scan_torch">Torch</string>
+    <string name="scan_capture">Capture</string>
+    <string name="scan_uploading">Reading the card…</string>
+    <string name="scan_camera_denied">Camera permission was declined — you can add the contact manually instead.</string>
+    <string name="scan_camera_error">Camera problem: %1$s</string>
+
+    <!-- Consent -->
+    <string name="consent_title">Recording consent</string>
+    <string name="consent_body">Before recording, confirm the client agreed to it. This is stored with the lead (DPDP).</string>
+    <string name="consent_verbal">They agreed verbally</string>
+    <string name="consent_written">They agreed in writing</string>
+    <string name="consent_in_app">Consent captured in app</string>
+    <string name="consent_note_hint">Note (optional — e.g. who agreed)</string>
+    <string name="consent_confirm">Consent recorded — continue</string>
+
+    <!-- Recorder -->
+    <string name="recorder_title">Record meeting</string>
+    <string name="recorder_record">Record</string>
+    <string name="recorder_pause">Pause</string>
+    <string name="recorder_resume">Resume</string>
+    <string name="recorder_stop">Stop</string>
+    <string name="recorder_mic_denied">Microphone permission was declined — typed notes work just as well.</string>
+    <string name="recorder_status_idle">Tap the mic to start</string>
+    <string name="recorder_status_recording">Recording — the screen can be turned off</string>
+    <string name="recorder_status_paused">Paused</string>
+    <string name="recorder_recorded_summary">Recorded %1$s</string>
+    <string name="recorder_title_hint">Meeting title (optional)</string>
+    <string name="recorder_upload">Upload</string>
+    <string name="recorder_discard">Discard</string>
+    <string name="recorder_discard_confirm">Delete this recording without uploading? This cannot be undone.</string>
+    <string name="recorder_pick_file">Choose a recording file</string>
+    <string name="recorder_pick_copying">Getting the file ready…</string>
+    <string name="recorder_picked_summary">%1$s · %2$s</string>
+    <string name="recorder_picked_summary_no_length">%1$s</string>
+    <string name="recorder_still_running">Recording continues in the background — the notification takes you back.</string>
+    <string name="recording_notification_title">Recording meeting</string>
+    <string name="recording_notification_body">Tap to return to the recorder</string>
+    <string name="upload_notification_uploading">Uploading meeting audio…</string>
+    <string name="upload_notification_failed">Meeting upload failed</string>
+    <string name="upload_failed_generic">Upload failed — the backend refused the file.</string>
+
+    <!-- Meeting pipeline -->
+    <string name="meeting_title">Meeting</string>
+    <string name="meeting_retry">Retry</string>
+    <string name="meeting_review_button">Review extracted tasks</string>
+    <string name="meeting_step_uploading">Uploading</string>
+    <string name="meeting_step_uploaded">Uploaded</string>
+    <string name="meeting_step_transcribing">Transcribing</string>
+    <string name="meeting_step_extracting">Extracting</string>
+    <string name="meeting_step_review">Review</string>
+    <string name="meeting_step_done">Done</string>
+    <string name="meeting_failed_generic">The pipeline failed without a reason string.</string>
+    <string name="meeting_result_summary">Summary</string>
+    <string name="meeting_result_low_confidence_title">Transcript confidence</string>
+    <string name="meeting_result_low_confidence">The transcript confidence was low — double-check anything important against your memory of the meeting.</string>
+    <string name="meeting_result_items">Action items (%1$d)</string>
+    <string name="meeting_result_item_due">— due %1$s</string>
+    <string name="meeting_result_suggestion_title">Lead state</string>
+    <string name="meeting_result_suggestion">The AI suggests marking this lead \'%1$s\' — accept or keep it on the lead screen.</string>
+    <string name="meeting_result_none_title">Result</string>
+    <string name="meeting_result_none">The pipeline finished without extracting anything actionable. The transcript is stored with the meeting.</string>
+    <string name="review_add_item">Add an item the AI missed</string>
+
+    <!-- Typed notes -->
+    <string name="notes_title">Type the meeting</string>
+    <string name="notes_meeting_title_hint">Meeting title (optional)</string>
+    <string name="notes_type_hint">Meeting type</string>
+    <string name="notes_text_hint">What was discussed, agreed, promised…</string>
+    <string name="notes_explainer">The Planner reads these notes exactly like a recording\'s transcript: it extracts tasks, updates plans and drafts follow-ups — everything lands as approvals or reviewable items, nothing is sent by itself.</string>
+    <string name="notes_send">Send to the Planner</string>
+    <string name="notes_processing">The Planner is reading your notes…</string>
+    <string name="notes_too_short">Write at least a sentence or two.</string>
+    <string name="notes_planner_title">What the Planner did</string>
+    <string name="notes_planner_no_detail">The Planner finished but reported no detail.</string>
+    <string name="notes_open_meeting">Open meeting</string>
+
+    <string name="tab_home">Home</string>
+    <string name="tab_leads">Leads</string>
+    <string name="tab_assistant">Jarvis</string>
+    <string name="tab_tasks">Tasks</string>
+    <string name="tab_inbox">Inbox</string>
+    <string name="tab_pipeline">Pipeline</string>
+    <string name="tab_approvals">Approvals</string>
+    <string name="tab_team">Team</string>
+    <string name="tab_projects">Projects</string>
+    <string name="tab_more">More</string>
+    <string name="tab_delivery">Delivery</string>
+    <string name="tab_incidents">Incidents</string>
+    <string name="tab_admin">Admin</string>
+    <string name="tab_insights">Insights</string>
+    <string name="tab_orgs">Orgs</string>
+    <string name="tab_stats">Stats</string>
+
+    <!-- Assistant (Phase 3) -->
+    <string name="assistant_title">Assistant</string>
+    <!-- No "create leads": there is no create_lead agent tool (handoff §6d), so
+         claiming it would be a promise the assistant cannot keep (finding F12). -->
+    <string name="assistant_greeting">Hello %1$s — tell me what you need. I can draft and send proposals, book follow-ups, answer questions… anything client-visible waits for your approval.</string>
+    <string name="assistant_greeting_fallback">there</string>
+    <string name="assistant_input_hint">Type a command…</string>
+    <string name="message_draft_instruction_hint">What should the message say?</string>
+    <string name="assistant_send">Send</string>
+    <string name="assistant_thinking">Thinking — reading your data…</string>
+    <string name="assistant_about">About: %1$s</string>
+    <string name="assistant_agent_meta">answered by the %1$s agent</string>
+    <string name="assistant_error_meta">The request did not go through — your text is back in the box, tap send to retry.</string>
+    <string name="assistant_action_failed">failed</string>
+    <string name="assistant_open">Open</string>
+    <!-- F30: the draft still has fill-in-the-blanks the model left behind. The
+         server refuses this send either way; the dialog exists so the refusal
+         arrives as a readable question before the tap, not an error after it. -->
+    <string name="approval_blanks_title">This draft isn\'t finished</string>
+    <string name="approval_blanks_body">It still has blanks the AI left to fill in: %1$s\n\nAsk the assistant to fill them in, or reject it with a note so it gets redrafted. If you send it now, the client sees them exactly as they are.</string>
+    <string name="approval_blanks_send_anyway">Send as it is</string>
+    <string name="approval_blanks_cancel">Not yet</string>
+    <!-- F28: the assistant is unsure and is asking. Not a failure — a short or
+         loosely worded command is the AI's job to resolve, and when it
+         genuinely cannot, one clear question is the right answer. -->
+    <string name="assistant_question_title">One quick check</string>
+    <string name="assistant_question_nothing_done">Nothing has been drafted or sent yet — pick one, or type your answer.</string>
+    <string name="assistant_question_fallback">I need one more detail before I can do this.</string>
+    <string name="assistant_approval_title">Ready for approval: %1$s</string>
+    <string name="assistant_sent">Approved — queued to send.</string>
+    <string name="assistant_rejected">Rejected — nothing was sent.</string>
+    <string name="assistant_approve_send">Approve &amp; send</string>
+    <string name="assistant_reject">Reject</string>
+    <string name="assistant_reject_title">Reject this draft?</string>
+    <string name="assistant_reject_hint">Why? (helps the AI next time)</string>
+    <string name="assistant_reject_confirm">Reject</string>
+    <string name="assistant_reject_default">Rejected from the assistant</string>
+
+    <!-- Why chip -->
+    <string name="why_chip">Why?</string>
+    <string name="why_title">Why the AI did this</string>
+    <string name="why_subtitle">Decision log for this %1$s</string>
+    <string name="why_empty">No AI decision is recorded for this record.</string>
+
+    <!-- Proposals (Phase 3) -->
+    <string name="proposal_untitled">Proposal</string>
+    <string name="proposal_versions">template v%1$d · pricing v%2$d</string>
+    <string name="proposal_sent_meta">sent %1$s</string>
+    <string name="proposal_pricing_title">Commercials</string>
+    <string name="proposal_pricing_locked_note">Machine-generated from the pricing table — words are editable, numbers are not.</string>
+    <string name="proposal_total">Total</string>
+    <string name="proposal_narrative_title">Narrative</string>
+    <string name="proposal_no_narrative">No narrative yet.</string>
+    <string name="proposal_revisions_title">Revision trail</string>
+    <string name="proposal_revision_row">v%1$d — %2$s</string>
+    <string name="proposal_view_pdf">View PDF</string>
+    <string name="proposal_change_it">Change it (by instruction)</string>
+    <string name="proposal_upload_edited">Upload edited file</string>
+    <string name="proposal_submit_review">Submit for internal review</string>
+    <string name="proposal_approve_send">Approve &amp; send</string>
+    <string name="proposal_approve_send_confirm">Approve &amp; send now</string>
+    <string name="proposal_send_warning">This really emails the client from your address. Check the recipient.</string>
+    <string name="proposal_send_to">To (email)</string>
+    <string name="proposal_send_cc">CC (comma-separated, optional)</string>
+    <string name="proposal_send_note">Extra note (optional)</string>
+    <string name="proposal_send_bad_to">That is not a valid email address</string>
+    <string name="proposal_send_bad_cc">CC entry \"%1$s\" is not a valid email</string>
+    <string name="proposal_sent_to">Approved — sending to %1$s</string>
+    <string name="proposal_edited">Applied.</string>
+    <string name="proposal_edit_title">Change the proposal</string>
+    <string name="proposal_edit_note">Say what to change in plain words. Prices and totals stay locked — the pricing table owns them.</string>
+    <string name="proposal_edit_hint">e.g. make the tone warmer and shorter</string>
+    <string name="proposal_edit_apply">Apply</string>
+    <string name="proposal_edit_too_short">Say a little more about the change you want</string>
+    <string name="proposal_review_result">Review status: %1$s</string>
+    <string name="proposal_upload_done">Revision %1$d uploaded</string>
+    <string name="proposal_upload_refused">Upload refused</string>
+    <string name="proposal_upload_read_failed">Could not read that file: %1$s</string>
+    <string name="lead_mou">MOU</string>
+    <string name="lead_mou_meta">Contract · %1$s · %2$s</string>
+    <string name="lead_mou_sent_meta">Contract · sent to the client · %1$s</string>
+    <string name="mou_filled_title">What went into this MOU</string>
+    <string name="mou_view_pdf">Read the contract</string>
+    <string name="mou_document_title">The contract, in words</string>
+    <string name="mou_revisions_title">Corrections</string>
+    <string name="mou_revision_row">%1$d. %2$s</string>
+    <string name="mou_template_version">Template v%1$d</string>
+    <string name="mou_sent_meta">sent %1$s</string>
+    <string name="proposal_filled_title">What went into this proposal</string>
+    <string name="proposal_filled_ai">Written for this client</string>
+    <string name="proposal_filled_system">From your records</string>
+    <string name="proposal_filled_user">You told me this</string>
+    <string name="proposal_filled_default">The template\'s suggestion</string>
+    <string name="proposal_filled_unfilled">Left blank — needs you</string>
+    <string name="proposal_filled_empty_hint">This section could not be written from what is on record. Fill it in before sending.</string>
+
+    <!-- PDF viewer -->
+    <string name="pdf_open_failed">Could not open the PDF: %1$s</string>
+    <string name="pdf_page">Document page</string>
+    <string name="meeting_title_fallback">Meeting</string>
+
+    <!-- Projects portfolio (Phase 4, 03 §6) -->
+    <string name="projects_title">Projects</string>
+    <string name="projects_empty_title">No projects yet</string>
+    <string name="projects_empty_body">Projects appear once a deal is agreed or the Planner proposes one from a meeting.</string>
+
+    <!-- Project detail -->
+    <string name="project_tab_overview">Overview</string>
+    <string name="project_tab_plan">Plan</string>
+    <string name="project_tab_tasks">Tasks</string>
+    <string name="project_tab_timeline">Timeline</string>
+    <string name="project_tab_people">People</string>
+    <string name="project_tab_team">Team</string>
+    <string name="project_tab_conflicts">Conflicts</string>
+    <string name="project_tab_reports">Reports</string>
+    <string name="project_change_status">Change status</string>
+    <string name="project_whats_blocking_title">What\'s blocking?</string>
+    <string name="project_whats_blocking_loading">Asking…</string>
+    <string name="project_next_tasks">Next up</string>
+    <string name="project_commitments">Open commitments</string>
+    <string name="project_commitment_ours">We owe them</string>
+    <string name="project_commitment_theirs">They owe us</string>
+    <string name="project_quick_record_meeting">Record meeting here</string>
+    <string name="project_quick_draft_message">Draft message</string>
+    <string name="project_quick_catch_me_up">Catch me up</string>
+    <string name="project_quick_split_branches">Split into branches</string>
+    <string name="project_quick_phase_shift">Shift phase</string>
+    <string name="project_phase_shift_done">Phase shifted.</string>
+    <string name="project_brief_title">Catching you up</string>
+    <string name="project_no_lead">This project has no linked lead to record a meeting against.</string>
+    <string name="project_overview_empty">Nothing to show on this project yet.</string>
+    <string name="project_plan_empty">No plan version yet.</string>
+    <string name="project_plan_version">Version %1$d</string>
+    <string name="project_plan_active">active</string>
+    <string name="project_tasks_empty">No tasks on this project yet.</string>
+    <string name="project_timeline_empty">Nothing has happened on this project yet.</string>
+    <string name="project_people_empty">No stakeholders recorded yet.</string>
+    <string name="project_people_add">Add stakeholder</string>
+    <string name="project_people_pick_contact">Pick a contact for this lead first</string>
+    <string name="project_people_no_contacts">This lead has no contacts yet — add one from the lead\'s Contacts tab first.</string>
+    <string name="project_people_saved">Saved.</string>
+    <string name="project_team_empty">No team members yet.</string>
+    <string name="project_team_add">Add member</string>
+    <string name="project_team_remove">Remove</string>
+    <string name="project_team_remove_confirm">Remove %1$s from this project?</string>
+    <string name="project_team_no_permission">Your role can\'t manage the project team — ask your operations lead or org admin.</string>
+    <string name="project_team_added">Added — %1$s</string>
+    <string name="project_conflicts_empty">No conflicts on this project.</string>
+    <string name="project_conflict_resolve">Resolve</string>
+    <string name="project_conflict_resolve_title">Resolve this conflict</string>
+    <string name="project_conflict_resolution_hint">What\'s the call, and why?</string>
+    <string name="project_conflict_resolution_too_short">Say a little more about the resolution</string>
+    <string name="project_conflict_resolved">Resolved.</string>
+    <string name="project_reports_generate">Generate this week\'s client report</string>
+    <string name="project_reports_generate_internal">Generate internal digest</string>
+    <string name="project_reports_none">Nothing happened this week, or the project is on hold — no report generated.</string>
+    <string name="project_reports_preview_title">This week\'s report</string>
+    <string name="project_reports_sent_note">Queued for approval before it reaches the client.</string>
+
+    <!-- Chain wizard -->
+    <string name="chain_wizard_title">Split into branches</string>
+    <string name="chain_wizard_explainer">Commercials stay on this parent project; each branch gets its own lead record and delivery plan.</string>
+    <string name="chain_wizard_branch_hint">Branch name</string>
+    <string name="chain_wizard_add_branch">Add branch</string>
+    <string name="chain_wizard_invoicing">Invoicing</string>
+    <string name="chain_wizard_invoicing_group">One invoice for the group</string>
+    <string name="chain_wizard_invoicing_per_branch">One invoice per branch</string>
+    <string name="chain_wizard_create">Create branches</string>
+    <string name="chain_wizard_need_one">Add at least one branch</string>
+    <string name="chain_wizard_created">%1$d branch project(s) created</string>
+    <string name="chain_only_parent">This project is already a branch of another — chain deals start from the top-level project.</string>
+
+    <!-- My Tasks (Phase 4, 03 §7) -->
+    <string name="my_tasks_title">My tasks</string>
+    <!-- F53: "Overdue" already existed on the follow-ups screen; My tasks had no
+         such group, so late work was filed under Today. -->
+    <string name="my_tasks_overdue">Overdue</string>
+    <string name="my_tasks_today">Today</string>
+    <string name="my_tasks_week">This week</string>
+    <string name="my_tasks_later">Later</string>
+    <string name="my_tasks_blocked">Blocked</string>
+    <string name="my_tasks_vendor">Waiting on vendor</string>
+    <string name="my_tasks_no_due">No due date</string>
+    <string name="my_tasks_open_client">Open client %1$s</string>
+    <string name="my_tasks_empty_title">Nothing assigned to you</string>
+    <string name="my_tasks_empty_body">New tasks show up here the moment they\'re assigned.</string>
+
+    <!-- Task detail -->
+    <string name="task_detail_title">Task</string>
+    <string name="task_assigned_reason">Assigned because</string>
+    <string name="task_dependencies">Waiting on</string>
+    <string name="task_commitment_linked">Fulfils a client commitment</string>
+    <string name="task_progress">Progress</string>
+    <string name="task_limited_detail">This task was found outside its project, so some detail (priority, dependencies, blocked state) isn\'t available here.</string>
+    <string name="task_action_done">Done</string>
+    <string name="task_action_decline">Decline</string>
+    <string name="task_action_block">Block</string>
+    <string name="task_action_unblock">Unblock</string>
+    <string name="task_action_new_date">New date</string>
+    <string name="task_action_split">Split</string>
+    <string name="task_action_vendor_promise">Vendor promise</string>
+    <string name="task_action_vendor_slip">Vendor slipped</string>
+    <string name="task_done_title">Mark this task done</string>
+    <string name="task_done_note_hint">What happened? (optional)</string>
+    <string name="task_done_success">Done.</string>
+    <string name="task_already_done">Already marked done.</string>
+    <string name="task_decline_title">Decline this task</string>
+    <string name="task_decline_reason_busy">Too busy</string>
+    <string name="task_decline_reason_wrong_skill">Wrong skill for this</string>
+    <string name="task_decline_reason_on_site_elsewhere">On-site elsewhere</string>
+    <string name="task_decline_reason_other">Other</string>
+    <string name="task_decline_note_hint">Add a note (optional)</string>
+    <string name="task_decline_success">Declined — %1$s</string>
+    <string name="task_decline_reassigned">reassigned to someone else</string>
+    <string name="task_decline_needs_lead">no one else found — your phase lead has been notified</string>
+    <string name="task_block_title">Block this task</string>
+    <string name="task_block_reason_hint">What\'s blocking it?</string>
+    <string name="task_blocked_success">Blocked — nudges paused until you unblock.</string>
+    <string name="task_blocked_told">Blocked — %1$s has been told and will see it on Home.</string>
+    <string name="waiting_on_you_title">%1$s is waiting on you</string>
+    <string name="waiting_on_you_someone">A colleague</string>
+    <string name="task_unblocked_success">Unblocked.</string>
+    <string name="task_new_date_title">Propose a new date</string>
+    <string name="task_new_date_reason_hint">Why the change? (optional)</string>
+    <string name="task_new_date_accepted">Date updated.</string>
+    <string name="task_new_date_routed">This breaks: %1$s — sent to your phase lead to confirm instead.</string>
+    <string name="task_split_title">Split into two tasks</string>
+    <string name="task_split_part_hint">Part %1$d title</string>
+    <string name="task_split_success">Split into %1$d tasks.</string>
+    <string name="task_vendor_promise_title">Record a vendor promise</string>
+    <string name="task_vendor_name_hint">Vendor name</string>
+    <string name="task_vendor_date_hint">Promised date (YYYY-MM-DD)</string>
+    <string name="task_vendor_promise_success">Vendor promise recorded.</string>
+    <string name="task_vendor_slip_title">Vendor slipped — new date</string>
+    <string name="task_vendor_slip_success">Slip recorded.</string>
+    <string name="task_progress_success">Progress updated.</string>
+    <string name="task_pick_date_hint">Tap to pick a date</string>
+
+    <!-- Voice (Phase 5, 04 §3) -->
+    <string name="voice_listening">Listening…</string>
+    <string name="voice_transcribing">Transcribing…</string>
+    <string name="voice_unavailable">This device has no microphone — typing works everywhere.</string>
+    <string name="voice_dictate">Dictate this field</string>
+    <string name="voice_permission_hint">Allow microphone access, then tap the mic again.</string>
+    <!-- Shown instead of sending, when the server reports it did not hear well.
+         The text is still filled in so the user can correct it and send. -->
+    <string name="voice_low_confidence">Didn\'t catch that clearly — check the text and send it yourself.</string>
+    <string name="assistant_mic">Dictate a command</string>
+    <string name="assistant_speak_toggle">Speak replies</string>
+    <string name="assistant_speak_on">Jarvis will speak replies.</string>
+    <string name="assistant_speak_off">Jarvis is quiet now.</string>
+
+    <!-- Conversation memory -->
+    <string name="assistant_new_chat">Start a new conversation</string>
+    <string name="assistant_new_chat_title">Start a new conversation?</string>
+    <string name="assistant_new_chat_body">Jarvis will forget what you have said so far in this chat. Your leads, tasks and drafts are not affected.</string>
+    <string name="assistant_new_chat_confirm">Start fresh</string>
+    <string name="assistant_new_chat_not_forgotten">New chat started here, but the old one could not be deleted on the server — it will go on its own within 90 days.</string>
+
+    <!-- Demos (Phase 5, 03 §11) -->
+    <string name="demos_title">Demos</string>
+    <string name="demos_prev_month">Previous month</string>
+    <string name="demos_next_month">Next month</string>
+    <string name="demos_month_meta">%1$d demo(s) · %2$d free day(s)</string>
+    <string name="demos_day_empty">No demos on this day.</string>
+    <string name="demos_no_time">time not set</string>
+    <string name="demos_detail_title">Demo</string>
+    <string name="demos_action_reschedule">Reschedule</string>
+    <string name="demos_action_update_status">Update status</string>
+    <string name="demos_status_completed">Completed</string>
+    <string name="demos_status_cancelled">Cancelled — retract the invite</string>
+    <string name="demos_rescheduled">Rescheduled — the updated invite is drafted and waiting in Approvals.</string>
+    <string name="demos_cancelled">Cancelled — the retraction is drafted and waiting in Approvals.</string>
+    <string name="demos_status_updated">Updated.</string>
+    <string name="demos_no_permission">Your role can\'t update demos — ask your operations team.</string>
+    <!-- F48: this used to end "…or ask Jarvis to request one", but no
+         request-a-demo capability was ever built — the scheduling agent has only
+         list_demos / list_demo_teams / calendar_view / book_demo / cancel_demo,
+         so Jarvis answers the same permission rule back and the user goes in a
+         circle. Point at the person who can actually do it. -->
+    <string name="demos_no_schedule_permission">Your role can\'t book demos — ask your operations lead or an admin to book it for you.</string>
+    <string name="demos_book">Book demo</string>
+    <string name="demos_book_title">Book a demo</string>
+    <string name="demos_book_title_for">Book a demo — %1$s</string>
+    <string name="demos_date_hint">Date (YYYY-MM-DD)</string>
+    <string name="demos_time_hint">Time (HH:MM, optional)</string>
+    <string name="demos_notes_hint">Notes (optional)</string>
+    <string name="demos_no_team">No team</string>
+    <string name="demos_date_required">A date is needed to book.</string>
+    <string name="demos_booked_title">Demo booked</string>
+    <string name="demos_booked">Booked for %1$s.</string>
+    <string name="demos_booked_invite">The calendar invite is drafted and waiting in Approvals — nothing has been sent yet.</string>
+    <string name="demos_booked_no_invite">No invite was drafted.</string>
+    <string name="demos_pick_date_hint">Tap to choose a date</string>
+    <string name="demos_pick_time_hint">Tap to choose a time (optional)</string>
+    <string name="demos_pick_date_title">Pick a date</string>
+    <string name="demos_day_tasks_title">Tasks due %1$s</string>
+    <string name="demos_day_no_tasks">No tasks due on %1$s</string>
+    <string name="demos_clash_prefix">Heads up: %1$s</string>
+    <string name="demos_card_today">%1$d today</string>
+    <string name="demos_card_month">%1$d this month</string>
+
+    <!-- Follow-ups (Phase 5, 03 §12) -->
+    <string name="followups_title">Follow-ups</string>
+    <string name="followups_today">Due today</string>
+    <string name="followups_overdue">Overdue</string>
+    <string name="followups_week">This week</string>
+    <string name="followups_all_pending">All pending</string>
+    <string name="followups_mine_only">Mine only</string>
+    <string name="followups_due_meta">due %1$s · %2$s</string>
+    <string name="followups_empty_title">No follow-ups waiting</string>
+    <string name="followups_empty_body">Follow-ups appear here as meetings and messages create them.</string>
+    <string name="followups_done">Mark done</string>
+    <string name="followups_draft">Draft message (AI)</string>
+    <string name="followups_open_lead">Open the lead</string>
+    <string name="followups_complete_note_hint">What happened? (optional)</string>
+    <string name="followups_schedule_next">Schedule the next one automatically</string>
+    <string name="followups_done_next">Done — next follow-up set for %1$s.</string>
+    <string name="followups_done_no_next">Done.</string>
+    <string name="followups_card_due">%1$d due today</string>
+    <string name="followups_card_none">none due today</string>
+    <string name="home_card_unavailable">unavailable offline</string>
+
+    <!-- Phase 6 — Inbox &amp; messages -->
+    <string name="action_close">Close</string>
+    <string name="inbox_title">Inbox</string>
+    <string name="inbox_tab_messages">Messages</string>
+    <string name="inbox_tab_triage">Needs a human</string>
+    <string name="inbox_log_reply">Log a reply</string>
+
+    <string name="message_filter_all">Everything</string>
+    <string name="message_scope_mine">Mine</string>
+    <string name="message_scope_everyone">Whole organisation</string>
+    <string name="message_to_line">To %1$s · %2$s</string>
+    <string name="message_center_empty_title">No messages here</string>
+    <string name="message_center_empty_mine">Nothing you have sent matches this filter. Try “Whole organisation”.</string>
+    <string name="message_center_empty_all">Nothing in the organisation matches this filter.</string>
+
+    <string name="delivery_trace_title">Delivery trace</string>
+    <string name="delivery_trace_timeline">What happened to it</string>
+    <string name="delivery_trace_body">The message</string>
+    <string name="delivery_trace_no_subject">(no subject)</string>
+    <string name="delivery_trace_meta">To %1$s · %2$s · %3$s</string>
+    <string name="delivery_trace_no_events">Nothing has happened to this message yet.</string>
+    <string name="delivery_trace_open_eml">Open the message that was sent</string>
+    <string name="delivery_trace_eml_title">Exactly what was sent</string>
+    <string name="delivery_trace_eml_unreadable">Could not read the saved message: %1$s</string>
+    <string name="delivery_trace_attachments_unavailable">Attachments are not listed here — the server does not return them with a message. The saved copy above includes them.</string>
+
+    <string name="triage_actions">Actions</string>
+    <string name="triage_reply">Reply</string>
+    <string name="triage_action_attach_client">Attach to a client</string>
+    <string name="triage_action_attach_project">Attach to a project</string>
+    <string name="triage_action_set_intent">Set what it is asking for</string>
+    <string name="triage_action_read_full">Read the whole message</string>
+    <string name="triage_action_handled">Mark handled</string>
+    <!-- No "AI:" prefix: once a human corrects the intent the payload cannot
+         say who set it, and crediting their correction to the AI would be a
+         small lie on every card. The picker still says whose reading it is. -->
+    <string name="triage_intent_unknown">Not classified yet</string>
+    <string name="triage_intent_current">Currently read as “%1$s”.</string>
+    <string name="triage_intent_none">The AI could not tell what this is asking for.</string>
+    <string name="triage_intent_set">Set to %1$s</string>
+    <string name="triage_pick_client">Which client is this?</string>
+    <string name="triage_pick_contact">Who wrote it?</string>
+    <string name="triage_pick_contact_hint">A contact at %1$s — this is how the message finds its client.</string>
+    <string name="triage_pick_project">Which project is this about?</string>
+    <string name="triage_pick_intent">What is it asking for?</string>
+    <string name="triage_attached_to">Attached to %1$s</string>
+    <string name="triage_attached_known">Client identified — you can reply from here.</string>
+    <string name="triage_no_leads">There are no clients to attach this to yet.</string>
+    <string name="triage_no_projects">There are no projects to attach this to yet.</string>
+    <string name="triage_no_contacts_title">No contacts on this client</string>
+    <string name="triage_no_contacts_body">%1$s has no contacts yet, and a message is attached through the person who sent it. Add a contact on the client first, then come back.</string>
+    <string name="triage_reply_needs_client_title">Attach it to a client first</string>
+    <string name="triage_reply_needs_client_body">The assistant writes on behalf of a client relationship, so it needs to know whose message this is before it can draft a reply.</string>
+    <!-- Natural phrasing, restored in Phase 7 when FINDING F28 was fixed.
+         Phase 6 had to write these as labelled lines ("Recipient: …\nClient:
+         …") because the assistant could not read a person out of an ordinary
+         sentence. That was a workaround for one app-generated command and did
+         nothing for anyone typing into the Jarvis tab by hand, so the resolver
+         was fixed instead. These two strings are the acceptance test for that
+         fix: if a plainly worded command still drafts the right email, the
+         resolver is genuinely fixed rather than bypassed. -->
+    <string name="triage_reply_prompt">Draft an email to %1$s at %2$s replying to their question: %3$s</string>
+    <string name="triage_reply_prompt_unknown_sender">Draft an email to %2$s replying to the question they sent from %1$s: %3$s</string>
+
+    <string name="log_reply_title">Log a client reply</string>
+    <string name="log_reply_explainer">A call or a message that reached you outside the system. It goes through the same understanding and routing as an email that arrived on its own.</string>
+    <string name="log_reply_pick_contact">Choose who it came from</string>
+    <string name="log_reply_from">From %1$s at %2$s</string>
+    <string name="log_reply_subject_hint">Subject (optional)</string>
+    <string name="log_reply_body_hint">What they said</string>
+    <string name="log_reply_submit">Log it</string>
+    <string name="log_reply_needs_contact">Choose who this came from first.</string>
+    <string name="log_reply_needs_body">Type or dictate what they said.</string>
+    <string name="log_reply_contact_unreachable">That contact has no address for %1$s.</string>
+    <string name="log_reply_no_reachable_contacts">No contact at %1$s has an address to receive this on.</string>
+    <string name="log_reply_result">Understood as: %1$s · %2$s</string>
+
+    <!-- F31 (genericity). These were Java literals, which is why a strings.xml
+         grep reported the app "clean" twice while a domain word sat on screen.
+         The role example must stay in the CLIENT's vocabulary and must not
+         assume an industry — it mirrors the backend's own guidance in
+         app/ai/planning.py, which says "never force-fit a label from another
+         industry". -->
+    <string name="stakeholder_role_hint">Role at client (e.g. procurement_head, plant_supervisor)</string>
+    <string name="stakeholder_influence_hint">Influence (decision_maker / influencer / gatekeeper)</string>
+    <string name="stakeholder_receives_updates">Send progress updates</string>
+
+    <string name="home_foundation_ready">Foundation is in place</string>
+    <string name="meeting_item_description_hint">Description (optional)</string>
+    <string name="task_blocked_prefix">Blocked: %1$s</string>
+    <string name="task_dependency_row">• %1$s</string>
+    <string name="task_dependency_outside_project">• (task outside this project)</string>
+    <string name="approval_entity_fallback">approval</string>
+    <!-- Pre-sales -->
+    <string name="lead_owner_hint">Owner (who will cold call)</string>
+    <string name="lead_owner_unassigned">Assign to me</string>
+    <string name="lead_owner_load_failed">Could not load agents — this lead will be yours</string>
+    <string name="lead_owner_label">Owner · %1$s</string>
+    <string name="lead_locked_title">Waiting on the cold call</string>
+    <string name="lead_locked_body">%1$s owns this lead and has not opened it yet. Meetings and projects unlock once they do.</string>
+    <string name="lead_locked_body_self">You own this lead. Open it once a call goes well — meetings and projects unlock then.</string>
+    <string name="lead_open_action">Mark as open</string>
+    <string name="lead_drop_action">Not interested</string>
+    <string name="lead_open_reason_hint">What did the school say?</string>
+    <string name="lead_timeline_assigned">Assigned</string>
+    <string name="lead_timeline_next">Next</string>
+    <string name="lead_locked_owner_unknown">Its owner</string>
+    <string name="lead_drop_confirm">This marks the lead as lost for now. It stays on record and can be revived later.</string>
+    <string name="home_recently_opened">Newly opened leads</string>
+    <string name="home_recently_opened_title">%1$s is now open</string>
+    <string name="home_recently_opened_meta">Opened by %1$s</string>
+
+    <!-- Relationship management -->
+    <string name="lead_handover_action">Hand to relationship manager</string>
+    <string name="lead_handover_title">Hand over %1$s</string>
+    <string name="lead_handover_message">The work is finished. A relationship manager keeps in touch from here and tells you when they are ready to buy again.\n\nLeaving this client closed is fine too.</string>
+    <string name="lead_handover_auto">Let the assistant choose</string>
+    <string name="lead_handover_choose">Choose myself</string>
+    <string name="lead_handover_pick_title">Who should look after %1$s?</string>
+    <string name="lead_handover_none">There are no relationship managers set up yet.</string>
+    <string name="lead_handover_done">%1$s now looks after this client</string>
+    <string name="lead_handover_current">Looked after by %1$s</string>
+
+    <!-- The relationship manager's own screens -->
+    <string name="tab_clients">Clients</string>
+    <string name="relationship_home_title">Clients you look after</string>
+    <string name="relationship_home_subtitle">The ones who have not heard from us in a while come first.</string>
+    <string name="relationship_home_empty_title">No clients yet</string>
+    <string name="relationship_home_empty_body">When a sale finishes, the owner can hand the client to you. They will appear here.</string>
+    <string name="relationship_badge_quiet">Needs a call</string>
+    <string name="relationship_badge_opportunity">Wants to buy?</string>
+    <string name="opportunity_title">They may be ready to buy again</string>
+    <string name="opportunity_badge">Decide</string>
+    <string name="opportunity_tap_to_decide">Tap to accept or dismiss</string>
+    <string name="opportunity_quote">They said: “%1$s”</string>
+    <string name="opportunity_dialog_title">%1$s — a new opportunity?</string>
+    <string name="opportunity_dialog_body">Accepting tells every sales lead so one of them can pick it up. The client stays with you until a new round actually starts. Dismissing records that it was not real, which is how the assistant learns.</string>
+    <string name="opportunity_accept">Yes, tell sales</string>
+    <string name="opportunity_dismiss">No, not real</string>
+    <string name="opportunity_accepted">Sales leads have been told</string>
+    <string name="opportunity_dismissed">Dismissed — thanks, that helps</string>
+
+    <!-- Rounds of business with the same client -->
+    <string name="cycle_title">Round %1$d</string>
+    <string name="cycle_body">%1$s · %2$s</string>
+    <string name="cycle_source_cold_call">Started from a cold call</string>
+    <string name="cycle_source_relationship">They came back to us</string>
+    <string name="cycle_no_owner">Nobody on it yet</string>
+    <string name="cycle_needs_owner">Needs an owner</string>
+    <string name="cycle_assign_title">Who takes round %1$d?</string>
+    <string name="cycle_assign_action">Give it to them</string>
+    <string name="cycle_no_agents">There are no sales agents to assign this to.</string>
+    <string name="relationship_never_spoken">Not spoken to yet</string>
+    <string name="relationship_spoken_today">Spoken to today</string>
+    <string name="relationship_touch_planned">Next touch %1$s</string>
+    <string name="relationship_touch_overdue">Touch overdue since %1$s</string>
+    <string name="relationship_section_title">Relationship</string>
+    <string name="relationship_managed_by">Looked after by %1$s</string>
+    <string name="relationship_story_title">What we know</string>
+    <string name="relationship_approach_title">How to approach them</string>
+    <string name="meeting_type_catch_up">Catch-up</string>
+    <string name="catch_up_saved_title">Catch-up saved</string>
+    <string name="catch_up_saved_body">The summary is on the client record. No tasks were created — this was a conversation, not a job.</string>
+    <string name="catch_up_saved_next">The summary is on the client record. Suggested next touch: %1$s</string>
+    <plurals name="relationship_days_quiet">
+        <item quantity="one">Quiet for %1$d day</item>
+        <item quantity="other">Quiet for %1$d days</item>
+    </plurals>
+    <!-- Voice mode (backend docs/JARVIS_VOICE_AND_CLIENT_CREATION_ANDROID.md) -->
+    <string name="voice_mode_start">Talk to Jarvis hands-free</string>
+    <string name="voice_mode_end">End voice mode</string>
+    <string name="voice_mode_barge_in">Let me talk over Jarvis</string>
+    <string name="voice_mode_barge_in_on">You can interrupt Jarvis by talking. Turn this off if Jarvis starts answering itself.</string>
+    <string name="voice_mode_barge_in_off">Jarvis finishes speaking before listening again. Tap stop to cut it short.</string>
+    <string name="voice_state_connecting">Connecting…</string>
+    <string name="voice_state_listening">Listening</string>
+    <string name="voice_state_hearing">Hearing you…</string>
+    <string name="voice_state_transcribing">Got it — transcribing…</string>
+    <string name="voice_state_thinking">Thinking…</string>
+    <string name="voice_state_speaking">Speaking</string>
+    <string name="voice_state_reconnecting">Reconnecting…</string>
+    <string name="voice_state_paused">Paused</string>
+    <string name="voice_mode_recording_busy">A meeting is being recorded — voice mode can\'t use the microphone until it stops.</string>
+    <string name="voice_mode_signed_out">Your session has expired — please sign in again.</string>
+    <string name="voice_mode_not_acted_hint">Edit what I heard and tap send, or just say it again.</string>
+    <string name="voice_heard_meta">heard by voice</string>
+    <string name="voice_heard_unsure_meta">heard by voice — not sure I got it right</string>
+    <string name="assistant_agent_voice_meta">not acted on — I wasn\'t sure what I heard</string>
+    <string name="assistant_client_added">Client added</string>
+    <string name="assistant_client_added_body">%1$s is saved and starts in cold calling. Tap to open it.</string>
+    <string name="assistant_draft_nothing_created">Nothing is created until you say so.</string>
+    <string name="assistant_suggest_create_lead">Create a lead…</string>
+    <string name="assistant_suggest_create_lead_prefill">"Create a lead named "</string>
+    <string name="assistant_draft_owner_you">You</string>
+    <!-- Jarvis voice screen (avatar) -->
+    <string name="stage_title">JARVIS</string>
+    <string name="stage_back_to_chat">End voice mode and go back to the chat</string>
+    <string name="stage_options">Voice options</string>
+    <string name="stage_conversation">Conversation</string>
+    <string name="stage_type_hint">Type to Jarvis…</string>
+    <string name="stage_type_instead">Type instead</string>
+    <string name="stage_mic_listening">Mute the microphone</string>
+    <string name="stage_mic_muted">Unmute the microphone</string>
+    <string name="stage_mic_stop">Stop Jarvis speaking</string>
+    <string name="stage_mic_resume">Listen again</string>
+    <string name="stage_mic_restart">Start voice mode again</string>
+    <string name="stage_speaker_you">You</string>
+    <string name="stage_speaker_jarvis">Jarvis</string>
+    <string name="stage_hello">Hi! I\'m listening — ask me anything, or say \"create a lead named…\".</string>
+    <string name="stage_hearing">…</string>
+    <string name="stage_muted">Microphone muted</string>
+    <string name="stage_ended">Voice mode stopped</string>
+    <string name="stage_avatar_offer_title">Give Jarvis a face?</string>
+    <string name="stage_avatar_download">Download</string>
+    <string name="stage_avatar_retry">Retry</string>
+    <string name="stage_avatar_prev">Previous face</string>
+    <string name="stage_avatar_next">Next face</string>
+    <string name="stage_avatar_hear">Hear voice</string>
+    <string name="stage_avatar_download_mb">Download · %1$d MB</string>
+    <string name="stage_avatar_subtitle">%1$s · %2$s</string>
+    <string name="stage_avatar_offer_body2">%1$s. Download this face to talk with it; swipe to meet the others.</string>
+    <string name="stage_avatar_unsupported_body">This phone can\'t show faces, but Jarvis will speak in %1$s\'s voice.</string>
+    <string name="stage_avatar_getting_ready">Getting %1$s ready</string>
+    <string name="stage_avatar_failed_title">%1$s couldn\'t load</string>
+    <string name="stage_avatar_busy">Another face is still downloading — try again when it\'s done.</string>
+    <string name="stage_avatar_deleted_named">%1$s removed from this phone.</string>
+    <string name="stage_menu_voice_only">Voice only (hide faces)</string>
+    <string name="stage_menu_show_faces">Show faces</string>
+    <string name="stage_menu_delete_face">Delete %1$s from this phone (%2$d MB)</string>
+</resources>

@@ -1,0 +1,72 @@
+INFO:     Started server process [14912]
+INFO:     Waiting for application startup.
+2026-07-20 16:38:37,382 INFO app.jobs.queue: Job queue started with 3 workers
+2026-07-20 16:38:37,383 INFO app.jobs.scheduler: Scheduler started
+2026-07-20 16:38:37,384 INFO app: Platform ready
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+WARNING:  Invalid HTTP request received.
+INFO:     127.0.0.1:36678 - "WebSocket /ws" 403
+INFO:     connection rejected (403 Forbidden)
+INFO:     connection closed
+2026-07-20 23:40:56,585 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 00:21:33,104 INFO app.jobs.scheduler: Sync sweep a1f8b39768ea48a7abdec753b655c5ae: {'overdue_laddered': 0, 'commitments_chased': 3, 'reply_nudges': 0, 'payment_reminders': 0, 'overload_alerts': 0, 'revival_cards': 0, 'external_chases': 0}
+2026-07-21 13:32:40,736 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:31:56,756 INFO httpx: HTTP Request: POST https://oauth2.googleapis.com/token "HTTP/1.1 200 OK"
+2026-07-21 14:31:57,578 INFO httpx: HTTP Request: POST https://www.googleapis.com/calendar/v3/calendars/ekaghni.mukherjee@gmail.com/events "HTTP/1.1 200 OK"
+2026-07-21 14:34:12,685 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:34:14,062 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:35:26,357 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:35:26,380 WARNING app.ai.llm: LLM call failed (attempt 1/5), retrying in 1.7s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (16/16)", "code": 502}
+2026-07-21 14:35:28,331 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:35:30,046 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:35:46,006 ERROR app.ai.agents.base: Tool list_demos failed
+Traceback (most recent call last):
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\base.py", line 157, in _execute_tool
+    result = await spec.handler(runtime, **(call.args or {}))
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\scheduling_agent.py", line 117, in _list_demos
+    team_row = await resolve_team(runtime, team)
+  File "C:\Users\Ekaghni\Downloads\Salesforce_AI\Complete_Project\app\ai\agents\resolvers.py", line 127, in resolve_team
+    raise NotFoundError(f"No demo team matching '{term}'")
+app.core.exceptions.NotFoundError: No demo team matching 'Gmail'
+2026-07-21 14:35:46,398 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:35:48,590 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:35:48,609 WARNING app.ai.llm: LLM call failed (attempt 1/5), retrying in 1.3s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (16/16)", "code": 502}
+2026-07-21 14:35:50,146 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:36:43,867 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:36:45,133 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:37:48,241 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:37:50,715 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:37:58,594 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:38:22,541 INFO httpx: HTTP Request: POST https://www.googleapis.com/calendar/v3/calendars/ekaghni.mukherjee@gmail.com/events "HTTP/1.1 200 OK"
+2026-07-21 14:38:22,806 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:42:14,803 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:42:18,263 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:43:06,410 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:43:09,763 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:43:14,615 INFO httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=AQ.Ab8RN6JP96mEToPa7cVXgoTTQYmiD7lfCSpOY2dfe497VJAYsQ "HTTP/1.1 429 Too Many Requests"
+2026-07-21 14:43:14,619 WARNING app.ai.memory: Memory search skipped: Embedding failed (429): {
+  "error": {
+    "code": 429,
+    "message": "Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.
+2026-07-21 14:43:14,969 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:43:14,991 WARNING app.ai.llm: LLM call failed (attempt 1/5), retrying in 1.3s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (16/16)", "code": 502}
+2026-07-21 14:43:16,548 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:43:22,606 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:43:22,626 WARNING app.ai.llm: LLM call failed (attempt 1/5), retrying in 1.0s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (16/16)", "code": 502}
+2026-07-21 14:43:23,947 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:47:51,828 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:47:55,153 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:48:36,137 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:48:36,159 WARNING app.ai.llm: LLM call failed (attempt 1/5), retrying in 1.3s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (16/16)", "code": 502}
+2026-07-21 14:48:37,740 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:48:39,458 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:48:42,479 INFO httpx: HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=AQ.Ab8RN6JP96mEToPa7cVXgoTTQYmiD7lfCSpOY2dfe497VJAYsQ "HTTP/1.1 429 Too Many Requests"
+2026-07-21 14:48:42,499 WARNING app.ai.memory: Memory search skipped: Embedding failed (429): {
+  "error": {
+    "code": 429,
+    "message": "Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing. Learn more at https://ai.
+2026-07-21 14:48:42,859 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:48:42,901 WARNING app.ai.llm: LLM call failed (attempt 1/5), retrying in 1.7s: OpenRouter unavailable (502): {"message": "Upstream error from Nvidia: ResourceExhausted: Worker local total request limit reached (16/16)", "code": 502}
+2026-07-21 14:48:44,823 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"
+2026-07-21 14:48:52,517 INFO httpx: HTTP Request: POST https://openrouter.ai/api/v1/chat/completions "HTTP/1.1 200 OK"

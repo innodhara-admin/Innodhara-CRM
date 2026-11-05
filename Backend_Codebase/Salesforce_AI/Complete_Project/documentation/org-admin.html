@@ -1,0 +1,1226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="The Org Admin's manual: what you do in the InnoDhara CRM app, what you do in the setup console, and the powers only your role holds.">
+<title>The Org Admin</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a3d7c'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='%23f5a623' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* Design tokens lifted from the Innodhara download page, the pre-sales page
+   and the relationship-manager page, so every page reads as one product.
+   Same navy/amber, same neutrals, same radius and shadows. Each role page
+   claims ONE extra hue of its own (--role), the way the relationship manager
+   claimed teal — so a reader with three tabs open knows which is which. */
+:root{
+  --navy:#1a3d7c;
+  --navy-lift:#2f5eaf;
+  --amber:#f5a623;
+  --bg:#f6f7fb;
+  --surface:#ffffff;
+  --surface-2:#fbfcfe;
+  --border:#e2e6f0;
+  --border-strong:#cdd4e4;
+  --ink:#111827;
+  --ink-2:#4b5563;
+  --ink-3:#6b7280;
+  --hero-ink:#ffffff;
+  --hero-ink-2:#c3cee4;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 12px 28px -12px rgba(16,24,40,.16);
+  --shadow-lift:0 2px 4px rgba(16,24,40,.06),0 22px 44px -16px rgba(26,61,124,.30);
+  --ok:#15803d; --ok-bg:#dcfce7; --ok-br:#a7e5bd;
+  --warn:#92400e; --warn-bg:#fef3c7; --warn-br:#fcd34d;
+  --bad:#b91c1c; --bad-bg:#fee2e2; --bad-br:#f7b4b4;
+  --cold:#6a4fb6; --cold-bg:#efebfa; --cold-br:#d9cff4;
+  --open:#527080; --open-bg:#e8eef2;
+  --rel:#0f766e; --rel-bg:#d7f2ee; --rel-br:#9fd9d1;
+  --radius:16px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#080c15; --surface:#121a2b; --surface-2:#161f33;
+    --border:#25314c; --border-strong:#33415f;
+    --ink:#eef2f9; --ink-2:#a9b4cb; --ink-3:#8592ad;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -12px rgba(0,0,0,.6);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.5),0 22px 44px -16px rgba(0,0,0,.7);
+    --ok:#4ade80; --ok-bg:#052e16; --ok-br:#166534;
+    --warn:#fcd34d; --warn-bg:#2e1f05; --warn-br:#7c5e12;
+    --bad:#fca5a5; --bad-bg:#3f1010; --bad-br:#7f1d1d;
+    --cold:#a996ea; --cold-bg:#241d38; --cold-br:#3d3260;
+    --open:#93b0c2; --open-bg:#1a242a;
+    --rel:#5eead4; --rel-bg:#062e2a; --rel-br:#155e56;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#080c15; --surface:#121a2b; --surface-2:#161f33;
+  --border:#25314c; --border-strong:#33415f;
+  --ink:#eef2f9; --ink-2:#a9b4cb; --ink-3:#8592ad;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -12px rgba(0,0,0,.6);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.5),0 22px 44px -16px rgba(0,0,0,.7);
+  --ok:#4ade80; --ok-bg:#052e16; --ok-br:#166534;
+  --warn:#fcd34d; --warn-bg:#2e1f05; --warn-br:#7c5e12;
+  --bad:#fca5a5; --bad-bg:#3f1010; --bad-br:#7f1d1d;
+  --cold:#a996ea; --cold-bg:#241d38; --cold-br:#3d3260;
+  --open:#93b0c2; --open-bg:#1a242a;
+  --rel:#5eead4; --rel-bg:#062e2a; --rel-br:#155e56;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img{max-width:100%}
+a{color:var(--navy)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) a{color:#9fc0ff}}
+:root[data-theme="dark"] a{color:#9fc0ff}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:4px}
+.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* ── the manual's one typographic device ─────────────────────────────
+   Every string the app actually puts on screen is set in this face. If it is
+   in a box, those exact words are on your phone; if it is in the running
+   text, it is our description of them. A manual that quotes labels loosely
+   sends people hunting for buttons that do not exist. */
+kbd{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.85em; font-weight:600; letter-spacing:-.01em;
+  background:var(--surface-2); border:1px solid var(--border-strong);
+  border-bottom-width:2px; border-radius:6px; padding:1.5px 6px;
+  color:var(--ink); white-space:nowrap;
+}
+kbd.say{background:var(--role-bg);border-color:var(--role-br);color:var(--role)}
+
+/* ── hero ───────────────────────────────────────────── */
+.hero{
+  position:relative; color:var(--hero-ink); overflow:hidden;
+  background:
+    radial-gradient(900px 460px at 78% -12%, rgba(245,166,35,.30), transparent 62%),
+    radial-gradient(760px 420px at 8% 8%, var(--hero-wash), transparent 58%),
+    linear-gradient(158deg,#16305f 0%,#1a3d7c 46%,#12274f 100%);
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:radial-gradient(760px 400px at 50% 0%,#000,transparent 76%);
+  -webkit-mask-image:radial-gradient(760px 400px at 50% 0%,#000,transparent 76%);
+}
+.hero>*{position:relative;z-index:1}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:36px;height:36px;flex:none;border-radius:10px;background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.2);display:grid;place-items:center}
+.brand-name{font-weight:650;letter-spacing:-.01em;font-size:17px;white-space:nowrap}
+.pill{font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+  color:#fff;white-space:nowrap}
+.hero-body{padding:clamp(28px,7vw,58px) 0 clamp(30px,6vw,52px);max-width:800px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--amber);margin:0 0 18px}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--amber);border-radius:2px}
+h1{margin:0 0 18px;font-size:clamp(2rem,5.6vw,3.1rem);line-height:1.07;
+  letter-spacing:-.033em;font-weight:700;text-wrap:balance}
+.lede{margin:0;font-size:clamp(1rem,2.1vw,1.12rem);color:var(--hero-ink-2);max-width:64ch}
+.hero-facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.fact{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);
+  border-radius:11px;padding:10px 15px}
+.fact b{display:block;font-size:15px;font-weight:660;letter-spacing:-.01em}
+.fact span{font-size:12.5px;color:var(--hero-ink-2)}
+
+/* ── sections ───────────────────────────────────────── */
+main{padding:clamp(30px,5vw,48px) 0 10px}
+section{margin-bottom:clamp(38px,6vw,62px);scroll-margin-top:20px}
+h2{font-size:clamp(1.25rem,3.1vw,1.6rem);letter-spacing:-.02em;margin:0 0 6px;font-weight:680}
+h2 .num{color:var(--role);font-variant-numeric:tabular-nums;margin-right:10px;font-weight:750}
+.section-sub{color:var(--ink-3);margin:0 0 22px;font-size:15px;max-width:72ch}
+p{margin:0 0 14px}
+p:last-child{margin-bottom:0}
+figure{margin:0}
+.fig{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px;box-shadow:var(--shadow)}
+figcaption{margin-top:12px;font-size:13px;color:var(--ink-3);text-align:center}
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ── contents ───────────────────────────────────────── */
+.toc{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--role);
+  border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+.toc h2{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 12px}
+.toc ol{margin:0;padding:0;list-style:none;counter-reset:toc;
+  display:grid;gap:8px 26px;grid-template-columns:1fr}
+@media(min-width:660px){.toc ol{grid-template-columns:1fr 1fr}}
+.toc li{counter-increment:toc;display:grid;grid-template-columns:auto 1fr;gap:10px;
+  align-items:baseline;font-size:14.5px}
+.toc li::before{content:counter(toc,decimal-leading-zero);color:var(--role);
+  font-size:11.5px;font-weight:750;font-variant-numeric:tabular-nums}
+.toc a{text-decoration:none;color:var(--ink-2);font-weight:560}
+.toc a:hover{color:var(--role);text-decoration:underline}
+
+/* ── the bottom bar ─────────────────────────────────── */
+.bar{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(158px,100%),1fr))}
+.slot{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+  padding:16px 15px;position:relative;box-shadow:var(--shadow)}
+.slot.soon{background:var(--surface-2);border-style:dashed}
+.slot-ico{width:30px;height:30px;border-radius:9px;background:var(--role-bg);
+  border:1px solid var(--role-br);display:grid;place-items:center;margin-bottom:10px}
+.slot.soon .slot-ico{background:var(--surface);border-color:var(--border-strong)}
+.slot b{display:block;font-size:14.5px;font-weight:660;margin-bottom:3px;letter-spacing:-.01em}
+.slot p{margin:0;font-size:13px;color:var(--ink-2);line-height:1.45}
+.slot .tag{position:absolute;top:14px;right:14px;font-size:9.5px;font-weight:750;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ── screen-by-screen cards ─────────────────────────── */
+.screens{display:grid;gap:18px;grid-template-columns:1fr}
+@media(min-width:820px){.screens{grid-template-columns:1fr 1fr}}
+.screen{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.screen.wide{grid-column:1/-1}
+.screen-where{font-size:10.5px;font-weight:750;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--role);margin:0 0 7px}
+.screen h3{margin:0 0 8px;font-size:1.06rem;letter-spacing:-.015em;font-weight:670}
+.screen>p{font-size:14.5px;color:var(--ink-2)}
+.controls{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:11px}
+.controls li{display:grid;grid-template-columns:auto 1fr;gap:11px;align-items:baseline;
+  font-size:13.8px;color:var(--ink-2);line-height:1.5}
+.controls li::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--role);
+  transform:translateY(-2px)}
+.controls b{color:var(--ink);font-weight:640}
+.two-col{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:560px){.two-col{grid-template-columns:1fr 1fr}}
+
+/* ── inline notes ───────────────────────────────────── */
+.note{border-radius:0 11px 11px 0;padding:13px 15px;margin-top:16px;font-size:13.5px;
+  line-height:1.5;background:var(--surface-2);border:1px solid var(--border);
+  border-left:3px solid var(--amber)}
+.note b{display:block;font-size:10.5px;font-weight:750;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.note p{margin:0;color:var(--ink-2)}
+.note.stop{background:var(--bad-bg);border-color:var(--bad-br);border-left-color:var(--bad)}
+.note.stop b{color:var(--bad)}
+.note.stop p{color:var(--ink)}
+.note.good{background:var(--ok-bg);border-color:var(--ok-br);border-left-color:var(--ok)}
+.note.good b{color:var(--ok)}
+.note.good p{color:var(--ink)}
+.mt{margin-top:auto}
+
+/* ── permission table ───────────────────────────────── */
+table{border-collapse:collapse;width:100%;min-width:580px;font-size:14.5px}
+caption{caption-side:top;text-align:left;font-size:13px;color:var(--ink-3);padding-bottom:10px}
+th{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);text-align:left;padding:0 12px 10px 0;
+  border-bottom:1px solid var(--border-strong)}
+th.c,td.c{text-align:center;width:104px}
+td{padding:12px 12px 12px 0;border-bottom:1px solid var(--border);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+td b{font-weight:640}
+td small{display:block;color:var(--ink-3);font-size:12.5px;font-weight:400;margin-top:2px}
+.tick{font-weight:800;font-size:13px}
+.tick.y{color:var(--ok)} .tick.n{color:var(--bad)} .tick.p{color:var(--warn)}
+
+/* ── rules ──────────────────────────────────────────── */
+.rules{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:720px){.rules{grid-template-columns:1fr 1fr}}
+.rule{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 20px}
+.rule b{display:block;font-size:14.5px;font-weight:660;margin-bottom:5px}
+.rule p{margin:0;font-size:13.5px;color:var(--ink-2)}
+
+/* ── status ─────────────────────────────────────────── */
+.statuses{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:640px){.statuses{grid-template-columns:1fr 1fr}}
+.st{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 20px}
+.st-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:660;
+  padding:4px 11px;border-radius:999px;margin-bottom:10px}
+.st-badge.live{background:var(--ok-bg);color:var(--ok)}
+.st-badge.soon{background:var(--cold-bg);color:var(--cold)}
+.st-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.st b{display:block;font-size:14.5px;font-weight:650;margin-bottom:4px}
+.st p{margin:0;font-size:13.5px;color:var(--ink-2)}
+
+/* ── phone mock ─────────────────────────────────────── */
+.phone{border:1px solid var(--border-strong);border-radius:20px;overflow:hidden;
+  background:var(--surface);box-shadow:var(--shadow);max-width:390px;margin:0 auto}
+.phone-head{padding:14px 16px 12px;border-bottom:1px solid var(--border)}
+.phone-title{font-weight:680;font-size:16px;letter-spacing:-.01em}
+.phone-meta{font-size:12.5px;color:var(--ink-3);margin-top:6px}
+.phone-body{padding:16px;display:grid;gap:12px}
+.chip{display:inline-block;font-size:11px;font-weight:680;padding:3px 9px;border-radius:6px;
+  letter-spacing:.02em;white-space:nowrap}
+.chip-role{background:var(--role-bg);color:var(--role)}
+.chip-warn{background:var(--warn-bg);color:var(--warn)}
+.chip-ok{background:var(--ok-bg);color:var(--ok)}
+.acts{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.btn{font-size:13px;font-weight:650;padding:9px 15px;border-radius:9px;border:1px solid transparent}
+.btn-y{background:var(--navy);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn-y{background:var(--navy-lift)}}
+:root[data-theme="dark"] .btn-y{background:var(--navy-lift)}
+.btn-n{background:transparent;border-color:var(--border-strong);color:var(--ink-2)}
+
+footer{border-top:1px solid var(--border);margin-top:20px;padding:26px 0 44px;
+  color:var(--ink-3);font-size:13.5px}
+footer p{max-width:80ch}
+footer a{font-weight:600}
+@media (max-width:420px){.topbar .pill{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* The admin's hue is crimson — the one role whose manual has to document
+   actions that cannot be taken back. It is used sparingly and never as a
+   warning colour; warnings keep the red they have everywhere else. */
+:root{ --role:#a4133c; --role-bg:#ffe7ed; --role-br:#f7bccb; --hero-wash:rgba(164,19,60,.40); }
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){ --role:#f472b6; --role-bg:#3a0d1e; --role-br:#7d2144; }
+}
+:root[data-theme="dark"]{ --role:#f472b6; --role-bg:#3a0d1e; --role-br:#7d2144; }
+
+/* ── SIGNATURE: two devices, one organisation ───────────────────────
+   Every other role in this product lives entirely inside the phone. The Org
+   Admin does not, and no amount of prose fixes the confusion that causes —
+   people hunt the app for a pricing screen that was never going to be there.
+   So the page opens by drawing the boundary: two devices, and the jobs that
+   belong to each. It is the first thing an admin needs and the one thing
+   they cannot infer from the app itself. */
+.split{display:grid;gap:20px;grid-template-columns:1fr}
+@media(min-width:900px){.split{grid-template-columns:1fr 1fr;gap:26px}}
+.device{background:var(--surface);border:1px solid var(--border-strong);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-lift);
+  display:flex;flex-direction:column}
+.device-chrome{padding:11px 15px;background:var(--surface-2);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px}
+.dots{display:flex;gap:5px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--border-strong);display:block}
+.device-chrome .url{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;
+  color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.device-head{padding:20px 22px 4px}
+.device-head .kind{font-size:10.5px;font-weight:750;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--role);margin:0 0 6px}
+.device-head h3{margin:0 0 6px;font-size:1.14rem;font-weight:680;letter-spacing:-.018em}
+.device-head p{margin:0;font-size:13.5px;color:var(--ink-2)}
+.jobs{margin:16px 0 0;padding:0 22px 22px;list-style:none;display:grid;gap:0}
+.jobs li{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:baseline;
+  font-size:13.8px;color:var(--ink-2);padding:10px 0;border-top:1px solid var(--border)}
+.jobs li:first-child{border-top:0;padding-top:4px}
+.jobs li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--role);
+  transform:translateY(-2px)}
+.jobs b{color:var(--ink);font-weight:640}
+.device.soon{border-style:dashed;box-shadow:none;background:var(--surface-2)}
+.device.soon .device-head .kind{color:var(--ink-3)}
+.verdict{margin-top:22px;background:var(--role-bg);border:1px solid var(--role-br);
+  border-radius:var(--radius);padding:20px 22px}
+.verdict b{display:block;font-size:1.02rem;color:var(--role);font-weight:670;margin-bottom:7px}
+.verdict p{margin:0;font-size:14.5px;color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+            <path d="M9 21V11l7 6 7-6v10" stroke="#f5a623" stroke-width="2.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brand-name">Innodhara</span>
+      </div>
+      <span class="pill">Role manual</span>
+    </div>
+
+    <div class="hero-body">
+      <p class="eyebrow">Org Admin</p>
+      <h1>Everyone else's limits are your responsibilities.</h1>
+      <p class="lede">
+        You hold every permission your organisation has. That makes this manual different
+        from the others: less about what you are allowed to do, and more about where each
+        job actually lives — because half of an admin's work happens in a browser, not on
+        the phone. Start with the boundary, then the screens.
+      </p>
+      <div class="hero-facts">
+        <div class="fact"><b>Every permission</b><span>Nothing in the org is closed to you</span></div>
+        <div class="fact"><b>Two places</b><span>The app, and the setup console</span></div>
+        <div class="fact"><b>The last resort</b><span>What nobody else can unstick</span></div>
+        <div class="fact"><b>Still no sending</b><span>Approvals apply to you too</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ── contents ────────────────────────────────────────────────── -->
+  <section>
+    <nav class="toc" aria-label="On this page">
+      <h2>On this page</h2>
+      <ol>
+        <li><a href="#where">Two devices, one organisation</a></li>
+        <li><a href="#bar">Your five tabs</a></li>
+        <li><a href="#accounts">Accounts, including everyone else's</a></li>
+        <li><a href="#home">Home — the whole org's queue</a></li>
+        <li><a href="#approvals">The Approvals inbox</a></li>
+        <li><a href="#batch">The assignment batch</a></li>
+        <li><a href="#reach">Reaching leads, projects and tasks</a></li>
+        <li><a href="#breakglass">The powers only you hold</a></li>
+        <li><a href="#jarvis">Jarvis, the assistant</a></li>
+        <li><a href="#day">Demos, follow-ups and the Inbox</a></li>
+        <li><a href="#console">The setup console, screen by screen</a></li>
+        <li><a href="#dials">The dials that change how the AI behaves</a></li>
+        <li><a href="#cannot">What even you cannot do</a></li>
+        <li><a href="#care">Three things that cannot be undone</a></li>
+        <li><a href="#status">Where this has got to</a></li>
+      </ol>
+    </nav>
+  </section>
+
+  <!-- ── 01 SIGNATURE ────────────────────────────────────────────── -->
+  <section id="where">
+    <h2><span class="num">01</span>Two devices, one organisation</h2>
+    <p class="section-sub">
+      Every other role does their entire job in the app. You do not, and this is the single
+      thing most worth knowing before you start hunting for a screen: the phone runs the
+      business day to day, the browser sets the business up.
+    </p>
+
+    <div class="split">
+      <div class="device">
+        <div class="device-chrome"><div class="dots"><i></i><i></i><i></i></div>
+          <span class="url">InnoDhara CRM &middot; Android</span></div>
+        <div class="device-head">
+          <p class="kind">On the phone</p>
+          <h3>Running the day</h3>
+          <p>Decisions, oversight, and stepping in where a role's limits have left something
+             stuck.</p>
+        </div>
+        <ul class="jobs">
+          <li><span><b>Approvals</b> — every one raised anywhere in the organisation, at both
+              stages.</span></li>
+          <li><span><b>The assignment batch</b> — confirm it, and change who a task goes to,
+              which no other role can.</span></li>
+          <li><span><b>Any lead, any state</b> — including opening a cold-calling lead whose
+              owner has gone.</span></li>
+          <li><span><b>Any task</b> — block, reschedule, split, vendor actions, right across
+              the organisation.</span></li>
+          <li><span><b>Projects</b> — team membership, phase shifts, conflict resolutions.</span></li>
+          <li><span><b>Demos</b> — book, reschedule, and mark completed or cancelled.</span></li>
+          <li><span><b>Jarvis</b>, with no permission narrowing on anything it can do.</span></li>
+        </ul>
+      </div>
+
+      <div class="device">
+        <div class="device-chrome"><div class="dots"><i></i><i></i><i></i></div>
+          <span class="url">https://&lt;your-server&gt;/dashboard/</span></div>
+        <div class="device-head">
+          <p class="kind">In a browser</p>
+          <h3>Setting the business up</h3>
+          <p>The setup console. Same sign-in, same account — a web page rather than an app,
+             because this is desk work.</p>
+        </div>
+        <ul class="jobs">
+          <li><span><b>Staff</b> — create accounts, set roles, skills and workload caps, reset
+              passwords.</span></li>
+          <li><span><b>What you sell</b> — programmes, rate cards, proposal templates.</span></li>
+          <li><span><b>Message templates</b> — the introduction and follow-up wording.</span></li>
+          <li><span><b>Demo teams</b> — who runs demos, and their calendar.</span></li>
+          <li><span><b>Integrations</b> — email sending, WhatsApp, calendar, inbound
+              mail.</span></li>
+          <li><span><b>Settings</b> — the behaviour dials the AI reads before it acts.</span></li>
+          <li><span><b>Retention, audit, import and the go-live checklist.</b></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <b>So if you cannot find it in the app, it is in the console</b>
+      <p>
+        The app's <b>Admin</b> and <b>Insights</b> tabs are honest placeholders — they say
+        <kbd>On its way</kbd> and nothing more. Pricing, programmes, templates, staff and
+        settings were never behind them; they live in the console and always have. Nothing is
+        missing, and nothing is hidden. Section 11 walks the console screen by screen.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 02 the bar ──────────────────────────────────────────────── -->
+  <section id="bar">
+    <h2><span class="num">02</span>Your five tabs</h2>
+    <p class="section-sub">
+      Your bar is built for oversight rather than for working clients, so it is shorter on
+      lists than a salesperson's. Switching tabs closes whatever detail screen you had opened
+      on top of one.
+    </p>
+
+    <div class="bar">
+      <div class="slot">
+        <div class="slot-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></div>
+        <b>Home</b>
+        <p>The briefing, and everything in the org that is blocked on a person.</p>
+      </div>
+      <div class="slot">
+        <div class="slot-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <b>Approvals</b>
+        <p>Every approval raised anywhere, at both stages.</p>
+      </div>
+      <div class="slot">
+        <div class="slot-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+        <b>Jarvis</b>
+        <p>The fastest way to reach any record, since you have no list tabs.</p>
+      </div>
+      <div class="slot soon">
+        <span class="tag">Not yet</span>
+        <div class="slot-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 3 13.8H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V3a2 2 0 1 1 4 0v.1A1.6 1.6 0 0 0 17 4.6l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></div>
+        <b>Admin</b>
+        <p>Reserved for a future in-app admin area. Use the console today.</p>
+      </div>
+      <div class="slot soon">
+        <span class="tag">Not yet</span>
+        <div class="slot-ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+        <b>Insights</b>
+        <p>Funnel, health mix, invoice aging, AI spend. Planned, not built.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Two placeholders, said out loud</b>
+      <p>
+        Both tabs open a screen reading <kbd>On its way</kbd>. That is deliberate: the app
+        would rather tell you a thing is not built than show you an empty page that looks
+        broken. Everything they will eventually hold is available today — the admin work in
+        the console, the numbers by asking Jarvis.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 03 accounts ─────────────────────────────────────────────── -->
+  <section id="accounts">
+    <h2><span class="num">03</span>Accounts, including everyone else's</h2>
+    <p class="section-sub">
+      Nobody in your organisation can sign up for themselves. Every account exists because
+      you created it.
+    </p>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">Console · Staff</p>
+        <h3>Creating a colleague</h3>
+        <p>
+          Name, work email, role, and optionally phone, department, designation, WhatsApp
+          number, working days and a cap on open tasks. Creating the account returns a
+          <b>temporary password</b> — pass it to them, and they will be forced to set their
+          own the first time they sign in.
+        </p>
+        <ul class="controls">
+          <li><span>Staff email must use your organisation's own domain. The server refuses
+              anything else and says which domain it expects.</span></li>
+          <li><span>Only organisation roles can be assigned here — you cannot mint a platform
+              operator.</span></li>
+          <li><span>Forgotten password? <b>Reset</b> on their record issues a new temporary one
+              the same way.</span></li>
+          <li><span>Every one of these actions is written to the audit log, with who did it and
+              when.</span></li>
+        </ul>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">The app · sign-in</p>
+        <h3>What they will see</h3>
+        <p>
+          Your colleagues sign in with their work email. Someone with no account taps
+          <kbd>Don't have an account?</kbd> and is told plainly that admins create accounts,
+          with a <kbd>Copy request template</kbd> button that writes you a message with their
+          email already in it. A temporary password gets them exactly one screen,
+          <kbd>Set your own password</kbd>, and nothing else until it is done.
+        </p>
+        <div class="note mt">
+          <b>Which server?</b>
+          <p>
+            The backend is self-hosted, so the app carries a <b>server chip</b> on the sign-in
+            screen — tap it, or long-press the logo, to point the phone at a different address.
+            If your operator moves the server, that chip is the answer to "the app stopped
+            working".
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 04 home ─────────────────────────────────────────────────── -->
+  <section id="home">
+    <h2><span class="num">04</span>Home — the whole org's queue</h2>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">Top of Home</p>
+        <h3>Your briefing</h3>
+        <p>
+          A written summary of the day, stamped <kbd>updated 20m ago</kbd> so you always know
+          how fresh it is. If the server cannot be reached the last briefing stays on screen
+          with the reason under it. The bell, top right, carries the unread count; pull down
+          to refresh the whole screen.
+        </p>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Middle of Home</p>
+        <h3>Waiting on you</h3>
+        <ul class="controls">
+          <li><span><b>Task assignments proposed</b> — the AI's batch, which you can confirm
+              and, uniquely, change.</span></li>
+          <li><span><b>Approvals</b>, with <kbd>Approve</kbd> and <kbd>Reject</kbd> inline.</span></li>
+          <li><span><b>Meeting needs your review</b> — extracted items awaiting a human.</span></li>
+          <li><span><b>Newly opened leads</b> — announcements from the sales floor.</span></li>
+          <li><span><b>Inbound messages need a human</b> — taps through to the Inbox triage
+              queue, which you have no tab for but can always reach.</span></li>
+        </ul>
+        <div class="note mt">
+          <b>Empty is an answer</b>
+          <p><kbd>You're all caught up.</kbd> — not a loading state.</p>
+        </div>
+      </article>
+
+      <article class="screen wide">
+        <p class="screen-where">Bottom of Home</p>
+        <h3>Demos, follow-ups, and the way out</h3>
+        <p>
+          Two cards summarise the rest of the day and open full screens: <b>Demos</b>
+          (<kbd>3 today</kbd>, or <kbd>12 this month</kbd>) and <b>Follow-ups</b>
+          (<kbd>4 due today</kbd> or <kbd>none due today</kbd>). Offline both read
+          <kbd>unavailable offline</kbd> rather than showing a stale number as current.
+          <kbd>Sign out</kbd> is at the very bottom, and warns that it wipes this device's
+          cached copy of your data.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 05 approvals ────────────────────────────────────────────── -->
+  <section id="approvals">
+    <h2><span class="num">05</span>The Approvals inbox</h2>
+    <p class="section-sub">
+      Nothing the AI writes reaches a client without a person, and you are the person of last
+      resort for all of it.
+    </p>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">Tab 2</p>
+        <h3>The queue</h3>
+        <ul class="controls">
+          <li><span>Every approval waiting, with its expiry counting down, and
+              <kbd>Approve</kbd> / <kbd>Reject</kbd> on the row.</span></li>
+          <li><span><b>Both stages by default.</b> A sales lead opens this screen filtered to
+              <kbd>Decide stage</kbd>; you do not. You see the recommend-stage items too, which
+              is what oversight means.</span></li>
+          <li><span><b>Type chips</b> narrow to <kbd>message</kbd>, <kbd>proposal</kbd>,
+              <kbd>price change</kbd>, <kbd>plan change</kbd> or <kbd>invoice</kbd>.</span></li>
+        </ul>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Tap any row</p>
+        <h3>The card itself</h3>
+        <p>
+          The kind and stage, a countdown, the facts recorded when it was raised (in the
+          server's own words), the AI's recommendation under its own heading, and for a
+          message the complete draft — recipient, CC, subject, channel and the full body.
+        </p>
+        <ul class="controls">
+          <li><span>There is no edit button, on purpose. <kbd>To change this draft, reject it
+              with a note describing the change and the AI will redraft it.</kbd></span></li>
+          <li><span>A draft still carrying placeholders stops you once:
+              <kbd>This draft isn't finished</kbd>, naming them, with <kbd>Send as it is</kbd>
+              and <kbd>Not yet</kbd>.</span></li>
+          <li><span>Offline, a decision says <kbd>Queued — will apply when you're back
+              online</kbd>. A refusal on replay is shown, never swallowed.</span></li>
+        </ul>
+        <div class="note mt">
+          <b>The full anatomy</b>
+          <p>
+            This card is dissected part by part in the
+            <a href="/documentation/roles/sales-lead#anatomy">Sales Lead manual</a> — the same
+            screen, the same six parts.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 06 batch ────────────────────────────────────────────────── -->
+  <section id="batch">
+    <h2><span class="num">06</span>The assignment batch</h2>
+    <p class="section-sub">
+      When tasks come out of a meeting, the AI matches people to them and stops. Nothing is
+      assigned and nobody is notified until a lead — or you — confirms.
+    </p>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">Home card → Confirm assignments</p>
+        <h3>The screen</h3>
+        <p>
+          One row per proposal: the task, its phase, and the AI's reason for choosing that
+          person, written out rather than scored. At the bottom,
+          <kbd>Confirm 7 assignment(s)</kbd>. Confirming reports
+          <kbd>7 assignment(s) confirmed</kbd> and notifies everyone at that moment.
+        </p>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Home card → Confirm assignments</p>
+        <h3>Change person — the bit only you can use</h3>
+        <div class="note good">
+          <b>This works for you and nobody else in sales</b>
+          <p>
+            <kbd>Change person</kbd> lists your active staff with their roles, because reading
+            the staff directory is your permission. A sales lead tapping the same button is
+            told to confirm as proposed or come to you — so when one asks you to fix a batch,
+            this is the screen they mean.
+          </p>
+        </div>
+        <p style="margin-top:14px">
+          Overridden rows show <kbd>Overridden → Priya Nair</kbd> until you confirm. Confirm
+          once and the whole batch, overrides included, goes live together.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 07 reach ────────────────────────────────────────────────── -->
+  <section id="reach">
+    <h2><span class="num">07</span>Reaching leads, projects and tasks</h2>
+    <p class="section-sub">
+      You have no Leads tab, no Pipeline tab and no Tasks tab — those slots went to Approvals
+      and the two placeholders. Every one of those screens still exists and you have full
+      rights on all of them; here is how to get there.
+    </p>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">Four ways in</p>
+        <h3>Getting to a record</h3>
+        <ul class="controls">
+          <li><span><b>Ask Jarvis.</b> The quickest route by far. Ask for a client, a project
+              brief, or what is overdue, and the reply carries <kbd>Open</kbd> buttons
+              straight to the record.</span></li>
+          <li><span><b>Tap a notification.</b> Approvals, meetings, leads, proposals, projects,
+              tasks, messages and follow-ups all deep-link to their own screen.</span></li>
+          <li><span><b>Tap a Home card.</b> Newly opened leads, meetings awaiting review and the
+              triage count all open the thing they describe.</span></li>
+          <li><span><b>Follow the chain.</b> A lead's Projects tab reaches its projects; a
+              project's Tasks tab reaches its tasks; a task's dependencies reach each
+              other.</span></li>
+        </ul>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Once you are there</p>
+        <h3>What you can do on each</h3>
+        <ul class="controls">
+          <li><span><b>A lead</b> — six tabs (Overview, Contacts, Projects, Notebook, History,
+              Meetings), the state chip on any lead in the organisation, the importance star,
+              contacts and card scan, notes, recording and typed notes, <kbd>Book demo</kbd>,
+              and <kbd>Hand to relationship manager</kbd> on a closed one.</span></li>
+          <li><span><b>A project</b> — <kbd>What's blocking?</kbd>, <kbd>Change status</kbd>,
+              eight tabs, and every quick action including the two other roles do not get:
+              <kbd>Shift phase</kbd> and <kbd>Add member</kbd> on the Team tab.</span></li>
+          <li><span><b>A task</b> — <kbd>Done</kbd>, <kbd>Block</kbd> / <kbd>Unblock</kbd>,
+              <kbd>New date</kbd>, <kbd>Split</kbd>, <kbd>Vendor promise</kbd> and
+              <kbd>Vendor slipped</kbd>, on anyone's task anywhere. Only <kbd>Decline</kbd> is
+              reserved for the person it is assigned to.</span></li>
+        </ul>
+        <div class="note mt">
+          <b>These are documented in full elsewhere</b>
+          <p>
+            The lead and meeting screens are covered step by step in the
+            <a href="/documentation/roles/sales-agent">Sales Agent manual</a>; projects and the
+            approval card in the <a href="/documentation/roles/sales-lead">Sales Lead
+            manual</a>. Everything they describe, you can do — and more.
+          </p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 08 break glass ──────────────────────────────────────────── -->
+  <section id="breakglass">
+    <h2><span class="num">08</span>The powers only you hold</h2>
+    <p class="section-sub">
+      Most of the app's rules exist so that people cannot accidentally act outside their job.
+      You are the exception each of those rules is written against — the person who unsticks
+      what nobody else can.
+    </p>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">A cold-calling lead</p>
+        <h3>Opening a lead that is not yours</h3>
+        <p>
+          While a lead sits in <kbd>Cold calling</kbd>, only its owner may press
+          <kbd>Mark as open</kbd> or <kbd>Not interested</kbd> — not even a Sales Lead can
+          overrule that, because only the person who made the calls knows what was said.
+          <b>You can.</b>
+        </p>
+        <div class="note mt">
+          <b>Use the ordinary fix first</b>
+          <p>
+            An owner who has left the company is not a reason to reach for this. Reassign the
+            lead to somebody else and let them open it — the answer is then given by a person
+            who has actually spoken to the client. Break-glass is for the case nobody planned
+            for.
+          </p>
+        </div>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Across the app</p>
+        <h3>The rest of the list</h3>
+        <ul class="controls">
+          <li><span><b>Change who an assignment goes to</b> — the batch screen, above.</span></li>
+          <li><span><b>Add and remove project team members</b> — the project's Team tab. A sales
+              lead is told to ask you.</span></li>
+          <li><span><b>Shift a project's phase</b> — sales, proposal, preparation, delivery,
+              payment, closure. Yours and the operations lead's.</span></li>
+          <li><span><b>Mark a demo completed or cancelled</b> — and cancelling drafts the
+              retraction of the invite into Approvals.</span></li>
+          <li><span><b>Move any lead through any state</b>, and act on any task anywhere.</span></li>
+          <li><span><b>Accept a relationship manager's opportunity card</b> — you hold that
+              permission alongside them.</span></li>
+          <li><span><b>Erase a person's data</b>, and <b>reset the organisation</b> — both in
+              the console, and both covered in section 14.</span></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 09 jarvis ───────────────────────────────────────────────── -->
+  <section id="jarvis">
+    <h2><span class="num">09</span>Jarvis, the assistant</h2>
+    <p class="section-sub">
+      With no list tabs of your own, the assistant is not a convenience for you — it is a
+      main route into the app.
+    </p>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">Tab 3</p>
+        <h3>What it will answer</h3>
+        <ul class="controls">
+          <li><span>Leads, clients and their full details; what is due or overdue; follow-ups
+              waiting; demos; approvals outstanding; a written brief on any project.</span></li>
+          <li><span><b>Explain a decision</b> — any AI choice on any record, opened up: what it
+              saw and why it concluded that. The tool to reach for before you overrule
+              anything.</span></li>
+          <li><span><b>Search past notes</b> across every client — the organisational memory
+              nobody can hold in their head.</span></li>
+          <li><span>Draft and revise proposals, price them, prepare the email; schedule,
+              complete and draft follow-ups; create, close and reassign action items; book and
+              cancel demos; add a note to a client record.</span></li>
+        </ul>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Tab 3 · the mechanics</p>
+        <h3>How it behaves</h3>
+        <ul class="controls">
+          <li><span><b>The context chip</b> — arrive from a record and it reads
+              <kbd>About: Green Valley School</kbd>, so pronouns work.</span></li>
+          <li><span><b>Recent commands</b> are chips above the box; tap to reuse.</span></li>
+          <li><span><b>The mic</b> dictates and sends. If the server did not hear clearly it
+              fills the box and stops rather than asking on your behalf.</span></li>
+          <li><span><b>Approval bars</b> appear inline on anything client-visible it drafted.
+              Holding every permission does not exempt you from the gate.</span></li>
+          <li><span><b>New chat</b> makes it forget the conversation; your records are
+              untouched. If the server could not delete the old one, it says so rather than
+              implying it is gone.</span></li>
+          <li><span>It will not invent capabilities. There is no create-a-lead tool, and it says
+              so instead of pretending.</span></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 10 day ──────────────────────────────────────────────────── -->
+  <section id="day">
+    <h2><span class="num">10</span>Demos, follow-ups and the Inbox</h2>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">Home · Demos card</p>
+        <h3>The demo calendar</h3>
+        <p>
+          A month grid with a count per day; tap a day for its demos, tap one for its detail —
+          client, time, status, team and notes. You are the only role that can do all three
+          things to a demo:
+        </p>
+        <ul class="controls">
+          <li><span><kbd>Book demo</kbd> from any lead past cold calling — date, optional time,
+              a demo team and notes. Days you already have tasks due are dotted on the
+              calendar. Clashes come back in the server's own words.</span></li>
+          <li><span><kbd>Reschedule</kbd> — <kbd>Rescheduled — the updated invite is drafted and
+              waiting in Approvals.</kbd></span></li>
+          <li><span><kbd>Update status</kbd> — <kbd>Completed</kbd>, or
+              <kbd>Cancelled — retract the invite</kbd>, which drafts the retraction into
+              Approvals.</span></li>
+        </ul>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Home · Follow-ups card</p>
+        <h3>The follow-up queue</h3>
+        <p>
+          Filter by <kbd>Due today</kbd>, <kbd>Overdue</kbd>, <kbd>This week</kbd> or
+          <kbd>All pending</kbd>, with a <kbd>Mine only</kbd> switch you will usually leave
+          off. <kbd>Mark done</kbd> takes a note and offers
+          <kbd>Schedule the next one automatically</kbd>; <kbd>Draft message (AI)</kbd> writes
+          one into Approvals; <kbd>Open the lead</kbd> jumps to the client.
+        </p>
+      </article>
+
+      <article class="screen wide">
+        <p class="screen-where">Home card → Inbox</p>
+        <h3>The Inbox</h3>
+        <p>
+          You have no Inbox tab, but the Home card <kbd>3 inbound message(s) need a human</kbd>
+          and any inbound-message notification open it with a back arrow. <b>Messages</b> shows
+          every outbound message and its status — you land on <kbd>Whole organisation</kbd>,
+          and tapping one gives the full delivery trace plus the exact copy that was sent.
+          <b>Needs a human</b> is the triage queue: attach a message to a client (pick the
+          client, then the contact who wrote it) or to a project, set what it is asking for,
+          read it in full, mark it handled, or <kbd>Reply</kbd> — which hands Jarvis a drafted
+          reply that still goes through Approvals. <kbd>Log a reply</kbd> at the top records
+          something a client said outside the system and routes it exactly like an email that
+          arrived on its own.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 11 console ──────────────────────────────────────────────── -->
+  <section id="console">
+    <h2><span class="num">11</span>The setup console, screen by screen</h2>
+    <p class="section-sub">
+      Open <kbd>/dashboard/</kbd> on your server in a browser and sign in with the same
+      account you use on the phone. This is where an organisation is configured, and where
+      almost everything an admin owns actually lives.
+    </p>
+
+    <div class="screens">
+      <article class="screen">
+        <p class="screen-where">Console · the spine</p>
+        <h3>The go-live checklist</h3>
+        <p>
+          The console opens on a checklist rather than a menu, because setting up an
+          organisation has an order: the organisation and its first administrator, email
+          sending, retention windows, calendar, and the suppliers of inbound mail. Each item
+          reports its own state, so you can see what is genuinely done rather than what
+          somebody remembers doing.
+        </p>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Console · Staff</p>
+        <h3>People</h3>
+        <ul class="controls">
+          <li><span>Create accounts with a role, and hand over the temporary password.</span></li>
+          <li><span>Record each person's <b>skills</b>, their working days and a cap on open
+              tasks — the assignment engine reads all three when it proposes who does
+              what.</span></li>
+          <li><span>Deactivate someone who has left, and reset a password for someone locked
+              out.</span></li>
+        </ul>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Console · what you sell</p>
+        <h3>Programmes, pricing and templates</h3>
+        <ul class="controls">
+          <li><span><b>Programmes</b> — one entry per thing you offer.</span></li>
+          <li><span><b>Pricing</b> — a rate card per programme, versioned. This is why a
+              proposal's numbers are locked in the app: they come from here, and editing prose
+              can never move a price.</span></li>
+          <li><span><b>Proposal templates</b> — one per programme, the shape every generated
+              proposal follows.</span></li>
+          <li><span><b>Message templates</b> — the introduction and follow-up wording the AI
+              starts from.</span></li>
+        </ul>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Console · operations</p>
+        <h3>Demo teams, integrations and mail</h3>
+        <ul class="controls">
+          <li><span><b>Demo teams</b> — who runs demos, and the calendar the app's booking
+              screen reads.</span></li>
+          <li><span><b>Integrations</b> — email sending, WhatsApp and calendar credentials.
+              Until email is configured, messages are prepared but have nowhere to
+              go.</span></li>
+          <li><span><b>Inbound mail</b> — the addresses and suppliers that feed the triage
+              queue.</span></li>
+          <li><span><b>Approval rules</b> and <b>playbooks</b> — what needs signing off, and the
+              standard responses the system reuses.</span></li>
+        </ul>
+      </article>
+
+      <article class="screen">
+        <p class="screen-where">Console · records</p>
+        <h3>Audit, retention and data</h3>
+        <ul class="controls">
+          <li><span><b>Audit</b> — who did what, when. Staff created, settings changed,
+              approvals decided. Yours to read, nobody else's.</span></li>
+          <li><span><b>Retention</b> — how long meeting audio and transcripts are kept, in
+              days.</span></li>
+          <li><span><b>Import</b> and <b>bundle</b> — bring a configured organisation in from a
+              file, or export the current one.</span></li>
+          <li><span><b>Reset</b> — covered in section 14, because it is not reversible.</span></li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── 12 dials ────────────────────────────────────────────────── -->
+  <section id="dials">
+    <h2><span class="num">12</span>The dials that change how the AI behaves</h2>
+    <p class="section-sub">
+      Console → Settings. These are not cosmetic preferences: every engine reads them before
+      it acts, so changing one changes what your whole organisation experiences tomorrow
+      morning. The ones worth understanding:
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <caption>What each setting actually moves.</caption>
+            <thead>
+              <tr><th>Setting</th><th>What changes when you move it</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Assignment mode</b><small>auto, or lead confirm</small></td>
+                <td>On <kbd>lead_confirm</kbd>, the AI proposes and a lead confirms the batch
+                  before anyone is notified. On <kbd>auto</kbd>, it assigns directly. This
+                  single setting is why the batch card exists at all.</td>
+              </tr>
+              <tr>
+                <td><b>Require action-item review</b></td>
+                <td>Whether extracted tasks go through the human review gate after a meeting,
+                  or become live immediately.</td>
+              </tr>
+              <tr>
+                <td><b>Auto-suggest lead state</b></td>
+                <td>Whether the suggestion banner appears on lead screens at all.</td>
+              </tr>
+              <tr>
+                <td><b>Timezone and working days</b><small>plus workday start and end</small></td>
+                <td>What "today", "overdue" and "this week" mean everywhere in the app. The
+                  task list deliberately uses the organisation's day, not the phone's.</td>
+              </tr>
+              <tr>
+                <td><b>Lead cold after N days</b></td>
+                <td>How long silence lasts before a lead is suggested as <kbd>Cold</kbd>.</td>
+              </tr>
+              <tr>
+                <td><b>Follow-up cadence</b><small>and nudge gaps, max unanswered nudges</small></td>
+                <td>How often follow-ups are scheduled, how hard the system chases, and when it
+                  stops chasing.</td>
+              </tr>
+              <tr>
+                <td><b>Max client messages per week</b></td>
+                <td>A hard ceiling on how much any one client can be written to. Protects
+                  relationships from an over-eager pipeline.</td>
+              </tr>
+              <tr>
+                <td><b>Quiet hours override priority</b></td>
+                <td>How urgent something must be to notify someone outside working hours.</td>
+              </tr>
+              <tr>
+                <td><b>High-load caution percentage</b></td>
+                <td>How full a person's plate must be before the assignment engine hesitates to
+                  add to it.</td>
+              </tr>
+              <tr>
+                <td><b>Delivery requires advance</b><small>scope change requires confirmation</small></td>
+                <td>Commercial guardrails: whether delivery may start before payment, and
+                  whether a scope change needs explicit sign-off.</td>
+              </tr>
+              <tr>
+                <td><b>Client report day and time</b></td>
+                <td>When the weekly client report is generated — it still goes through
+                  Approvals before a client sees it.</td>
+              </tr>
+              <tr>
+                <td><b>AI confidence threshold</b></td>
+                <td>How sure the AI must be before it acts rather than asks. Lower it and you
+                  get more suggestions and more noise; raise it and you get fewer, better
+                  ones.</td>
+              </tr>
+              <tr>
+                <td><b>Monthly AI budget</b><small>currency, retention windows</small></td>
+                <td>Spend ceiling for model usage, the currency amounts are shown in, and how
+                  long audio and transcripts are kept.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>Every change here is written to the audit log with your name on it.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 13 cannot ───────────────────────────────────────────────── -->
+  <section id="cannot">
+    <h2><span class="num">13</span>What even you cannot do</h2>
+    <p class="section-sub">
+      Your permissions cover everything inside your organisation. Two things sit outside it,
+      and one sits inside it but is not yours by design.
+    </p>
+
+    <figure>
+      <div class="fig">
+        <div class="scroller">
+          <table>
+            <caption>Where the Org Admin's authority stops.</caption>
+            <thead>
+              <tr><th>Capability</th><th class="c">You</th><th>Who then</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Create or deactivate an organisation</b></td>
+                <td class="c"><span class="tick n">NO</span></td>
+                <td>The platform team, in a separate build.</td>
+              </tr>
+              <tr>
+                <td><b>See platform-wide statistics</b></td>
+                <td class="c"><span class="tick n">NO</span></td>
+                <td>The platform team — and the traffic does not run the other way either:
+                  <kbd>Platform operators cannot read organisation data.</kbd></td>
+              </tr>
+              <tr>
+                <td><b>Open a cold-calling lead</b></td>
+                <td class="c"><span class="tick p">LAST RESORT</span></td>
+                <td>You can, but the owner should. Reassigning the lead is almost always the
+                  better fix.</td>
+              </tr>
+              <tr>
+                <td><b>Send a client message without approval</b></td>
+                <td class="c"><span class="tick n">NO</span></td>
+                <td>Nobody. There is no setting that turns the approval gate off, and holding
+                  every permission does not exempt you from it.</td>
+              </tr>
+              <tr>
+                <td><b>Edit an AI draft by hand</b></td>
+                <td class="c"><span class="tick n">NO</span></td>
+                <td>Nobody. Reject with a note and it redrafts — so the correction is recorded
+                  rather than living in one person's typing.</td>
+              </tr>
+              <tr>
+                <td><b>Record a meeting without consent</b></td>
+                <td class="c"><span class="tick n">NO</span></td>
+                <td>Nobody. The consent sheet appears every time, for every role, because there
+                  is no "already on file" lookup to trust.</td>
+              </tr>
+              <tr>
+                <td><b>Decline someone else's task</b></td>
+                <td class="c"><span class="tick n">NO</span></td>
+                <td>The person it is assigned to. You can reassign it instead.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <figcaption>
+        Everything else — leads, meetings, proposals, messages, tasks, projects, demos,
+        relationships, pricing, programmes, templates, staff, teams, settings, audit — is
+        yours.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 14 care ─────────────────────────────────────────────────── -->
+  <section id="care">
+    <h2><span class="num">14</span>Three things that cannot be undone</h2>
+    <p class="section-sub">
+      Everything else in this manual is reversible. These are not, so they get their own
+      section rather than a line in a list.
+    </p>
+
+    <div class="rules">
+      <div class="rule">
+        <b>Erasing a person's data</b>
+        <p>
+          A data-protection request removes an individual's personal data permanently. It is
+          the right thing to do when asked, and there is no recovery afterwards. Confirm the
+          identity before you run it.
+        </p>
+      </div>
+      <div class="rule">
+        <b>Resetting the organisation</b>
+        <p>
+          The console's reset wipes working data and returns the organisation to a clean
+          state. It exists for trials and rehearsals, not for tidying up. Export a bundle
+          first if there is any chance you will want what is there.
+        </p>
+      </div>
+      <div class="rule">
+        <b>Deleting a programme, rate card or template</b>
+        <p>
+          Records already generated from them keep what they were built with, but nothing new
+          can be made from a deleted one, and the version history goes with it. Deactivating
+          is usually what you actually want.
+        </p>
+      </div>
+      <div class="rule">
+        <b>And one that only looks irreversible</b>
+        <p>
+          <kbd>Sign out</kbd> wipes this device's cached copy of your data. That is not data
+          loss — everything lives on the server, and signing back in brings it all down again.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 15 status ───────────────────────────────────────────────── -->
+  <section id="status">
+    <h2><span class="num">15</span>Where this has got to</h2>
+    <div class="statuses">
+      <div class="st">
+        <span class="st-badge live"><span class="st-dot"></span>Live now</span>
+        <b>Three of your five tabs, and the whole console</b>
+        <p>
+          Home, Approvals and Jarvis are built and running, along with every record screen you
+          reach from them, the assignment batch with its override, demo booking and status
+          updates, and the setup console at <kbd>/dashboard/</kbd>.
+        </p>
+      </div>
+      <div class="st">
+        <span class="st-badge soon"><span class="st-dot"></span>Not yet</span>
+        <b>Admin and Insights, in the app</b>
+        <p>
+          Both tabs say <kbd>On its way</kbd>. The admin work they will eventually carry is in
+          the console today and loses nothing by being there; the Insights dashboards —
+          pipeline funnel, health mix, invoice aging, AI spend — genuinely do not exist yet.
+          Ask Jarvis for the numbers in the meantime.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p>
+    Written for the Org Admin role in the InnoDhara CRM Android app and its setup console.
+    The other manuals: <a href="/documentation/roles/sales-lead">the Sales Lead</a>,
+    <a href="/documentation/roles/sales-agent">the Sales Agent</a> and
+    <a href="/documentation/roles/relationship-manager">the Relationship Manager</a>.
+    For how a lead is worked before any of it, see the
+    <a href="/documentation/pre-sales">pre-sales lead flow</a>.
+  </p>
+</footer>
+</body>
+</html>

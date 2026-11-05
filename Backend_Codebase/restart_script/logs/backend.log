@@ -1,0 +1,39 @@
+INFO:     Started server process [4000376]
+INFO:     Waiting for application startup.
+2026-08-25 16:10:55,987 INFO app.jobs.queue: Job queue started with 3 workers
+2026-08-25 16:10:55,987 INFO app.jobs.scheduler: Scheduler started
+2026-08-25 16:10:55,987 INFO app: Platform ready
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8010 (Press CTRL+C to quit)
+INFO:     127.0.0.1:51442 - "GET /health HTTP/1.1" 200 OK
+INFO:     122.166.250.254:0 - "GET /health HTTP/1.1" 200 OK
+2026-08-25 16:10:58,124 INFO app: Dictation model 'tiny' warmed
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [4000376]
+INFO:     Started server process [3804458]
+INFO:     Waiting for application startup.
+2026-09-08 03:34:01,980 INFO app.jobs.queue: Job queue started with 3 workers
+2026-09-08 03:34:01,980 INFO app.jobs.scheduler: Scheduler started
+2026-09-08 03:34:01,980 INFO app: Platform ready
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8010 (Press CTRL+C to quit)
+INFO:     127.0.0.1:41398 - "GET /health HTTP/1.1" 200 OK
+INFO:     122.166.250.254:0 - "GET /health HTTP/1.1" 200 OK
+2026-09-08 03:34:04,144 INFO app: Dictation model 'tiny' warmed
+INFO:     160.30.217.146:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     160.30.217.146:0 - "GET /dashboard HTTP/1.1" 307 Temporary Redirect
+INFO:     160.30.217.146:0 - "GET /dashboard/ HTTP/1.1" 200 OK
+INFO:     160.30.217.146:0 - "GET /dashboard/assets/index-DUkD8dwf.js HTTP/1.1" 200 OK
+INFO:     160.30.217.146:0 - "GET /dashboard HTTP/1.1" 307 Temporary Redirect
+INFO:     160.30.217.146:0 - "GET /dashboard/ HTTP/1.1" 200 OK
+INFO:     160.30.217.146:0 - "GET /dashboard HTTP/1.1" 307 Temporary Redirect
+INFO:     160.30.217.146:0 - "GET /dashboard/ HTTP/1.1" 200 OK
+INFO:     160.30.217.146:0 - "POST /api/v1/admin/programs/x/proposal-templates/docx HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:52306 - "GET /health HTTP/1.1" 200 OK
+INFO:     122.166.250.254:0 - "GET /health HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [3804458]

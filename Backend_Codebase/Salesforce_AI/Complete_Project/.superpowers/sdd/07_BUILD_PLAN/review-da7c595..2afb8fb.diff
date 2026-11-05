@@ -1,0 +1,515 @@
+# Review package: da7c595..HEAD
+
+## Commits
+2afb8fb Add guarded deletes for skills, playbooks, vendors (change #6, part 1/2)
+
+## Files changed
+ Dashboard/READMEs/09_BACKEND_CHANGES.md |   3 +-
+ app/api/ops.py                          | 174 +++++++++++++++++++++++++++++-
+ tests/test_dashboard_deletes_ops.py     | 182 ++++++++++++++++++++++++++++++++
+ 3 files changed, 356 insertions(+), 3 deletions(-)
+
+## Diff
+diff --git a/Dashboard/READMEs/09_BACKEND_CHANGES.md b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+index f1037e2..b10e255 100644
+--- a/Dashboard/READMEs/09_BACKEND_CHANGES.md
++++ b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+@@ -17,21 +17,21 @@ is fully ticked.
+ ## 1 · The eight changes
+ 
+ | # | Change | Files | Task | State | Tests | Guards green |
+ |---|---|---|---|---|---|---|
+ | 1 | 5 staff fields on `CreateUserRequest` / `UpdateUserRequest` / `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 4 | `GET /admin/users/{user_id}` + widened `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 2 | Delivery mode read-only on `GET /admin/settings`; honest `*_configured` | `app/api/admin.py` | T2 | ✅ | ✅ | ⬜ |
+ | 3 | `GET /playbooks` | `app/api/ops.py` | T3 | ✅ | ✅ | ⬜ |
+ | 7 | `contact_name` / `phone` / `email` on `GET /vendors` | `app/api/ops.py` | T4 | ✅ | ✅ | ⬜ |
+ | 5 | `POST /admin/reset` (dry-run + apply) | `app/api/admin.py`, `app/core/reset_taxonomy.py` *(new)* | T5, T6 | ✅ | ✅ | ⬜ |
+-| 6 | 8 guarded DELETE routes | `app/api/ops.py` (3), `app/api/admin.py` (5) | T7, T8 | ⬜ | ⬜ | ⬜ |
++| 6 | 8 guarded DELETE routes | `app/api/ops.py` (3), `app/api/admin.py` (5) | T7, T8 | 🔶 part 1/2 (T7 ✅, T8 ⬜) | 🔶 T7 7/7 ✅, T8 ⬜ | ⬜ |
+ | 8 | Conditional `StaticFiles` mount at `/dashboard` | `app/main.py` | T9 | ⬜ | ⬜ | ⬜ |
+ 
+ **Amendments accepted after the list closed** — none of these is a ninth change:
+ 
+ | Amends | Amendment | Decision |
+ |---|---|---|
+ | #5 | `audit_log` moves WIPE → KEEP | D16 |
+ | #5 | `user_skills` + `approval_rules` move KEEP → a new CONFIG bucket, reached by a third flag `wipe_org_config` | D16 |
+ | #5 | Every delete is org-scoped (`WHERE org_id = :org`), unlike the script it replaces | `06_DESIGN.md` §7.3 |
+ | #8 | The mount is conditional on the directory existing; a missing bundle logs a warning and the API still starts | D20 |
+@@ -142,11 +142,12 @@ outside this project's closed change list.
+ ## 5 · Change log
+ 
+ *(One dated line per change as it lands: what, where, tests added, guards run.)*
+ 
+ | Date | # | What landed | Tests | Guards |
+ |---|---|---|---|---|
+ | 2026-08-13 | 1, 4 | 5 staff fields (`department`, `designation`, `whatsapp_number`, `max_open_tasks`, `working_days`) added to `CreateUserRequest`/`UpdateUserRequest`/`UserResponse`; `GET /admin/users/{user_id}` added (declared after `GET /users`) | `tests/test_dashboard_staff.py` new, 4/4 pass; full suite 219 passed / 3 failed (222 total; count of passing rose 215→219 as expected); the 3 failures are pre-existing `test_what_is_late.py` date-boundary failures, confirmed present before this change via `git stash` | `check_docs_in_sync.py` still fails as expected (route count now 141, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 2 | `_settings_response` gains `email_mode`/`whatsapp_mode`/`calendar_mode`/`inbound_email_mode` (from `get_settings()`) plus `email_credentials_stored`/`whatsapp_credentials_stored`/`calendar_credentials_stored`; the three `*_integration_configured` booleans now require credentials **AND** the matching process-wide mode (`email_mode=="smtp"`, `whatsapp_mode=="cloud_api"`, `calendar_mode=="google"`) | `tests/test_dashboard_settings_honesty.py` new, 2/2 pass; full suite 221 passed / 3 failed (224 total; passing rose 219→221 as expected, same 3 pre-existing `test_what_is_late.py` failures); no existing test asserted the old meaning, so none needed updating | `check_docs_in_sync.py` still fails as expected (resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 3 | `GET /playbooks` added to `app/api/ops.py` (declared immediately before `GET /playbooks/suggestions`), gated on `get_org_context` (readable by any org member, matching its GET siblings); query params `program_id`, `phase`, `current_only` (default `True`); returns `id`/`program_id`/`phase`/`entries`/`version`/`is_current`/`updated_by` per row, org-scoped, ordered by `phase, version` | `tests/test_dashboard_reads.py` new, 3/3 pass; full suite 224 passed / 3 failed (227 total; passing rose 221→224 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count rose by 1 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 7 | `contact_name`/`phone`/`email` fields added to `GET /vendors` response in `app/api/ops.py` (widened return dict, no route signature change, gated on `get_org_context` unchanged) | `tests/test_dashboard_reads.py` appended 1 test (4th in file), 4/4 pass; full suite 225 passed / 3 failed (228 total; passing rose 224→225 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count unchanged, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
++| 2026-08-13 | 6 (part 1/2, T7) | 3 guarded DELETE routes added to `app/api/ops.py`: `DELETE /skills?user_id=&skill=` (natural key, matches `POST /skills`'s upsert key; refuses 409 when it is the last holder and open/in_progress/pending_review work needs the skill; role-gated identically to `POST /skills`, duplicated tuple kept deliberately per Part F #11 deferral), `DELETE /playbooks/{playbook_id}` (`manage_programs`; no reference guard — nothing points at a playbook; deleting the current version promotes the highest-version predecessor back to `is_current`, the API's only un-supersede path), `DELETE /vendors/{vendor_id}` (`manage_settings`; refuses 409 when a task's `external_wait` JSON blob references it — scanned explicitly since there is no FK; matches on `vendor_name`, not `vendor_id`, because the only writer of that blob, `POST /tasks/{id}/vendor-promise`, records a free-text name and never an id, and the `vendor_id` key in the model's own docstring comment is aspirational and never produced — `vendor_id` is still checked too, defensively). All three call `audit_service.record` (D13). Two of the brief's test setup calls didn't match the real API and were corrected: `POST /action-items` has no `required_skill` field (silently dropped; no route can set it, so the fixture task is built directly via `SessionLocal`, following the precedent already in `tests/test_assignment_skills.py`), and there is no `/tasks/{id}/external-wait` route (the real route is `POST /tasks/{id}/vendor-promise`, taking `vendor_name`/`promised_date`/optional `chase_contact_user_id`, not `vendor_id`) — no assertions were changed | `tests/test_dashboard_deletes_ops.py` new, 7/7 pass; full suite 254 passed / 0 failed (was 247 passed / 0 failed at this task's start — the 3 `test_what_is_late.py` clock-dependent tests noted in change #5's row are currently passing, not failing, at this run's time of day) | `check_docs_in_sync.py` still fails as expected (route count rose by 3 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 5 | `POST /admin/reset` added to `app/api/admin.py` (`ResetRequest` + `reset_organisation`), consuming `deletion_order`/`KEEP`/`CONFIG`/`REPLACE`/`WIPE` from `app/core/reset_taxonomy.py` (built in the prior task, T5, already committed/tested). Dry-run vs apply gated on `body.dry_run`; apply requires `confirm_org_name` to exactly match the org's name (422 otherwise); every count/delete is `WHERE org_id = :org` (`Base.metadata.tables[name]`, iterated in `deletion_order`'s child-before-parent order, never sorted/reversed); writes `admin.org_reset` to `audit_log` (KEEP) only on apply, with `counts`/`total`/the 3 flags as detail, before `db.commit()`; gated on `require_permission("manage_settings")` (org_admin only) | `tests/test_dashboard_reset.py` new, 7/7 pass (dry-run counts without deleting; apply requires echoed org name, both wrong-name 422 and missing-name 422; flags clear only their own bucket; KEEP survives a full reset and the session still works — `/auth/me`, `/admin/users`, `/admin/settings` all still 200; another org untouched by a reset scoped to a different org; audit row written and readable after its own bucket is gone; sales agent gets 403). Every test creates its own throwaway org via `create_org(...)` — none touches the session-scoped `org_a`/`org_b` fixtures except the permission test, which only needs a 403 and applies nothing. Full suite 238 passed / 3 failed (241 total; passing rose 231→238 as expected — 231 was this task's starting baseline, not 225, because T5's own tests (`tests/test_reset_taxonomy.py`) landed in the prior task and are already included); the 3 failures are the same pre-existing `test_what_is_late.py` timezone-boundary failures, untouched by this change | `check_docs_in_sync.py` still fails as expected (route count rose by 1 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+diff --git a/app/api/ops.py b/app/api/ops.py
+index 30961b0..3bb730a 100644
+--- a/app/api/ops.py
++++ b/app/api/ops.py
+@@ -1,45 +1,52 @@
+ """Operations API: invoices & payments, vendors, leave & bookings,
+ deliverables (incl. manual upload), playbooks & suggestions."""
+ from __future__ import annotations
+ 
+ from datetime import date, datetime
+ 
+ from fastapi import APIRouter, Depends
+ from pydantic import BaseModel, Field
+-from sqlalchemy import select
++from sqlalchemy import func, select
+ from sqlalchemy.ext.asyncio import AsyncSession
+ 
+ from app.api.deps import get_org_context, require_permission
+ from app.core.constants import (
+     ApprovalEntityType,
+     DeliverableSource,
+     EventType,
+     InvoiceStatus,
+     MessageKind,
+     Role,
+ )
+ from app.core.context import OrgContext
+-from app.core.exceptions import NotFoundError, PermissionDeniedError, ValidationFailedError
++from app.core.exceptions import (
++    ConflictError,
++    NotFoundError,
++    PermissionDeniedError,
++    ValidationFailedError,
++)
+ from app.database import get_db
+ from app.engines import (
+     communication_engine,
+     document_engine,
+     events,
+     resource_engine,
+ )
++from app.models.action_item import ActionItem
+ from app.models.base import utcnow
+ from app.models.finance import Deliverable, Invoice, Vendor
+ from app.models.lead import Contact
+ from app.models.project import Playbook, PlaybookSuggestion, Project, Stakeholder
+ from app.models.resource import ResourceBooking
+ from app.models.user import User
++from app.services import audit_service
+ 
+ router = APIRouter(tags=["operations"])
+ 
+ 
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Invoices & payments
+ # ─────────────────────────────────────────────────────────────────────────────
+ 
+ 
+ class InvoiceRequest(BaseModel):
+@@ -282,20 +289,72 @@ async def list_vendors(
+             "contact_name": v.contact_name,
+             "phone": v.phone,
+             "email": v.email,
+             "category": v.category,
+             "notes": v.notes,
+         }
+         for v in rows
+     ]
+ 
+ 
++@router.delete("/vendors/{vendor_id}")
++async def delete_vendor(
++    vendor_id: str,
++    ctx: OrgContext = Depends(require_permission("manage_settings")),
++    db: AsyncSession = Depends(get_db),
++):
++    """action_items.external_wait is a JSON blob no foreign key can reach, so
++    the reference check is an explicit scan (04_OPEN_QUESTIONS.md Q5).
++
++    The scan matches on `vendor_name`, not `vendor_id`: the only route that
++    ever writes this blob (`POST /tasks/{id}/vendor-promise`) records a free
++    -text vendor name, never the catalogue row's id — the `vendor_id` key
++    named in the model's own docstring comment is aspirational and is never
++    actually produced. `vendor_id` is still checked too, defensively, in case
++    a future writer starts producing it (mirrors the same defensive read
++    already in `sync_engine.py`)."""
++    row = (
++        await db.execute(
++            select(Vendor).where(Vendor.id == vendor_id, Vendor.org_id == ctx.org_id)
++        )
++    ).scalar_one_or_none()
++    if row is None:
++        raise NotFoundError("Vendor not found")
++
++    waiting = (
++        await db.execute(
++            select(ActionItem).where(
++                ActionItem.org_id == ctx.org_id,
++                ActionItem.external_wait.is_not(None),
++            )
++        )
++    ).scalars().all()
++    blockers = [
++        t for t in waiting
++        if (t.external_wait or {}).get("vendor_id") == vendor_id
++        or (t.external_wait or {}).get("vendor_name") == row.name
++    ]
++    if blockers:
++        raise ConflictError(
++            f"{len(blockers)} task(s) are waiting on '{row.name}'. "
++            f"Clear those before removing the vendor."
++        )
++
++    await db.delete(row)
++    await audit_service.record(
++        db, org_id=ctx.org_id, user_id=ctx.user_id, action="ops.vendor_deleted",
++        entity_type="vendor", entity_id=vendor_id, detail={"name": row.name},
++    )
++    await db.commit()
++    return {"deleted": True}
++
++
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Leave & bookings
+ # ─────────────────────────────────────────────────────────────────────────────
+ 
+ 
+ class LeaveRequest(BaseModel):
+     user_id: str
+     leave_from: date
+     leave_to: date
+ 
+@@ -502,20 +561,68 @@ async def list_playbooks(
+             "phase": p.phase,
+             "entries": p.entries,
+             "version": p.version,
+             "is_current": p.is_current,
+             "updated_by": p.updated_by,
+         }
+         for p in rows
+     ]
+ 
+ 
++@router.delete("/playbooks/{playbook_id}")
++async def delete_playbook(
++    playbook_id: str,
++    ctx: OrgContext = Depends(require_permission("manage_programs")),
++    db: AsyncSession = Depends(get_db),
++):
++    """Nothing references a playbook, so there is no reference guard. Removing
++    the current version promotes its predecessor — the un-supersede path the
++    API has never had."""
++    row = (
++        await db.execute(
++            select(Playbook).where(
++                Playbook.id == playbook_id, Playbook.org_id == ctx.org_id
++            )
++        )
++    ).scalar_one_or_none()
++    if row is None:
++        raise NotFoundError("Playbook not found")
++
++    was_current, program_id, phase = row.is_current, row.program_id, row.phase
++    await db.delete(row)
++    await db.flush()
++
++    if was_current:
++        predecessor = (
++            await db.execute(
++                select(Playbook)
++                .where(
++                    Playbook.org_id == ctx.org_id,
++                    Playbook.program_id == program_id,
++                    Playbook.phase == phase,
++                )
++                .order_by(Playbook.version.desc())
++                .limit(1)
++            )
++        ).scalar_one_or_none()
++        if predecessor is not None:
++            predecessor.is_current = True
++
++    await audit_service.record(
++        db, org_id=ctx.org_id, user_id=ctx.user_id, action="ops.playbook_deleted",
++        entity_type="playbook", entity_id=playbook_id,
++        detail={"program_id": program_id, "phase": phase},
++    )
++    await db.commit()
++    return {"deleted": True}
++
++
+ @router.get("/playbooks/suggestions")
+ async def list_suggestions(
+     ctx: OrgContext = Depends(get_org_context),
+     db: AsyncSession = Depends(get_db),
+ ):
+     rows = (
+         await db.execute(
+             select(PlaybookSuggestion).where(
+                 PlaybookSuggestion.org_id == ctx.org_id,
+                 PlaybookSuggestion.status == "pending",
+@@ -707,10 +814,73 @@ async def list_skills(
+     ctx: OrgContext = Depends(get_org_context),
+     db: AsyncSession = Depends(get_db),
+ ):
+     stmt = select(UserSkill).where(UserSkill.org_id == ctx.org_id)
+     if user_id:
+         stmt = stmt.where(UserSkill.user_id == user_id)
+     rows = (await db.execute(stmt)).scalars().all()
+     return [
+         {"user_id": s.user_id, "skill": s.skill, "level": s.level} for s in rows
+     ]
++
++
++@router.delete("/skills")
++async def delete_skill(
++    user_id: str,
++    skill: str,
++    ctx: OrgContext = Depends(get_org_context),
++    db: AsyncSession = Depends(get_db),
++):
++    """Natural key, not a row id — GET /skills does not return one, and this
++    mirrors POST /skills, which upserts on the same pair."""
++    # This role tuple is duplicated from POST /skills above, deliberately.
++    # Centralising it into core/permissions.py _MATRIX is Part F #11, which is
++    # DEFERRED — the backend change list is closed at eight (05_DECISIONS.md
++    # Part 3), and moving it would be a ninth. Kept identical to its sibling so
++    # the two cannot drift apart while they both exist.
++    if ctx.role not in ("org_admin", "sales_lead", "operations_lead"):
++        raise PermissionDeniedError("Only the admin or a lead can adjust skills")
++    row = (
++        await db.execute(
++            select(UserSkill).where(
++                UserSkill.org_id == ctx.org_id,
++                UserSkill.user_id == user_id,
++                UserSkill.skill == skill,
++            )
++        )
++    ).scalar_one_or_none()
++    if row is None:
++        raise NotFoundError(f"No '{skill}' skill recorded for that person")
++
++    others = (
++        await db.execute(
++            select(func.count()).select_from(UserSkill).where(
++                UserSkill.org_id == ctx.org_id,
++                UserSkill.skill == skill,
++                UserSkill.user_id != user_id,
++            )
++        )
++    ).scalar_one()
++    if others == 0:
++        open_work = (
++            await db.execute(
++                select(func.count()).select_from(ActionItem).where(
++                    ActionItem.org_id == ctx.org_id,
++                    ActionItem.required_skill == skill,
++                    ActionItem.status.in_(("open", "in_progress", "pending_review")),
++                )
++            )
++        ).scalar_one()
++        if open_work:
++            raise ConflictError(
++                f"{open_work} open task(s) need '{skill}' and nobody else holds "
++                f"it. Give the skill to someone else first, or close that work."
++            )
++
++    await db.delete(row)
++    await audit_service.record(
++        db, org_id=ctx.org_id, user_id=ctx.user_id, action="ops.skill_deleted",
++        entity_type="user_skill", entity_id=row.id,
++        detail={"user_id": user_id, "skill": skill},
++    )
++    await db.commit()
++    return {"deleted": True}
+diff --git a/tests/test_dashboard_deletes_ops.py b/tests/test_dashboard_deletes_ops.py
+new file mode 100644
+index 0000000..b747400
+--- /dev/null
++++ b/tests/test_dashboard_deletes_ops.py
+@@ -0,0 +1,182 @@
++"""Catalogue deletes are for pre-go-live mistakes. Anything a live record
++depends on must refuse, with a reason (D7).
++
++Setup-call corrections vs. the original brief (see task-7-report.md for the
++full writeup):
++  - `POST /api/v1/action-items` (app/api/action_items.py CreateItemRequest)
++    has no `required_skill` field and the handler never sets one on create —
++    extra JSON keys are silently ignored by pydantic. There is no route that
++    lets a caller set `required_skill` on a task. The existing test suite's
++    own precedent for this (tests/test_assignment_skills.py,
++    test_a_seeded_skill_produces_a_real_match_not_no_skill_match) is to build
++    the ActionItem directly through `SessionLocal` — followed here.
++  - There is no `/tasks/{id}/external-wait` route. The real vendor-wait route
++    is `POST /tasks/{task_id}/vendor-promise`
++    (app/api/workflow.py:VendorPromiseRequest), and it takes
++    `vendor_name` (free text) + `promised_date` + optional
++    `chase_contact_user_id` — there is no `vendor_id` field to send.
++"""
++from __future__ import annotations
++
++import pytest
++
++from tests.conftest import auth, create_org
++
++pytestmark = pytest.mark.asyncio
++
++
++async def test_skill_delete_uses_the_natural_key(client, super_token):
++    org = await create_org(client, super_token, name="Del Skill",
++                           slug="del-skill", domain="del-skill-example.com")
++    token = org["admin_token"]
++    me = (await client.get("/api/v1/auth/me", headers=auth(token))).json()
++
++    await client.post("/api/v1/skills", headers=auth(token),
++                      json={"user_id": me["user_id"], "skill": "typo_skill",
++                            "level": "basic"})
++    assert len((await client.get("/api/v1/skills", headers=auth(token))).json()) == 1
++
++    resp = await client.request(
++        "DELETE",
++        f"/api/v1/skills?user_id={me['user_id']}&skill=typo_skill",
++        headers=auth(token),
++    )
++    assert resp.status_code == 200, resp.text
++    assert resp.json()["deleted"] is True
++    assert (await client.get("/api/v1/skills", headers=auth(token))).json() == []
++
++
++async def test_skill_delete_refuses_when_open_work_needs_it(client, super_token):
++    """`POST /api/v1/action-items` cannot set `required_skill` (no such field
++    on CreateItemRequest, and create_action_item never assigns one), so the
++    open task that needs the 'wiring' skill is built directly through the DB
++    session — the same workaround tests/test_assignment_skills.py already
++    uses for this exact gap."""
++    from app.database import SessionLocal
++    from app.models.action_item import ActionItem
++
++    org = await create_org(client, super_token, name="Del Skill Busy",
++                           slug="del-skill-busy",
++                           domain="del-skill-busy-example.com")
++    token = org["admin_token"]
++    me = (await client.get("/api/v1/auth/me", headers=auth(token))).json()
++    await client.post("/api/v1/skills", headers=auth(token),
++                      json={"user_id": me["user_id"], "skill": "wiring",
++                            "level": "expert"})
++    lead = (await client.post("/api/v1/leads", headers=auth(token),
++                              json={"name": "Site One"})).json()
++
++    async with SessionLocal() as db:
++        db.add(ActionItem(
++            org_id=org["id"], lead_id=lead["id"], title="Terminate the runs",
++            required_skill="wiring", status="open",
++        ))
++        await db.commit()
++
++    resp = await client.request(
++        "DELETE",
++        f"/api/v1/skills?user_id={me['user_id']}&skill=wiring",
++        headers=auth(token),
++    )
++    assert resp.status_code == 409
++    assert "wiring" in resp.text
++
++
++async def test_missing_skill_is_a_404(client, org_a):
++    resp = await client.request(
++        "DELETE",
++        f"/api/v1/skills?user_id={org_a['agent_id']}&skill=never_held",
++        headers=auth(org_a["admin_token"]),
++    )
++    assert resp.status_code == 404
++
++
++async def test_playbook_delete_promotes_the_previous_version(client, super_token):
++    org = await create_org(client, super_token, name="Del Playbook",
++                           slug="del-playbook",
++                           domain="del-playbook-example.com")
++    token = org["admin_token"]
++    program = (await client.post(
++        "/api/v1/admin/programs", headers=auth(token),
++        json={"name": "Handover", "code": "DPB", "description": "Handover."},
++    )).json()
++
++    for title in ("v1 wave", "v2 wave"):
++        await client.post("/api/v1/playbooks", headers=auth(token),
++                          json={"program_id": program["id"], "phase": "closure",
++                                "entries": [{"title": title,
++                                             "required_skill": "general",
++                                             "offset_days": 0, "priority": "P3",
++                                             "visible_to_client": False}]})
++
++    every = (await client.get(
++        f"/api/v1/playbooks?program_id={program['id']}&current_only=false",
++        headers=auth(token))).json()
++    current = next(p for p in every if p["is_current"])
++    assert current["version"] == 2
++
++    resp = await client.delete(
++        f"/api/v1/playbooks/{current['id']}", headers=auth(token)
++    )
++    assert resp.status_code == 200, resp.text
++
++    remaining = (await client.get(
++        f"/api/v1/playbooks?program_id={program['id']}", headers=auth(token))).json()
++    assert len(remaining) == 1
++    assert remaining[0]["version"] == 1, (
++        "deleting the current version must promote its predecessor"
++    )
++
++
++async def test_vendor_delete_refuses_when_a_task_waits_on_it(client, super_token):
++    org = await create_org(client, super_token, name="Del Vendor",
++                           slug="del-vendor", domain="del-vendor-example.com")
++    token = org["admin_token"]
++    vendor = (await client.post("/api/v1/vendors", headers=auth(token),
++                                json={"name": "Cable Supply Co"})).json()
++    lead = (await client.post("/api/v1/leads", headers=auth(token),
++                              json={"name": "Site Two"})).json()
++    task = (await client.post(
++        "/api/v1/action-items", headers=auth(token),
++        json={"lead_id": lead["id"], "title": "Await cable delivery"},
++    )).json()
++    waited = await client.post(
++        f"/api/v1/tasks/{task['id']}/vendor-promise", headers=auth(token),
++        json={"vendor_name": vendor["name"], "promised_date": "2026-09-01T00:00:00"},
++    )
++    assert waited.status_code == 200, waited.text
++
++    resp = await client.delete(
++        f"/api/v1/vendors/{vendor['id']}", headers=auth(token)
++    )
++    assert resp.status_code == 409
++    assert "Cable Supply Co" in resp.text or "task" in resp.text.lower()
++
++
++async def test_unreferenced_vendor_deletes(client, super_token):
++    org = await create_org(client, super_token, name="Del Vendor Free",
++                           slug="del-vendor-free",
++                           domain="del-vendor-free-example.com")
++    token = org["admin_token"]
++    vendor = (await client.post("/api/v1/vendors", headers=auth(token),
++                                json={"name": "Unused Supplier"})).json()
++
++    resp = await client.delete(
++        f"/api/v1/vendors/{vendor['id']}", headers=auth(token)
++    )
++    assert resp.status_code == 200, resp.text
++    assert (await client.get("/api/v1/vendors", headers=auth(token))).json() == []
++
++
++async def test_deletes_are_audited(client, super_token):
++    org = await create_org(client, super_token, name="Del Audit",
++                           slug="del-audit", domain="del-audit-example.com")
++    token = org["admin_token"]
++    vendor = (await client.post("/api/v1/vendors", headers=auth(token),
++                                json={"name": "Audited Supplier"})).json()
++    await client.delete(f"/api/v1/vendors/{vendor['id']}", headers=auth(token))
++
++    audit = (await client.get("/api/v1/admin/audit", headers=auth(token))).json()
++    assert "ops.vendor_deleted" in [row["action"] for row in audit], (
++        "delete_approval_rule writes no audit row; that is not inherited (D13)"
++    )

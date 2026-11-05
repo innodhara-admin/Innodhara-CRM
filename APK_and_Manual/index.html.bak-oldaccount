@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Innodhara — Download</title>
+<meta name="description" content="Download the Innodhara Android app and product manual. Automating Sales Process.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231a3d7c'/%3E%3Cpath d='M9 21V11l7 6 7-6v10' stroke='%23f5a623' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+
+:root{
+  --navy:#1a3d7c;
+  --amber:#f5a623;
+  --bg:#f6f7fb;
+  --bg-grad-a:#eef1f8;
+  --surface:#ffffff;
+  --surface-2:#fbfcfe;
+  --border:#e2e6f0;
+  --border-strong:#cdd4e4;
+  --ink:#111827;
+  --ink-2:#4b5563;
+  --ink-3:#6b7280;
+  --hero-ink:#ffffff;
+  --hero-ink-2:#c3cee4;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 12px 28px -12px rgba(16,24,40,.16);
+  --shadow-lift:0 2px 4px rgba(16,24,40,.06),0 22px 44px -16px rgba(26,61,124,.30);
+  --ok:#15803d; --ok-bg:#dcfce7;
+  --warn:#92400e; --warn-bg:#fef3c7; --warn-br:#fcd34d;
+  --bad:#b91c1c; --bad-bg:#fee2e2;
+  --radius:16px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#080c15;
+    --bg-grad-a:#0d1524;
+    --surface:#121a2b;
+    --surface-2:#161f33;
+    --border:#25314c;
+    --border-strong:#33415f;
+    --ink:#eef2f9;
+    --ink-2:#a9b4cb;
+    --ink-3:#8592ad;
+    --hero-ink:#ffffff;
+    --hero-ink-2:#b3c1de;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -12px rgba(0,0,0,.6);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.5),0 22px 44px -16px rgba(0,0,0,.7);
+    --ok:#4ade80; --ok-bg:#052e16;
+    --warn:#fcd34d; --warn-bg:#2e1f05; --warn-br:#7c5e12;
+    --bad:#fca5a5; --bad-bg:#3f1010;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#080c15; --bg-grad-a:#0d1524; --surface:#121a2b; --surface-2:#161f33;
+  --border:#25314c; --border-strong:#33415f;
+  --ink:#eef2f9; --ink-2:#a9b4cb; --ink-3:#8592ad;
+  --hero-ink:#ffffff; --hero-ink-2:#b3c1de;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 28px -12px rgba(0,0,0,.6);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.5),0 22px 44px -16px rgba(0,0,0,.7);
+  --ok:#4ade80; --ok-bg:#052e16;
+  --warn:#fcd34d; --warn-bg:#2e1f05; --warn-br:#7c5e12;
+  --bad:#fca5a5; --bad-bg:#3f1010;
+}
+
+body{
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.wrap{width:100%;max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* ── header ─────────────────────────────────────────── */
+.hero{
+  position:relative;
+  background:
+    radial-gradient(900px 460px at 78% -12%, rgba(245,166,35,.30), transparent 62%),
+    radial-gradient(760px 420px at 8% 8%, rgba(80,130,220,.34), transparent 58%),
+    linear-gradient(158deg,#16305f 0%,#1a3d7c 46%,#12274f 100%);
+  color:var(--hero-ink);
+  overflow:hidden;
+}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:radial-gradient(760px 400px at 50% 0%,#000,transparent 76%);
+  -webkit-mask-image:radial-gradient(760px 400px at 50% 0%,#000,transparent 76%);
+}
+.hero>*{position:relative;z-index:1}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:36px;height:36px;flex:none;border-radius:10px;background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.2);display:grid;place-items:center}
+.brand-name{font-weight:650;letter-spacing:-.01em;font-size:17px;white-space:nowrap}
+.pill{
+  font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+  color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums
+}
+
+.hero-body{padding:clamp(28px,7vw,66px) 0 clamp(40px,8vw,74px);max-width:730px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--amber);margin:0 0 18px
+}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--amber);border-radius:2px}
+h1{
+  margin:0 0 18px;font-size:clamp(2.1rem,6.4vw,3.65rem);line-height:1.06;
+  letter-spacing:-.033em;font-weight:700
+}
+h1 .sub{display:block;font-size:clamp(1rem,2.9vw,1.45rem);font-weight:500;
+  color:var(--hero-ink-2);letter-spacing:-.012em;margin-top:12px;line-height:1.4}
+.lede{margin:0;font-size:clamp(1rem,2.1vw,1.12rem);color:var(--hero-ink-2);max-width:60ch}
+
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:13px 22px;border-radius:12px;font-weight:640;font-size:15px;
+  text-decoration:none;border:1px solid transparent;cursor:pointer;
+  transition:transform .16s ease, box-shadow .16s ease, background .16s ease;
+  white-space:nowrap
+}
+.btn-primary{background:var(--amber);color:#2a1a00;box-shadow:0 10px 24px -10px rgba(245,166,35,.75)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 30px -10px rgba(245,166,35,.85)}
+.btn-ghost{background:rgba(255,255,255,.09);color:#fff;border-color:rgba(255,255,255,.26)}
+.btn-ghost:hover{background:rgba(255,255,255,.16);transform:translateY(-2px)}
+.btn:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+
+/* ── sections ───────────────────────────────────────── */
+main{padding:clamp(34px,6vw,60px) 0 20px}
+section{margin-bottom:clamp(34px,6vw,58px)}
+h2{font-size:clamp(1.25rem,3.1vw,1.6rem);letter-spacing:-.02em;margin:0 0 6px;font-weight:680}
+.section-sub{color:var(--ink-3);margin:0 0 22px;font-size:15px}
+
+/* ── download cards ─────────────────────────────────── */
+.cards{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(290px,100%),1fr))}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:26px;box-shadow:var(--shadow);display:flex;flex-direction:column;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease
+}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift);border-color:var(--border-strong)}
+.card-icon{width:50px;height:50px;border-radius:13px;display:grid;place-items:center;margin-bottom:17px;flex:none}
+.icon-apk{background:linear-gradient(140deg,#1a3d7c,#2f5eaf)}
+.icon-pdf{background:linear-gradient(140deg,#b03636,#dc5a5a)}
+.card h3{margin:0 0 7px;font-size:1.18rem;letter-spacing:-.015em;font-weight:660}
+.card p{margin:0 0 18px;color:var(--ink-2);font-size:14.5px;flex:1}
+.meta{list-style:none;margin:0 0 20px;padding:0;display:flex;flex-wrap:wrap;gap:7px}
+.meta li{
+  font-size:12px;font-weight:560;color:var(--ink-2);background:var(--surface-2);
+  border:1px solid var(--border);border-radius:7px;padding:4px 9px;
+  font-variant-numeric:tabular-nums;white-space:nowrap
+}
+.btn-dl{
+  background:var(--navy);color:#fff;width:100%;
+  box-shadow:0 8px 20px -10px rgba(26,61,124,.8)
+}
+.btn-dl:hover{transform:translateY(-2px);box-shadow:0 14px 26px -10px rgba(26,61,124,.9)}
+:root[data-theme="dark"] .btn-dl,
+:root:not([data-theme="light"]) .btn-dl{}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .btn-dl{background:#2f5eaf}
+}
+:root[data-theme="dark"] .btn-dl{background:#2f5eaf}
+
+/* ── server notice ──────────────────────────────────── */
+.notice{
+  background:var(--warn-bg);border:1px solid var(--warn-br);border-left-width:4px;
+  border-radius:var(--radius);padding:22px 24px
+}
+.notice h3{margin:0 0 8px;font-size:1.05rem;color:var(--warn);display:flex;align-items:center;gap:9px;font-weight:660}
+.notice p{margin:0 0 14px;color:var(--ink-2);font-size:14.5px}
+.notice ol{margin:0;padding-left:20px;color:var(--ink-2);font-size:14.5px}
+.notice ol li{margin-bottom:7px}
+.notice ol li:last-child{margin-bottom:0}
+
+.url-box{
+  display:flex;align-items:stretch;gap:0;margin:6px 0 16px;
+  border:1px solid var(--border-strong);border-radius:11px;overflow:hidden;background:var(--surface)
+}
+.url-box code{
+  flex:1;min-width:0;padding:12px 14px;font-size:13.5px;
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  color:var(--ink);overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch
+}
+.copy-btn{
+  flex:none;border:0;border-left:1px solid var(--border-strong);background:var(--surface-2);
+  color:var(--ink-2);padding:0 16px;font-size:13px;font-weight:620;cursor:pointer;
+  transition:background .15s ease,color .15s ease
+}
+.copy-btn:hover{background:var(--navy);color:#fff}
+.copy-btn.done{background:var(--ok-bg);color:var(--ok)}
+
+.status{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;
+  padding:4px 11px;border-radius:999px;background:var(--surface-2);
+  border:1px solid var(--border);color:var(--ink-3)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3);flex:none}
+.status.up{background:var(--ok-bg);color:var(--ok);border-color:transparent}
+.status.up .dot{background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.22)}
+.status.down{background:var(--bad-bg);color:var(--bad);border-color:transparent}
+.status.down .dot{background:var(--bad)}
+
+/* ── steps ──────────────────────────────────────────── */
+.steps{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));counter-reset:s}
+.step{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px;counter-increment:s;position:relative
+}
+.step::before{
+  content:counter(s);position:absolute;top:-13px;left:22px;
+  width:29px;height:29px;border-radius:9px;background:var(--navy);color:#fff;
+  display:grid;place-items:center;font-size:14px;font-weight:700;
+  box-shadow:0 4px 10px -3px rgba(26,61,124,.6)
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .step::before{background:#2f5eaf}}
+:root[data-theme="dark"] .step::before{background:#2f5eaf}
+.step h4{margin:9px 0 7px;font-size:1rem;letter-spacing:-.01em;font-weight:650}
+.step p{margin:0;color:var(--ink-2);font-size:14px}
+
+/* ── principles ─────────────────────────────────────── */
+.principles{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:640px){.principles{grid-template-columns:1fr 1fr}}
+.principle{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:13px;padding:20px 22px
+}
+.principle h4{margin:0 0 6px;font-size:15px;letter-spacing:-.01em;color:var(--ink);font-weight:650}
+.principle p{margin:0;font-size:14px;color:var(--ink-2)}
+
+/* ── footer ─────────────────────────────────────────── */
+footer{
+  border-top:1px solid var(--border);margin-top:14px;padding:28px 0 40px;
+  color:var(--ink-3);font-size:13.5px
+}
+.foot-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+footer a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--border-strong)}
+footer a:hover{color:var(--ink)}
+
+@media (max-width:420px){
+  .topbar .pill{display:none}
+}
+@media (max-width:560px){
+  .topbar{padding:14px 0}
+  .brand-name{font-size:15.5px}
+  .cta-row .btn{width:100%}
+  .card,.notice{padding:20px}
+  .url-box code{font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .btn:hover,.card:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M6 17V8l6 5 6-5v9" stroke="#f5a623" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="brand-name">Innodhara</span>
+      </div>
+      <span class="pill">Edition August 2026</span>
+    </div>
+
+    <div class="hero-body">
+      <p class="eyebrow">Android app &amp; product manual</p>
+      <h1>
+        Automating Sales Process
+        <span class="sub">A representative records a conversation. The system builds everything that follows.</span>
+      </h1>
+      <p class="lede">
+        From one recorded conversation Innodhara builds the project, the dated plan, the
+        staffed tasks and every message that goes back to the client — stopping at each point
+        where judgement is required, to hand the decision to a named person.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="app-org-release.apk" download>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Download the app
+        </a>
+        <a class="btn btn-ghost" href="Innodhara_Product_Manual.pdf" target="_blank" rel="noopener">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 2h8l6 6v14a0 0 0 010 0H6a0 0 0 010 0V2z" stroke="currentColor"
+                  stroke-width="2" stroke-linejoin="round"/>
+            <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          Read the manual
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <h2>Downloads</h2>
+    <p class="section-sub">Two files. Nothing else to install.</p>
+    <div class="cards">
+
+      <article class="card">
+        <div class="card-icon icon-apk" aria-hidden="true">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none">
+            <rect x="5" y="2" width="14" height="20" rx="2.5" stroke="#fff" stroke-width="1.9"/>
+            <path d="M10 18.5h4" stroke="#f5a623" stroke-width="1.9" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Innodhara for Android</h3>
+        <p>
+          The app your team uses every day — record a meeting, review what the AI found,
+          approve what goes out, and work your tasks.
+        </p>
+        <ul class="meta">
+          <li>v0.7.4</li>
+          <li>9.4 MB</li>
+          <li>Android 8.0+</li>
+          <li>APK</li>
+        </ul>
+        <a class="btn btn-dl" href="app-org-release.apk" download>Download APK</a>
+      </article>
+
+      <article class="card">
+        <div class="card-icon icon-pdf" aria-hidden="true">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none">
+            <path d="M6 2h8l6 6v14H6V2z" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/>
+            <path d="M14 2v6h6" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Product manual</h3>
+        <p>
+          How the product thinks, the six roles and what each sees, the go-live checklist,
+          every screen — and what the system deliberately refuses to do.
+        </p>
+        <ul class="meta">
+          <li>16 pages</li>
+          <li>143 KB</li>
+          <li>PDF</li>
+          <li>Aug 2026</li>
+        </ul>
+        <a class="btn btn-dl" href="Innodhara_Product_Manual.pdf" download>Download PDF</a>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Point the app at your server first</h2>
+    <p class="section-sub">The app talks to a self-hosted backend, so it needs the address before you sign in.</p>
+    <div class="notice">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 8v5m0 3.5h.01M10.3 3.9L2.4 17.6A2 2 0 004.1 20.6h15.8a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"
+                stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        This build ships with an address that no longer works
+      </h3>
+      <p>
+        The server baked into this APK was a temporary tunnel from an earlier demo and is offline.
+        Set the current one below — it takes about ten seconds, and the app remembers it.
+      </p>
+
+      <div class="url-box">
+        <code id="server-url">https://noninfluential-lamonica-unobservantly.ngrok-free.dev</code>
+        <button class="copy-btn" id="copy-btn" type="button">Copy</button>
+      </div>
+
+      <p style="margin:0 0 14px"><span class="status" id="status"><span class="dot"></span><span id="status-text">Checking server…</span></span></p>
+
+      <ol>
+        <li>Open the app. On the sign-in screen, tap the <strong>server:</strong> chip
+            (or press and hold the logo).</li>
+        <li>Paste the address above into the box.</li>
+        <li>Tap <strong>Apply</strong>, then sign in with the credentials your administrator gave you.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Installing the APK</h2>
+    <p class="section-sub">It is not on the Play Store, so Android asks permission once.</p>
+    <div class="steps">
+      <div class="step">
+        <h4>Download it</h4>
+        <p>Tap <strong>Download APK</strong> above. Your browser may warn that APK files can be
+           harmful — that is the standard notice for any app installed outside the Play Store.</p>
+      </div>
+      <div class="step">
+        <h4>Allow the install</h4>
+        <p>Open the downloaded file. Android will ask to allow installs from your browser or
+           Files app. Grant it, then come back — you only do this once.</p>
+      </div>
+      <div class="step">
+        <h4>Open and point it</h4>
+        <p>Launch Innodhara, set the server address from the section above, and sign in.
+           Your administrator creates accounts and issues the first password.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it thinks</h2>
+    <p class="section-sub">Four ideas the rest of the product follows from. The manual covers all of them.</p>
+    <div class="principles">
+      <div class="principle">
+        <h4>The client is the relationship</h4>
+        <p>A client record holds who they are and every conversation. A project is one concrete
+           piece of work — one client can have many, each with its own plan, team and money.</p>
+      </div>
+      <div class="principle">
+        <h4>One living plan, versioned</h4>
+        <p>The plan is never edited in place. Every change writes a new version with a
+           plain-language summary, and the old one stays readable forever.</p>
+      </div>
+      <div class="principle">
+        <h4>The AI proposes, a person decides</h4>
+        <p>No message reaches a client without somebody tapping Approve, and every AI decision
+           is recorded with its reasoning — so "why did it do that?" always has an answer.</p>
+      </div>
+      <div class="principle">
+        <h4>Work is matched by recorded skill</h4>
+        <p>People carry skills on their record. When a plan needs one nobody holds, that becomes
+           an explicit decision for a human rather than a silent fallback.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <div class="foot-row">
+    <span>Innodhara · Automating Sales Process</span>
+    <span>App v0.7.4 · Manual edition August 2026</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var URL_TEXT = document.getElementById('server-url').textContent.trim();
+
+  // ── copy ────────────────────────────────────────────
+  var btn = document.getElementById('copy-btn');
+  btn.addEventListener('click', function () {
+    var done = function () {
+      btn.textContent = 'Copied';
+      btn.classList.add('done');
+      setTimeout(function () {
+        btn.textContent = 'Copy';
+        btn.classList.remove('done');
+      }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(URL_TEXT).then(done, fallback);
+    } else {
+      fallback();
+    }
+    function fallback() {
+      // execCommand path for http:// origins and older mobile browsers, where
+      // the async clipboard API is unavailable or blocked outside a secure context.
+      var ta = document.createElement('textarea');
+      ta.value = URL_TEXT;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); }
+      catch (e) { btn.textContent = 'Select it'; }
+      document.body.removeChild(ta);
+    }
+  });
+
+  // ── live server status ──────────────────────────────
+  var box = document.getElementById('status');
+  var text = document.getElementById('status-text');
+
+  // AbortController rather than relying on fetch alone: a tunnel that is down
+  // often hangs rather than refusing, which would leave "Checking…" forever.
+  var ctrl = new AbortController();
+  var timer = setTimeout(function () { ctrl.abort(); }, 8000);
+
+  fetch(URL_TEXT + '/health', { signal: ctrl.signal, cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+    .then(function () {
+      clearTimeout(timer);
+      box.className = 'status up';
+      text.textContent = 'Server online — ready to sign in';
+    })
+    .catch(function () {
+      clearTimeout(timer);
+      box.className = 'status down';
+      text.textContent = 'Server not responding right now';
+    });
+})();
+</script>
+
+</body>
+</html>

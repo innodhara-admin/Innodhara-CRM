@@ -1,0 +1,32 @@
+[
+  {
+    "id": "806878f75695437895560929b602bf20",
+    "entity_type": "proposal",
+    "condition": {
+      "discount_pct_gt": 10
+    },
+    "rank": 10,
+    "approver_role": "sales_lead",
+    "fallback_role": "org_admin",
+    "recommender_role": "sales_agent",
+    "joint_with_role": null,
+    "joint_condition": null,
+    "auto_approve": false,
+    "expires_hours": 48,
+    "description": "Discounts above 10% go to the sales lead."
+  },
+  {
+    "id": "34a4f58e9e834848bff1a4c5159abcb5",
+    "entity_type": "proposal",
+    "condition": {},
+    "rank": 100,
+    "approver_role": "org_admin",
+    "fallback_role": null,
+    "recommender_role": null,
+    "joint_with_role": null,
+    "joint_condition": null,
+    "auto_approve": false,
+    "expires_hours": 48,
+    "description": "Catch-all."
+  }
+]

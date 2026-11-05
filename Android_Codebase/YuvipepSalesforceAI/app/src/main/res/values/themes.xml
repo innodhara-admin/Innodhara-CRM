@@ -1,0 +1,66 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Material 3, dynamic color OFF — brand consistency wins (06 §1). -->
+    <style name="Theme.YuviPep" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/md_light_primary</item>
+        <item name="colorOnPrimary">@color/md_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_light_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_light_secondary</item>
+        <item name="colorOnSecondary">@color/md_light_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_light_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_light_tertiary</item>
+        <item name="colorOnTertiary">@color/md_light_onTertiary</item>
+        <item name="colorError">@color/md_light_error</item>
+        <item name="colorOnError">@color/md_light_onError</item>
+        <item name="colorErrorContainer">@color/md_light_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_light_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_light_surface</item>
+        <item name="colorSurface">@color/md_light_surface</item>
+        <item name="colorOnSurface">@color/md_light_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_light_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_light_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_light_outline</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+    </style>
+
+    <!-- Splash: brand-colored full screen with centered mark. -->
+    <style name="Theme.YuviPep.Splash">
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+        <item name="android:statusBarColor">@color/brand_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/brand_primary</item>
+    </style>
+
+    <!-- Jarvis voice screen (full-screen dialog). Dark always: the avatar and
+         the orb are lit against night, and the chat cards follow. -->
+    <style name="Theme.YuviPep.VoiceStage" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/md_dark_primary</item>
+        <item name="colorOnPrimary">@color/md_dark_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_dark_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_dark_onPrimaryContainer</item>
+        <item name="colorSecondaryContainer">@color/md_dark_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_dark_onSecondaryContainer</item>
+        <item name="colorError">@color/md_dark_error</item>
+        <item name="colorSurface">@color/md_dark_surface</item>
+        <item name="colorOnSurface">@color/md_dark_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_dark_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/stage_on_muted</item>
+        <item name="colorOutline">@color/md_dark_outline</item>
+        <item name="android:windowBackground">@color/stage_bg_top</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:statusBarColor">@color/stage_bg_top</item>
+        <item name="android:navigationBarColor">@color/stage_bg_bottom</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowAnimationStyle">@style/Animation.YuviPep.VoiceStage</item>
+    </style>
+
+    <style name="Animation.YuviPep.VoiceStage" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/stage_enter</item>
+        <item name="android:windowExitAnimation">@anim/stage_exit</item>
+    </style>
+</resources>

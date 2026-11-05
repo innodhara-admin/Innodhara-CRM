@@ -1,0 +1,27 @@
+[
+  {
+    "id": "808f5ddfd5d8483b95251ee0adff48a1",
+    "version": 1,
+    "currency": "INR",
+    "items": [
+      {
+        "code": "RACK",
+        "label": "Rack commissioning",
+        "unit": "per rack",
+        "unit_price": 45000,
+        "default_quantity": 4,
+        "notes": null
+      },
+      {
+        "code": "AUDIT",
+        "label": "Capacity audit",
+        "unit": "per site",
+        "unit_price": 120000,
+        "default_quantity": null,
+        "notes": "Two-day survey"
+      }
+    ],
+    "is_current": true,
+    "effective_from": "2026-08-17T01:32:37.019227"
+  }
+]

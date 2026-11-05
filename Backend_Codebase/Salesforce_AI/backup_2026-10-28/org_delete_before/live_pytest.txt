@@ -1,0 +1,183 @@
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 45%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 76%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 87%]
+...............................F........................................ [ 91%]
+..........................................F............................. [ 95%]
+........................................................................ [ 99%]
+...............                                                          [100%]
+=================================== FAILURES ===================================
+___________________ test_the_worst_neglected_client_is_first ___________________
+
+client = <httpx.AsyncClient object at 0x7fc8b10f2710>
+org = {'id': '955062bfe258440ab0477c5f2243e568', 'name': 'RM Screens Co', 'slug': 'rm-screens-co', 'email_domain': 'rmscreens-example.com', ...}
+
+    async def test_the_worst_neglected_client_is_first(client, org):
+        """The ordering is the whole point of the screen."""
+        await _handed_over(client, org, "Sorting Client A", "meena")
+        lead_b = await _handed_over(client, org, "Sorting Client B", "meena")
+    
+        # B was spoken to today; every never-spoken-to client outranks it.
+        booked = await client.post(
+            "/api/v1/meetings/schedule", headers=auth(org["meena_token"]),
+            json={"lead_id": lead_b["id"], "title": "Catch-up",
+                  "started_at": "2026-08-31T10:00:00"},
+        )
+        assert booked.status_code == 200, booked.text
+    
+        rows = (await client.get("/api/v1/relationships/mine",
+                                 headers=auth(org["meena_token"]))).json()
+        order = [r["lead_name"] for r in rows]
+>       assert order.index("Sorting Client A") < order.index("Sorting Client B"), order
+E       AssertionError: ['Sorting Client B', 'Meenas Client', 'Never Called Client', 'Sorting Client A']
+E       assert 3 < 0
+E        +  where 3 = <built-in method index of list object at 0x7fc887cdb540>('Sorting Client A')
+E        +    where <built-in method index of list object at 0x7fc887cdb540> = ['Sorting Client B', 'Meenas Client', 'Never Called Client', 'Sorting Client A'].index
+E        +  and   0 = <built-in method index of list object at 0x7fc887cdb540>('Sorting Client B')
+E        +    where <built-in method index of list object at 0x7fc887cdb540> = ['Sorting Client B', 'Meenas Client', 'Never Called Client', 'Sorting Client A'].index
+
+tests/test_relationship_screens.py:134: AssertionError
+----------------------------- Captured stderr call -----------------------------
+2026-10-28 10:25:21,263 INFO httpx: HTTP Request: POST http://test/api/v1/leads "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,272 INFO httpx: HTTP Request: POST http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/contacts "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,278 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,283 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,287 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,292 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,297 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,307 INFO httpx: HTTP Request: POST http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/relationship/handover "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,317 INFO httpx: HTTP Request: POST http://test/api/v1/leads "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,325 INFO httpx: HTTP Request: POST http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/contacts "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,339 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,347 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,356 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,364 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,374 INFO httpx: HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,393 INFO httpx: HTTP Request: POST http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/relationship/handover "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,400 INFO httpx: HTTP Request: POST http://test/api/v1/meetings/schedule "HTTP/1.1 200 OK"
+2026-10-28 10:25:21,413 INFO httpx: HTTP Request: GET http://test/api/v1/relationships/mine "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/leads "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/contacts "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/leads/3838a2cac5474be0b4438e7b816c47ff/relationship/handover "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/leads "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/contacts "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: PATCH http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/state "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/leads/a4299a1581794c4b83f9504c2ba1428e/relationship/handover "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/meetings/schedule "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/api/v1/relationships/mine "HTTP/1.1 200 OK"
+____________ test_adding_a_contact_later_drafts_the_waiting_invite _____________
+
+client = <httpx.AsyncClient object at 0x7fc8b10f2710>
+org = {'id': 'b792fd63494443ef9e263397700684c7', 'name': 'Meet a303e976', 'slug': 'meet-a303e976', 'email_domain': 'meeta303e976-example.com', ...}
+
+    async def test_adding_a_contact_later_drafts_the_waiting_invite(client, org):
+        """The recording scheduled the meeting before the lead had any contact,
+        so the invite was skipped — and nothing ever drafted it afterwards."""
+        out = await _schedule(client, org, lead_id=org["bare_lead_id"])
+        assert out["invite"] is None
+        resp = await client.post(
+            f"{API}/leads/{org['bare_lead_id']}/contacts", headers=auth(org["admin_token"]),
+            json={"name": "Ekaghni", "email": "ekaghni@no-email.example", "is_primary": True},
+        )
+        assert resp.status_code == 200, resp.text
+        async with SessionLocal() as db:
+            meeting = (await db.execute(select(ScheduledMeeting).where(
+                ScheduledMeeting.id == out["id"]))).scalar_one()
+>       assert meeting.invite_status == "pending_approval"
+E       AssertionError: assert 'no_contact' == 'pending_approval'
+E         
+E         - pending_approval
+E         + no_contact
+
+tests/test_scheduled_meetings.py:739: AssertionError
+---------------------------- Captured stderr setup -----------------------------
+2026-10-28 10:25:33,412 INFO httpx: HTTP Request: POST http://test/api/v1/orgs "HTTP/1.1 200 OK"
+2026-10-28 10:25:33,493 INFO httpx: HTTP Request: POST http://test/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-10-28 10:25:33,573 INFO httpx: HTTP Request: POST http://test/api/v1/admin/users "HTTP/1.1 200 OK"
+2026-10-28 10:25:33,653 INFO httpx: HTTP Request: POST http://test/api/v1/auth/login "HTTP/1.1 200 OK"
+------------------------------ Captured log setup ------------------------------
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/orgs "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/auth/login "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/admin/users "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/auth/login "HTTP/1.1 200 OK"
+----------------------------- Captured stderr call -----------------------------
+2026-10-28 10:25:33,667 INFO httpx: HTTP Request: POST http://test/api/v1/scheduled-meetings "HTTP/1.1 200 OK"
+2026-10-28 10:25:33,672 INFO httpx: HTTP Request: POST http://test/api/v1/leads/2dceda7104a84622b3d7837376c4439e/contacts "HTTP/1.1 200 OK"
+------------------------------ Captured log call -------------------------------
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/scheduled-meetings "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/leads/2dceda7104a84622b3d7837376c4439e/contacts "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+tests/docx/test_fill_fixes_12oct.py::test_fill_literals_replaces_a_tag_title
+  tests/docx/test_fill_fixes_12oct.py:69: PytestWarning: The test <Function test_fill_literals_replaces_a_tag_title> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_fill_literals_replaces_a_tag_title():
+
+tests/docx/test_fill_fixes_12oct.py::test_fill_literals_matches_a_literal_whatever_its_case
+  tests/docx/test_fill_fixes_12oct.py:76: PytestWarning: The test <Function test_fill_literals_matches_a_literal_whatever_its_case> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_fill_literals_matches_a_literal_whatever_its_case():
+
+tests/docx/test_fill_fixes_12oct.py::test_fill_literals_blanks_a_tag_it_has_no_value_for
+  tests/docx/test_fill_fixes_12oct.py:82: PytestWarning: The test <Function test_fill_literals_blanks_a_tag_it_has_no_value_for> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_fill_literals_blanks_a_tag_it_has_no_value_for():
+
+tests/docx/test_fill_fixes_12oct.py::test_fill_literals_leaves_real_properties_alone
+  tests/docx/test_fill_fixes_12oct.py:88: PytestWarning: The test <Function test_fill_literals_leaves_real_properties_alone> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_fill_literals_leaves_real_properties_alone():
+
+tests/docx/test_fill_fixes_12oct.py::test_a_value_that_only_starts_like_its_label_is_kept
+  tests/docx/test_fill_fixes_12oct.py:297: PytestWarning: The test <Function test_a_value_that_only_starts_like_its_label_is_kept> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_a_value_that_only_starts_like_its_label_is_kept():
+
+tests/test_client_creation.py::test_spelling_format
+  tests/test_client_creation.py:1022: PytestWarning: The test <Function test_spelling_format> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_spelling_format():
+
+tests/test_contact_matching.py::test_the_parse_ignores_bad_answers
+  tests/test_contact_matching.py:214: PytestWarning: The test <Function test_the_parse_ignores_bad_answers> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_the_parse_ignores_bad_answers():
+
+tests/test_open_needs_owner_contact.py::test_the_migration_adds_the_column_and_credits_existing_contacts
+  tests/test_open_needs_owner_contact.py:256: PytestWarning: The test <Function test_the_migration_adds_the_column_and_credits_existing_contacts> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_the_migration_adds_the_column_and_credits_existing_contacts(tmp_path):
+
+tests/test_proposal_recipient.py::test_what_counts_as_said
+  tests/test_proposal_recipient.py:130: PytestWarning: The test <Function test_what_counts_as_said> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_what_counts_as_said():
+
+tests/test_proposal_recipient.py::test_all_defaults_is_offered_only_when_something_is_suggested
+  tests/test_proposal_recipient.py:354: PytestWarning: The test <Function test_all_defaults_is_offered_only_when_something_is_suggested> is marked with '@pytest.mark.asyncio' but it is not an async function. Please remove the asyncio mark. If the test is not marked explicitly, check for global marks applied via 'pytestmark'.
+    def test_all_defaults_is_offered_only_when_something_is_suggested():
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_relationship_screens.py::test_the_worst_neglected_client_is_first
+FAILED tests/test_scheduled_meetings.py::test_adding_a_contact_later_drafts_the_waiting_invite
+2 failed, 1885 passed, 10 warnings in 331.55s (0:05:31)

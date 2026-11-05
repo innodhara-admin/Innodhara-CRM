@@ -1,0 +1,173 @@
+# Review package: d04f007..HEAD
+
+## Commits
+da7c595 Fix round 2: derive _CATALOGUE_ORPHAN_EDGES from the schema, don't hand-list it
+
+## Files changed
+ app/api/admin.py              | 58 +++++++++++++++++++++++++++++--------------
+ tests/test_dashboard_reset.py | 42 +++++++++++++++++++++++++++++++
+ 2 files changed, 81 insertions(+), 19 deletions(-)
+
+## Diff
+diff --git a/app/api/admin.py b/app/api/admin.py
+index c1d6528..63c1cdd 100644
+--- a/app/api/admin.py
++++ b/app/api/admin.py
+@@ -11,21 +11,21 @@ from sqlalchemy import delete as sa_delete, func, select
+ from sqlalchemy.ext.asyncio import AsyncSession
+ 
+ from app.api.deps import get_org_context, require_permission
+ from app.config import get_settings
+ from app.core.constants import (
+     ORG_ROLES, Department, MessageChannel, Role, TemplateKind,
+ )
+ from app.core.context import OrgContext
+ from app.core.crypto import encrypt_secret
+ from app.core.exceptions import ConflictError, NotFoundError, ValidationFailedError
+-from app.core.reset_taxonomy import deletion_order
++from app.core.reset_taxonomy import CONFIG, REPLACE, WIPE, deletion_order
+ from app.core.security import hash_password
+ from app.database import Base, get_db
+ from app.models.audit import AuditLog
+ from app.models.demo import DemoTeam, DemoTeamMember
+ from app.models.organisation import Organisation, OrgSettings
+ from app.models.program import MessageTemplate, PricingTable, Program, ProposalTemplate
+ from app.models.user import User
+ from app.services import audit_service
+ 
+ router = APIRouter(prefix="/admin", tags=["org admin"])
+@@ -883,39 +883,59 @@ async def view_audit_log(
+ 
+ # ══════════════════════════ Reset ══════════════════════════════════════════
+ class ResetRequest(BaseModel):
+     dry_run: bool = True
+     wipe_transactional: bool = True
+     wipe_catalogue: bool = False
+     wipe_org_config: bool = False
+     confirm_org_name: str | None = None
+ 
+ 
+-# Six FK edges from a WIPE-bucket table into a REPLACE-bucket (catalogue)
+-# table. None of them carries `ondelete=` (reset_taxonomy.py: "the schema
+-# declares no ondelete= rule anywhere"), so a catalogue-only reset
+-# (wipe_catalogue=True, wipe_transactional=False) deletes the parent while
+-# these children survive — 4 of the 6 columns are NOT NULL, so that is an
+-# orphan, not a dangling optional reference. Change #6's per-row DELETE
+-# guards already refuse to remove a program a proposal references; this
+-# reset must not permit in bulk what those guards refuse one row at a time
+-# — a catalogue-only reset deleting every program while proposals survive is
+-# the same act at scale, and cannot be more permissive for being bigger.
+-# `reset_taxonomy.py` is frozen and guarded (tests/test_reset_taxonomy.py);
+-# these edges are derived here rather than added there.
++# Every FK edge from a table that SURVIVES a catalogue-only reset (WIPE or
++# CONFIG) into a table that reset DELETES (REPLACE, the catalogue). None of
++# them carries `ondelete=` (reset_taxonomy.py: "the schema declares no
++# ondelete= rule anywhere"), so a catalogue-only reset (wipe_catalogue=True,
++# wipe_transactional=False) deletes the parent while these children survive
++# — several of these columns are NOT NULL, so that is an orphan, not a
++# dangling optional reference. Change #6's per-row DELETE guards already
++# refuse to remove a program a proposal references; this reset must not
++# permit in bulk what those guards refuse one row at a time — a
++# catalogue-only reset deleting every program while proposals survive is the
++# same act at scale, and cannot be more permissive for being bigger.
++#
++# This is derived from the schema, not hand-copied: the immediately
++# preceding task shipped a Critical defect from exactly that pattern (a
++# hand-copied table-ordering list, wrong in five places no test caught).
++# `reset_taxonomy.py` is frozen and guarded (tests/test_reset_taxonomy.py)
++# and is not touched here — WIPE/CONFIG/REPLACE are only read, and the
++# derivation below is re-proved independently by
++# tests/test_dashboard_reset.py::test_catalogue_orphan_edges_match_the_schema
++# so a new WIPE/CONFIG -> REPLACE edge added later is covered with no code
++# change here, rather than silently reopening the orphan hole.
++def _derive_catalogue_orphan_edges() -> tuple[tuple[str, str, str], ...]:
++    edges: set[tuple[str, str, str]] = set()
++    replace_set = set(REPLACE)
++    for child in set(WIPE) | set(CONFIG):
++        table = Base.metadata.tables[child]
++        for column in table.columns:
++            for fk in column.foreign_keys:
++                parent = fk.column.table.name
++                if parent in replace_set:
++                    edges.add((child, column.name, parent))
++    # Sorted so the 422 message (built by iterating this tuple) is stable
++    # across runs — derivation walks set-typed buckets, so insertion order
++    # is not otherwise guaranteed.
++    return tuple(sorted(edges))
++
++
+ _CATALOGUE_ORPHAN_EDGES: tuple[tuple[str, str, str], ...] = (
+-    ("demo_team_members", "team_id", "demo_teams"),
+-    ("proposals", "program_id", "programs"),
+-    ("proposals", "template_id", "proposal_templates"),
+-    ("proposals", "pricing_table_id", "pricing_tables"),
+-    ("demos", "team_id", "demo_teams"),
+-    ("projects", "program_id", "programs"),
++    _derive_catalogue_orphan_edges()
+ )
+ 
+ 
+ async def _catalogue_blocking_edges(
+     db: AsyncSession, org_id: str
+ ) -> list[dict[str, Any]]:
+     """Org-scoped rows a catalogue-only reset would orphan.
+ 
+     Only rows where the FK column IS NOT NULL count — a null `demos.team_id`
+     or `projects.program_id` references nothing, so it orphans nothing. A
+diff --git a/tests/test_dashboard_reset.py b/tests/test_dashboard_reset.py
+index 75c437d..253b8e9 100644
+--- a/tests/test_dashboard_reset.py
++++ b/tests/test_dashboard_reset.py
+@@ -397,10 +397,52 @@ async def test_a_mid_loop_failure_rolls_back_everything(
+     audit = await client.get("/api/v1/admin/audit", headers=auth(token))
+     assert audit.status_code == 200, audit.text
+     actions = [row["action"] for row in audit.json()]
+     assert "admin.org_reset" not in actions, (
+         "the audit row is written after the delete loop — it must not "
+         "survive a failure inside that loop"
+     )
+ 
+     me = await client.get("/api/v1/auth/me", headers=auth(token))
+     assert me.status_code == 200, "the org must still be reachable after rollback"
++
++
++# ══════════════ Fix round: derive the orphan edges, don't hand-list them ═══
++async def test_catalogue_orphan_edges_match_the_schema():
++    """`_CATALOGUE_ORPHAN_EDGES` must be exactly the FK edges from a
++    surviving (WIPE|CONFIG) table into a deleted (REPLACE) table — derived
++    from Base.metadata, not hand-copied. This re-walks the FK graph
++    independently of app.api.admin's derivation and asserts the two sets are
++    identical, in the spirit of tests/test_reset_taxonomy.py: the guard a
++    hand-written list never had. A schema change that adds or removes a
++    WIPE/CONFIG -> REPLACE edge must fail this test, not silently change
++    behaviour."""
++    import app.models  # noqa: F401  (registers every mapper)
++    from app.api.admin import _CATALOGUE_ORPHAN_EDGES
++    from app.core.reset_taxonomy import CONFIG, REPLACE, WIPE
++    from app.database import Base
++
++    expected: set[tuple[str, str, str]] = set()
++    replace_set = set(REPLACE)
++    for child in set(WIPE) | set(CONFIG):
++        table = Base.metadata.tables[child]
++        for column in table.columns:
++            for fk in column.foreign_keys:
++                parent = fk.column.table.name
++                if parent in replace_set:
++                    expected.add((child, column.name, parent))
++
++    assert set(_CATALOGUE_ORPHAN_EDGES) == expected
++    assert list(_CATALOGUE_ORPHAN_EDGES) == sorted(_CATALOGUE_ORPHAN_EDGES), (
++        "must be sorted so the 422 message is stable across runs"
++    )
++    # Pin the currently-known six edges too: if this narrows, the derivation
++    # itself is broken (e.g. only checking one bucket) even though a set
++    # comparison against an equally-broken `expected` could still pass.
++    assert expected == {
++        ("demo_team_members", "team_id", "demo_teams"),
++        ("proposals", "program_id", "programs"),
++        ("proposals", "template_id", "proposal_templates"),
++        ("proposals", "pricing_table_id", "pricing_tables"),
++        ("demos", "team_id", "demo_teams"),
++        ("projects", "program_id", "programs"),
++    }

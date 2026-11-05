@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Local polled notifications until FCM (Phase 8); API 33+ runtime ask. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Phase 2: meeting recorder (foreground service, mic-use compliance)
+         and business-card capture. Storage stays SAF/app-private — no
+         legacy WRITE_EXTERNAL (08 §5). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
+
+    <!-- allowBackup=false: tokens and the org cache must never ride
+         device-to-device backups (09_SECURITY §5). -->
+    <application
+        android:name=".YuviPepApp"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="${cleartextPermitted}"
+        android:theme="@style/Theme.YuviPep"
+        tools:targetApi="31">
+
+        <!-- Auth world: splash → login → forced password change. -->
+        <activity
+            android:name=".feature.auth.AuthActivity"
+            android:exported="true"
+            android:theme="@style/Theme.YuviPep.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- The app proper: role-shaped navigation. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- Meeting recorder: persistent-notification foreground service so
+             recording survives screen-off and app-switch (08 §1). -->
+        <service
+            android:name=".feature.meetings.RecorderService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+    </application>
+
+</manifest>

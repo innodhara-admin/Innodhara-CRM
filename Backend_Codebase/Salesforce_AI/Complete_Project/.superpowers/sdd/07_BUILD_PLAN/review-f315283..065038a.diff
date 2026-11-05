@@ -1,0 +1,193 @@
+# Review package: f315283..HEAD
+
+## Commits
+065038a Add GET /playbooks read path (change #3, Task 3)
+
+## Files changed
+ Dashboard/READMEs/09_BACKEND_CHANGES.md |  3 +-
+ app/api/ops.py                          | 34 +++++++++++++++
+ tests/test_dashboard_reads.py           | 77 +++++++++++++++++++++++++++++++++
+ 3 files changed, 113 insertions(+), 1 deletion(-)
+
+## Diff
+diff --git a/Dashboard/READMEs/09_BACKEND_CHANGES.md b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+index 5764ef9..e7d61d2 100644
+--- a/Dashboard/READMEs/09_BACKEND_CHANGES.md
++++ b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+@@ -14,21 +14,21 @@ is fully ticked.
+ 
+ ---
+ 
+ ## 1 · The eight changes
+ 
+ | # | Change | Files | Task | State | Tests | Guards green |
+ |---|---|---|---|---|---|---|
+ | 1 | 5 staff fields on `CreateUserRequest` / `UpdateUserRequest` / `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 4 | `GET /admin/users/{user_id}` + widened `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 2 | Delivery mode read-only on `GET /admin/settings`; honest `*_configured` | `app/api/admin.py` | T2 | ✅ | ✅ | ⬜ |
+-| 3 | `GET /playbooks` | `app/api/ops.py` | T3 | ⬜ | ⬜ | ⬜ |
++| 3 | `GET /playbooks` | `app/api/ops.py` | T3 | ✅ | ✅ | ⬜ |
+ | 7 | `contact_name` / `phone` / `email` on `GET /vendors` | `app/api/ops.py` | T4 | ⬜ | ⬜ | ⬜ |
+ | 5 | `POST /admin/reset` (dry-run + apply) | `app/api/admin.py`, `app/core/reset_taxonomy.py` *(new)* | T5, T6 | ⬜ | ⬜ | ⬜ |
+ | 6 | 8 guarded DELETE routes | `app/api/ops.py` (3), `app/api/admin.py` (5) | T7, T8 | ⬜ | ⬜ | ⬜ |
+ | 8 | Conditional `StaticFiles` mount at `/dashboard` | `app/main.py` | T9 | ⬜ | ⬜ | ⬜ |
+ 
+ **Amendments accepted after the list closed** — none of these is a ninth change:
+ 
+ | Amends | Amendment | Decision |
+ |---|---|---|
+ | #5 | `audit_log` moves WIPE → KEEP | D16 |
+@@ -93,10 +93,11 @@ nothing to these figures. Verified by reading the guard.
+ ---
+ 
+ ## 5 · Change log
+ 
+ *(One dated line per change as it lands: what, where, tests added, guards run.)*
+ 
+ | Date | # | What landed | Tests | Guards |
+ |---|---|---|---|---|
+ | 2026-08-13 | 1, 4 | 5 staff fields (`department`, `designation`, `whatsapp_number`, `max_open_tasks`, `working_days`) added to `CreateUserRequest`/`UpdateUserRequest`/`UserResponse`; `GET /admin/users/{user_id}` added (declared after `GET /users`) | `tests/test_dashboard_staff.py` new, 4/4 pass; full suite 219 passed / 3 failed (222 total; count of passing rose 215→219 as expected); the 3 failures are pre-existing `test_what_is_late.py` date-boundary failures, confirmed present before this change via `git stash` | `check_docs_in_sync.py` still fails as expected (route count now 141, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 2 | `_settings_response` gains `email_mode`/`whatsapp_mode`/`calendar_mode`/`inbound_email_mode` (from `get_settings()`) plus `email_credentials_stored`/`whatsapp_credentials_stored`/`calendar_credentials_stored`; the three `*_integration_configured` booleans now require credentials **AND** the matching process-wide mode (`email_mode=="smtp"`, `whatsapp_mode=="cloud_api"`, `calendar_mode=="google"`) | `tests/test_dashboard_settings_honesty.py` new, 2/2 pass; full suite 221 passed / 3 failed (224 total; passing rose 219→221 as expected, same 3 pre-existing `test_what_is_late.py` failures); no existing test asserted the old meaning, so none needed updating | `check_docs_in_sync.py` still fails as expected (resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
++| 2026-08-13 | 3 | `GET /playbooks` added to `app/api/ops.py` (declared immediately before `GET /playbooks/suggestions`), gated on `get_org_context` (readable by any org member, matching its GET siblings); query params `program_id`, `phase`, `current_only` (default `True`); returns `id`/`program_id`/`phase`/`entries`/`version`/`is_current`/`updated_by` per row, org-scoped, ordered by `phase, version` | `tests/test_dashboard_reads.py` new, 3/3 pass; full suite 224 passed / 3 failed (227 total; passing rose 221→224 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count rose by 1 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+diff --git a/app/api/ops.py b/app/api/ops.py
+index 81ebe27..23657c5 100644
+--- a/app/api/ops.py
++++ b/app/api/ops.py
+@@ -460,20 +460,54 @@ async def upsert_playbook(
+     playbook = Playbook(
+         org_id=ctx.org_id, program_id=body.program_id, phase=body.phase,
+         entries=body.entries, version=version, is_current=True,
+         updated_by=ctx.user_id,
+     )
+     db.add(playbook)
+     await db.commit()
+     return {"id": playbook.id, "version": version}
+ 
+ 
++@router.get("/playbooks")
++async def list_playbooks(
++    program_id: str | None = None,
++    phase: str | None = None,
++    current_only: bool = True,
++    ctx: OrgContext = Depends(get_org_context),
++    db: AsyncSession = Depends(get_db),
++):
++    """A go-live prerequisite that had a write path and no read path: without
++    this a console can only overwrite task waves blindly."""
++    stmt = select(Playbook).where(Playbook.org_id == ctx.org_id)
++    if program_id:
++        stmt = stmt.where(Playbook.program_id == program_id)
++    if phase:
++        stmt = stmt.where(Playbook.phase == phase)
++    if current_only:
++        stmt = stmt.where(Playbook.is_current.is_(True))
++    rows = (
++        await db.execute(stmt.order_by(Playbook.phase, Playbook.version))
++    ).scalars().all()
++    return [
++        {
++            "id": p.id,
++            "program_id": p.program_id,
++            "phase": p.phase,
++            "entries": p.entries,
++            "version": p.version,
++            "is_current": p.is_current,
++            "updated_by": p.updated_by,
++        }
++        for p in rows
++    ]
++
++
+ @router.get("/playbooks/suggestions")
+ async def list_suggestions(
+     ctx: OrgContext = Depends(get_org_context),
+     db: AsyncSession = Depends(get_db),
+ ):
+     rows = (
+         await db.execute(
+             select(PlaybookSuggestion).where(
+                 PlaybookSuggestion.org_id == ctx.org_id,
+                 PlaybookSuggestion.status == "pending",
+diff --git a/tests/test_dashboard_reads.py b/tests/test_dashboard_reads.py
+new file mode 100644
+index 0000000..264b26b
+--- /dev/null
++++ b/tests/test_dashboard_reads.py
+@@ -0,0 +1,77 @@
++"""Read paths a setup console needs and the API did not have."""
++from __future__ import annotations
++
++import pytest
++
++from tests.conftest import auth
++
++pytestmark = pytest.mark.asyncio
++
++
++async def _program(client, token, code: str) -> str:
++    resp = await client.post(
++        "/api/v1/admin/programs",
++        headers=auth(token),
++        json={"name": f"Programme {code}", "code": code,
++              "description": "Commissioning and handover of capacity."},
++    )
++    assert resp.status_code == 200, resp.text
++    return resp.json()["id"]
++
++
++async def test_playbooks_can_be_read_back(client, org_a):
++    token = org_a["admin_token"]
++    program_id = await _program(client, token, "PBREAD")
++    entries = [{"title": "Confirm site access", "required_skill": "scheduling",
++                "offset_days": -7, "priority": "P1", "visible_to_client": False}]
++    wrote = await client.post(
++        "/api/v1/playbooks",
++        headers=auth(token),
++        json={"program_id": program_id, "phase": "preparation", "entries": entries},
++    )
++    assert wrote.status_code == 200, wrote.text
++
++    resp = await client.get(
++        f"/api/v1/playbooks?program_id={program_id}", headers=auth(token)
++    )
++    assert resp.status_code == 200, resp.text
++    rows = resp.json()
++    assert len(rows) == 1
++    assert rows[0]["phase"] == "preparation"
++    assert rows[0]["entries"] == entries
++    assert rows[0]["is_current"] is True
++
++
++async def test_playbooks_current_only_hides_superseded(client, org_a):
++    token = org_a["admin_token"]
++    program_id = await _program(client, token, "PBVER")
++    for title in ("First wave", "Second wave"):
++        resp = await client.post(
++            "/api/v1/playbooks",
++            headers=auth(token),
++            json={"program_id": program_id, "phase": "delivery",
++                  "entries": [{"title": title, "required_skill": "general",
++                               "offset_days": 0, "priority": "P2",
++                               "visible_to_client": False}]},
++        )
++        assert resp.status_code == 200, resp.text
++
++    current = await client.get(
++        f"/api/v1/playbooks?program_id={program_id}&phase=delivery",
++        headers=auth(token),
++    )
++    assert len(current.json()) == 1
++    assert current.json()[0]["version"] == 2
++
++    every = await client.get(
++        f"/api/v1/playbooks?program_id={program_id}&phase=delivery"
++        "&current_only=false",
++        headers=auth(token),
++    )
++    assert len(every.json()) == 2
++
++
++async def test_playbooks_are_org_scoped(client, org_a, org_b):
++    resp = await client.get("/api/v1/playbooks", headers=auth(org_b["admin_token"]))
++    assert resp.status_code == 200
++    assert resp.json() == []

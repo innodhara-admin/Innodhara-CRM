@@ -1,0 +1,55 @@
+{
+  "require_action_item_review": true,
+  "auto_suggest_lead_state": true,
+  "audio_retention_days": 90,
+  "transcript_retention_days": 365,
+  "llm_monthly_budget_usd": 3,
+  "timezone": "Asia/Kolkata",
+  "currency": "INR",
+  "followup_cadence_days": 7,
+  "assignment_mode": "lead_confirm",
+  "working_days": [
+    "mon",
+    "tue",
+    "wed",
+    "thu",
+    "fri"
+  ],
+  "workday_start": "09:00",
+  "workday_end": "18:30",
+  "quiet_hours_override_priority": "P1",
+  "nudge_gap_days": {
+    "first": 3,
+    "second": 7
+  },
+  "max_unanswered_nudges": 2,
+  "max_client_messages_per_week": 3,
+  "lead_cold_after_days": 30,
+  "high_load_caution_pct": 80,
+  "delivery_requires_advance": true,
+  "scope_change_requires_confirmation": true,
+  "client_report_day": "Friday",
+  "client_report_time": "16:00",
+  "payment_reminder_schedule": [
+    {
+      "offset_days": 3,
+      "channel": "email"
+    }
+  ],
+  "reply_nudge_after_days": {
+    "nudge1": 4,
+    "nudge2": 8,
+    "call_task": 12
+  },
+  "ai_confidence_threshold": 0.6,
+  "email_mode": "smtp",
+  "whatsapp_mode": "dry_run",
+  "calendar_mode": "google",
+  "inbound_email_mode": "off",
+  "email_credentials_stored": false,
+  "whatsapp_credentials_stored": false,
+  "calendar_credentials_stored": false,
+  "email_integration_configured": false,
+  "whatsapp_integration_configured": false,
+  "calendar_integration_configured": false
+}

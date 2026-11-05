@@ -1,0 +1,19 @@
+[
+  {
+    "id": "e2587974a7c749869c66d6390b09407f",
+    "program_id": "5d2196610c72443fa1f625a0ed799cff",
+    "phase": "preparation",
+    "entries": [
+      {
+        "title": "Confirm site access",
+        "required_skill": "rack-and-stack",
+        "offset_days": -7,
+        "priority": "P1",
+        "visible_to_client": false
+      }
+    ],
+    "version": 1,
+    "is_current": true,
+    "updated_by": "995e19238e2342bf93629506ede31af4"
+  }
+]

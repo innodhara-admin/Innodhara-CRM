@@ -1,0 +1,42 @@
+[
+  {
+    "id": "902bf8fc1aff45df959490591bf07cff",
+    "kind": "follow_up",
+    "channel": "email",
+    "name": "follow_up email",
+    "version": 1,
+    "subject": "Following up",
+    "body": "Hello {{contact_name}}, thank you for your time today.",
+    "is_current": true
+  },
+  {
+    "id": "fcdd0239b32b494b82ecd1100baacf0d",
+    "kind": "follow_up",
+    "channel": "whatsapp",
+    "name": "follow_up whatsapp",
+    "version": 1,
+    "subject": null,
+    "body": "Hello {{contact_name}}, thank you for your time today.",
+    "is_current": true
+  },
+  {
+    "id": "f28c57859b6c4e9cb6a3561ddc45dd84",
+    "kind": "intro",
+    "channel": "email",
+    "name": "intro email",
+    "version": 1,
+    "subject": "Introduction from our team",
+    "body": "Hello {{contact_name}}, thank you for your time today.",
+    "is_current": true
+  },
+  {
+    "id": "2d532983c73d49cdac61b34033e3bdb2",
+    "kind": "intro",
+    "channel": "whatsapp",
+    "name": "intro whatsapp",
+    "version": 1,
+    "subject": null,
+    "body": "Hello {{contact_name}}, thank you for your time today.",
+    "is_current": true
+  }
+]

@@ -1,0 +1,75 @@
+{
+ "id": "c45c7f0b6ab34d4781c673012595b759",
+ "lead_id": "9fa024ce832b40bb92e5c770c01fa178",
+ "program_id": "615ea5ee613c46ba936eed14a2c5edb0",
+ "title": "Innovation Base Course Proposal - Greenwood International School",
+ "status": "draft",
+ "content_md": "Proposal For\n\nPrepared for Greenwood International School, a body paragraph long enough to serve as a style reference.\n\nDescription  Estimation\n\nLaptops  8 Units\n\nInteractive Panel  1 Unit\n\nTotal investment  Rs. 18,00,000/- all inclusive",
+ "line_items": [
+  {
+   "code": "IBC",
+   "label": "Innovation Base Course",
+   "unit": "student",
+   "unit_price": 2500.0,
+   "quantity": 600.0,
+   "line_total": 1500000.0
+  }
+ ],
+ "total_amount": 1500000.0,
+ "currency": "INR",
+ "template_version": 1,
+ "pricing_version": 1,
+ "template_kind": "docx_simple",
+ "filled": [
+  {
+   "key": "6d68f3ed6657",
+   "kind": "semantic",
+   "source": "ai",
+   "text": "Greenwood International School",
+   "brief": "the client's own name",
+   "anchor": "Prepared for",
+   "computed_by": null,
+   "citation": "client.name"
+  },
+  {
+   "key": "174117aa7da1",
+   "kind": "ask",
+   "source": "user",
+   "text": "8 Units",
+   "brief": "the salesperson said so",
+   "anchor": "Laptops",
+   "computed_by": null,
+   "citation": "turn 1: \"as discussed\""
+  },
+  {
+   "key": "b789afcb0024",
+   "kind": "ask",
+   "source": "default",
+   "text": "1 Unit",
+   "brief": "the salesperson said so",
+   "anchor": "Interactive Panel",
+   "computed_by": null,
+   "citation": "turn 1: \"as discussed\""
+  },
+  {
+   "key": "2410061c495d",
+   "kind": "ask_calculate",
+   "source": "user",
+   "text": "Rs. 18,00,000/- all inclusive",
+   "brief": "the salesperson said so",
+   "anchor": "Total investment",
+   "computed_by": null,
+   "citation": "turn 1: \"as discussed\""
+  }
+ ],
+ "sent_at": null,
+ "created_at": "2026-09-08T02:13:49.300031",
+ "revisions": [
+  {
+   "revision_no": 1,
+   "instruction": "Filled from the document's own tags",
+   "total_amount": 1500000.0,
+   "edited_at": "2026-09-08T02:13:50.297531"
+  }
+ ]
+}

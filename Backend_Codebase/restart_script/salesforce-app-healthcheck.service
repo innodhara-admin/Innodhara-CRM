@@ -1,0 +1,20 @@
+[Unit]
+Description=Health probe for the Salesforce AI backend; restarts it if unreachable
+Documentation=file:///home/telaverge/Ekaghni/Salesforce_AI_Project/Backend_Codebase/restart_script/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+
+# Runs as root deliberately: its whole job is to call
+# `systemctl restart salesforce-app-restart.service`, which a non-root user
+# cannot do without a polkit rule or a sudoers entry. The unit only runs curl
+# and systemctl, so the surface is small.
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+ExecStart=/home/telaverge/Ekaghni/Salesforce_AI_Project/Backend_Codebase/restart_script/healthcheck.sh
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=salesforce-healthcheck

@@ -1,0 +1,197 @@
+# Review package: 3009657ac2c153c850c9a0ac1ff0bf69f49bfd3d..HEAD
+
+## Commits
+f315283 Report honest email/whatsapp/calendar delivery mode on GET /admin/settings
+
+## Files changed
+ Dashboard/READMEs/09_BACKEND_CHANGES.md  |  3 ++-
+ app/api/admin.py                         | 29 +++++++++++++++------
+ tests/test_dashboard_settings_honesty.py | 43 ++++++++++++++++++++++++++++++++
+ 3 files changed, 67 insertions(+), 8 deletions(-)
+
+## Diff
+diff --git a/Dashboard/READMEs/09_BACKEND_CHANGES.md b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+index 450ba49..5764ef9 100644
+--- a/Dashboard/READMEs/09_BACKEND_CHANGES.md
++++ b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+@@ -13,21 +13,21 @@
+ is fully ticked.
+ 
+ ---
+ 
+ ## 1 · The eight changes
+ 
+ | # | Change | Files | Task | State | Tests | Guards green |
+ |---|---|---|---|---|---|---|
+ | 1 | 5 staff fields on `CreateUserRequest` / `UpdateUserRequest` / `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 4 | `GET /admin/users/{user_id}` + widened `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+-| 2 | Delivery mode read-only on `GET /admin/settings`; honest `*_configured` | `app/api/admin.py` | T2 | ⬜ | ⬜ | ⬜ |
++| 2 | Delivery mode read-only on `GET /admin/settings`; honest `*_configured` | `app/api/admin.py` | T2 | ✅ | ✅ | ⬜ |
+ | 3 | `GET /playbooks` | `app/api/ops.py` | T3 | ⬜ | ⬜ | ⬜ |
+ | 7 | `contact_name` / `phone` / `email` on `GET /vendors` | `app/api/ops.py` | T4 | ⬜ | ⬜ | ⬜ |
+ | 5 | `POST /admin/reset` (dry-run + apply) | `app/api/admin.py`, `app/core/reset_taxonomy.py` *(new)* | T5, T6 | ⬜ | ⬜ | ⬜ |
+ | 6 | 8 guarded DELETE routes | `app/api/ops.py` (3), `app/api/admin.py` (5) | T7, T8 | ⬜ | ⬜ | ⬜ |
+ | 8 | Conditional `StaticFiles` mount at `/dashboard` | `app/main.py` | T9 | ⬜ | ⬜ | ⬜ |
+ 
+ **Amendments accepted after the list closed** — none of these is a ninth change:
+ 
+ | Amends | Amendment | Decision |
+ |---|---|---|
+@@ -92,10 +92,11 @@ nothing to these figures. Verified by reading the guard.
+ 
+ ---
+ 
+ ## 5 · Change log
+ 
+ *(One dated line per change as it lands: what, where, tests added, guards run.)*
+ 
+ | Date | # | What landed | Tests | Guards |
+ |---|---|---|---|---|
+ | 2026-08-13 | 1, 4 | 5 staff fields (`department`, `designation`, `whatsapp_number`, `max_open_tasks`, `working_days`) added to `CreateUserRequest`/`UpdateUserRequest`/`UserResponse`; `GET /admin/users/{user_id}` added (declared after `GET /users`) | `tests/test_dashboard_staff.py` new, 4/4 pass; full suite 219 passed / 3 failed (222 total; count of passing rose 215→219 as expected); the 3 failures are pre-existing `test_what_is_late.py` date-boundary failures, confirmed present before this change via `git stash` | `check_docs_in_sync.py` still fails as expected (route count now 141, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
++| 2026-08-13 | 2 | `_settings_response` gains `email_mode`/`whatsapp_mode`/`calendar_mode`/`inbound_email_mode` (from `get_settings()`) plus `email_credentials_stored`/`whatsapp_credentials_stored`/`calendar_credentials_stored`; the three `*_integration_configured` booleans now require credentials **AND** the matching process-wide mode (`email_mode=="smtp"`, `whatsapp_mode=="cloud_api"`, `calendar_mode=="google"`) | `tests/test_dashboard_settings_honesty.py` new, 2/2 pass; full suite 221 passed / 3 failed (224 total; passing rose 219→221 as expected, same 3 pre-existing `test_what_is_late.py` failures); no existing test asserted the old meaning, so none needed updating | `check_docs_in_sync.py` still fails as expected (resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+diff --git a/app/api/admin.py b/app/api/admin.py
+index df76799..655fa3c 100644
+--- a/app/api/admin.py
++++ b/app/api/admin.py
+@@ -4,20 +4,21 @@ from __future__ import annotations
+ 
+ import secrets
+ from typing import Any
+ 
+ from fastapi import APIRouter, Depends
+ from pydantic import BaseModel, EmailStr, Field
+ from sqlalchemy import func, select
+ from sqlalchemy.ext.asyncio import AsyncSession
+ 
+ from app.api.deps import get_org_context, require_permission
++from app.config import get_settings
+ from app.core.constants import (
+     ORG_ROLES, Department, MessageChannel, Role, TemplateKind,
+ )
+ from app.core.context import OrgContext
+ from app.core.crypto import encrypt_secret
+ from app.core.exceptions import ConflictError, NotFoundError, ValidationFailedError
+ from app.core.security import hash_password
+ from app.database import get_db
+ from app.models.audit import AuditLog
+ from app.models.demo import DemoTeam, DemoTeamMember
+@@ -710,20 +711,24 @@ async def _get_settings_row(db: AsyncSession, org_id: str) -> OrgSettings:
+         await db.execute(select(OrgSettings).where(OrgSettings.org_id == org_id))
+     ).scalar_one_or_none()
+     if row is None:
+         row = OrgSettings(org_id=org_id)
+         db.add(row)
+         await db.flush()
+     return row
+ 
+ 
+ def _settings_response(s: OrgSettings) -> dict[str, Any]:
++    _cfg = get_settings()
++    _email_creds = bool((s.email_integration or {}).get("smtp_username"))
++    _whatsapp_creds = bool((s.whatsapp_integration or {}).get("phone_number_id"))
++    _calendar_creds = bool((s.calendar_integration or {}).get("calendar_id"))
+     return {
+         "require_action_item_review": s.require_action_item_review,
+         "auto_suggest_lead_state": s.auto_suggest_lead_state,
+         "audio_retention_days": s.audio_retention_days,
+         "transcript_retention_days": s.transcript_retention_days,
+         "llm_monthly_budget_usd": s.llm_monthly_budget_usd,
+         "timezone": s.timezone,
+         "currency": s.currency,
+         "followup_cadence_days": s.followup_cadence_days,
+         "assignment_mode": s.assignment_mode,
+@@ -736,28 +741,38 @@ def _settings_response(s: OrgSettings) -> dict[str, Any]:
+         "max_client_messages_per_week": s.max_client_messages_per_week,
+         "lead_cold_after_days": s.lead_cold_after_days,
+         "high_load_caution_pct": s.high_load_caution_pct,
+         "delivery_requires_advance": s.delivery_requires_advance,
+         "scope_change_requires_confirmation": s.scope_change_requires_confirmation,
+         "client_report_day": s.client_report_day,
+         "client_report_time": s.client_report_time,
+         "payment_reminder_schedule": s.payment_reminder_schedule,
+         "reply_nudge_after_days": s.reply_nudge_after_days,
+         "ai_confidence_threshold": s.ai_confidence_threshold,
+-        "email_integration_configured": bool(
+-            (s.email_integration or {}).get("smtp_username")
++        # ── Delivery honesty (D5) ────────────────────────────────────────────
++        # Two halves are required for anything to leave: stored credentials AND
++        # a process-wide mode. email_service returns a "dry_run:<path>" file
++        # unless email_mode == "smtp" AND creds is not None. Reporting only the
++        # first half is how "everyone believes they were sent" happens.
++        "email_mode": _cfg.email_mode,
++        "whatsapp_mode": _cfg.whatsapp_mode,
++        "calendar_mode": _cfg.calendar_mode,
++        "inbound_email_mode": _cfg.inbound_email_mode,
++        "email_credentials_stored": _email_creds,
++        "whatsapp_credentials_stored": _whatsapp_creds,
++        "calendar_credentials_stored": _calendar_creds,
++        "email_integration_configured": _email_creds and _cfg.email_mode == "smtp",
++        "whatsapp_integration_configured": (
++            _whatsapp_creds and _cfg.whatsapp_mode == "cloud_api"
+         ),
+-        "whatsapp_integration_configured": bool(
+-            (s.whatsapp_integration or {}).get("phone_number_id")
+-        ),
+-        "calendar_integration_configured": bool(
+-            (s.calendar_integration or {}).get("calendar_id")
++        "calendar_integration_configured": (
++            _calendar_creds and _cfg.calendar_mode == "google"
+         ),
+     }
+ 
+ 
+ @router.get("/settings")
+ async def get_org_settings(
+     ctx: OrgContext = Depends(require_permission("manage_settings")),
+     db: AsyncSession = Depends(get_db),
+ ):
+     row = await _get_settings_row(db, ctx.org_id)
+diff --git a/tests/test_dashboard_settings_honesty.py b/tests/test_dashboard_settings_honesty.py
+new file mode 100644
+index 0000000..95e0634
+--- /dev/null
++++ b/tests/test_dashboard_settings_honesty.py
+@@ -0,0 +1,43 @@
++"""The API must not report a setup step as done when it will silently fail.
++
++Manual p.7: "otherwise approved messages are written to a file and everyone
++believes they were sent."  conftest pins EMAIL_MODE=dry_run.
++"""
++from __future__ import annotations
++
++import pytest
++
++from tests.conftest import auth
++
++pytestmark = pytest.mark.asyncio
++
++
++async def test_settings_expose_the_process_wide_modes(client, org_a):
++    resp = await client.get(
++        "/api/v1/admin/settings", headers=auth(org_a["admin_token"])
++    )
++    assert resp.status_code == 200, resp.text
++    body = resp.json()
++    assert body["email_mode"] == "dry_run"
++    assert body["calendar_mode"] == "off"
++    assert body["inbound_email_mode"] == "off"
++    assert "whatsapp_mode" in body
++
++
++async def test_email_configured_is_false_while_mode_is_dry_run(client, org_a):
++    stored = await client.put(
++        "/api/v1/admin/integrations/email",
++        headers=auth(org_a["admin_token"]),
++        json={"smtp_username": "sales@alpha-example.com",
++              "smtp_app_password": "abcd efgh ijkl mnop"},
++    )
++    assert stored.status_code == 200, stored.text
++
++    resp = await client.get(
++        "/api/v1/admin/settings", headers=auth(org_a["admin_token"])
++    )
++    body = resp.json()
++    assert body["email_credentials_stored"] is True
++    assert body["email_integration_configured"] is False, (
++        "credentials are stored but EMAIL_MODE=dry_run, so no mail will leave"
++    )

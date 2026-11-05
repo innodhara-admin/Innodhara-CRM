@@ -1,0 +1,117 @@
+"""Human-readable process documentation, served as web pages.
+
+Mounted at `/documentation`, outside `API_PREFIX`: these are pages a person
+opens in a browser, not JSON an app consumes.
+
+**These pages are public**, like `/download/`. Requiring a bearer token would
+defeat the purpose — a phone browser opening a shared link cannot send an
+Authorization header, and this project has no cookie session to fall back on.
+Keep that in mind when writing one: assume anyone with the link can read it,
+so no credentials, no client commercials, no personal data. To close a page
+off later, add `Depends(get_org_context)` to the route below; the page then
+becomes API-only and the link stops working in a browser.
+
+The HTML lives in `documentation/` at the project root rather than under
+`app/`, following the same rule as the setup console (05_DECISIONS.md D19):
+`tests/test_genericity.py` walks `app/**/*.py`, and prose written for one
+industry has no business inside a scan root that exists to keep the code free
+of that industry's vocabulary.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+
+from fastapi import APIRouter
+from fastapi.responses import HTMLResponse
+
+from app.core.exceptions import NotFoundError
+
+router = APIRouter(prefix="/documentation", tags=["documentation"])
+
+_DOCS_DIR = Path(__file__).resolve().parent.parent.parent / "documentation"
+
+# An explicit registry, not a directory listing. The slug never reaches the
+# filesystem as caller-supplied text, so there is no path to traverse — the
+# concern `tests/test_storage_traversal.py` exists for. This stays true now
+# that slugs may contain "/": the slug is a dict KEY, and a key that is not in
+# the dict is a 404 rather than a filesystem lookup.
+_PAGES: dict[str, tuple[str, str, str]] = {
+    # slug: (filename, human title, section)
+    "pre-sales": (
+        "pre-sales.html",
+        "Pre-Sales Lead Flow",
+        "How the process works",
+    ),
+    "roles/relationship-manager": (
+        "relationship-manager.html",
+        "The Relationship Manager",
+        "Roles",
+    ),
+}
+
+
+@router.get("", response_class=HTMLResponse, include_in_schema=False)
+@router.get("/", response_class=HTMLResponse, include_in_schema=False)
+async def index() -> HTMLResponse:
+    """A plain contents page, so the documentation is discoverable from its
+    own root rather than only from a link somebody remembered to share."""
+    sections: dict[str, list[str]] = {}
+    for slug, (_file, title, section) in sorted(
+        _PAGES.items(), key=lambda kv: (kv[1][2], kv[1][1])
+    ):
+        sections.setdefault(section, []).append(
+            f'<li><a href="/documentation/{slug}">{title}</a></li>'
+        )
+    items = "\n".join(
+        f"<h2>{section}</h2><ul>{''.join(links)}</ul>"
+        for section, links in sections.items()
+    )
+    return HTMLResponse(
+        "<!doctype html>\n"
+        '<html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        '<meta name="robots" content="noindex, nofollow">'
+        "<title>Documentation</title>"
+        "<style>"
+        ":root{color-scheme:light dark}"
+        "body{margin:0;padding:56px 24px;font:17px/1.6 ui-sans-serif,system-ui,"
+        "-apple-system,sans-serif}"
+        ".w{max-width:640px;margin:0 auto}"
+        "h1{font-size:31px;letter-spacing:-.01em;margin:0 0 8px}"
+        "p{margin:0 0 28px;opacity:.7}"
+        "ul{padding-left:20px;margin:0}"
+        "li{margin-bottom:10px}"
+        "h2{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;"
+        "opacity:.55;margin:30px 0 10px}"
+        "h2:first-of-type{margin-top:0}"
+        "a{color:#6A4FB6}"
+        "@media(prefers-color-scheme:dark){a{color:#A996EA}}"
+        "</style></head><body><div class=\"w\">"
+        "<h1>Documentation</h1>"
+        "<p>How the process works, written for people rather than for the API.</p>"
+        f"{items}"
+        "</div></body></html>"
+    )
+
+
+@router.get("/{slug:path}", response_class=HTMLResponse, include_in_schema=False)
+async def page(slug: str) -> HTMLResponse:
+    """`:path` so a slug may contain "/" — pages are grouped, e.g.
+    `roles/relationship-manager`. Safe for the same reason it always was: the
+    slug is looked up as a key, and only the registry's own filename ever
+    reaches the filesystem."""
+    entry = _PAGES.get(slug.strip("/"))
+    if entry is None:
+        raise NotFoundError(
+            f"No documentation page called '{slug}'. See /documentation for the list."
+        )
+    filename, _title, _section = entry
+    path = _DOCS_DIR / filename
+    if not path.is_file():
+        # Registered but not shipped — say which file is missing rather than
+        # returning a 404 that reads as "this page does not exist".
+        raise NotFoundError(
+            f"The '{slug}' page is registered but its file is missing "
+            f"({filename}). It should sit in documentation/ at the project root."
+        )
+    return HTMLResponse(path.read_text(encoding="utf-8"))

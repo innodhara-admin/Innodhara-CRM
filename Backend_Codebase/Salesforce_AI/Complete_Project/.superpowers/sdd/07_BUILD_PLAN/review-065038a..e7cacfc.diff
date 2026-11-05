@@ -1,0 +1,120 @@
+# Review package: 065038a..HEAD
+
+## Commits
+e7cacfc docs: mark task-4 (change #7) complete in backend-changes
+f1fe20d task-4: Widen GET /vendors to include contact details
+
+## Files changed
+ Dashboard/READMEs/09_BACKEND_CHANGES.md |  3 ++-
+ app/api/ops.py                          | 10 +++++++++-
+ tests/test_dashboard_reads.py           | 18 ++++++++++++++++++
+ 3 files changed, 29 insertions(+), 2 deletions(-)
+
+## Diff
+diff --git a/Dashboard/READMEs/09_BACKEND_CHANGES.md b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+index e7d61d2..36f7ae2 100644
+--- a/Dashboard/READMEs/09_BACKEND_CHANGES.md
++++ b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+@@ -15,21 +15,21 @@ is fully ticked.
+ ---
+ 
+ ## 1 · The eight changes
+ 
+ | # | Change | Files | Task | State | Tests | Guards green |
+ |---|---|---|---|---|---|---|
+ | 1 | 5 staff fields on `CreateUserRequest` / `UpdateUserRequest` / `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 4 | `GET /admin/users/{user_id}` + widened `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 2 | Delivery mode read-only on `GET /admin/settings`; honest `*_configured` | `app/api/admin.py` | T2 | ✅ | ✅ | ⬜ |
+ | 3 | `GET /playbooks` | `app/api/ops.py` | T3 | ✅ | ✅ | ⬜ |
+-| 7 | `contact_name` / `phone` / `email` on `GET /vendors` | `app/api/ops.py` | T4 | ⬜ | ⬜ | ⬜ |
++| 7 | `contact_name` / `phone` / `email` on `GET /vendors` | `app/api/ops.py` | T4 | ✅ | ✅ | ⬜ |
+ | 5 | `POST /admin/reset` (dry-run + apply) | `app/api/admin.py`, `app/core/reset_taxonomy.py` *(new)* | T5, T6 | ⬜ | ⬜ | ⬜ |
+ | 6 | 8 guarded DELETE routes | `app/api/ops.py` (3), `app/api/admin.py` (5) | T7, T8 | ⬜ | ⬜ | ⬜ |
+ | 8 | Conditional `StaticFiles` mount at `/dashboard` | `app/main.py` | T9 | ⬜ | ⬜ | ⬜ |
+ 
+ **Amendments accepted after the list closed** — none of these is a ninth change:
+ 
+ | Amends | Amendment | Decision |
+ |---|---|---|
+ | #5 | `audit_log` moves WIPE → KEEP | D16 |
+ | #5 | `user_skills` + `approval_rules` move KEEP → a new CONFIG bucket, reached by a third flag `wipe_org_config` | D16 |
+@@ -94,10 +94,11 @@ nothing to these figures. Verified by reading the guard.
+ 
+ ## 5 · Change log
+ 
+ *(One dated line per change as it lands: what, where, tests added, guards run.)*
+ 
+ | Date | # | What landed | Tests | Guards |
+ |---|---|---|---|---|
+ | 2026-08-13 | 1, 4 | 5 staff fields (`department`, `designation`, `whatsapp_number`, `max_open_tasks`, `working_days`) added to `CreateUserRequest`/`UpdateUserRequest`/`UserResponse`; `GET /admin/users/{user_id}` added (declared after `GET /users`) | `tests/test_dashboard_staff.py` new, 4/4 pass; full suite 219 passed / 3 failed (222 total; count of passing rose 215→219 as expected); the 3 failures are pre-existing `test_what_is_late.py` date-boundary failures, confirmed present before this change via `git stash` | `check_docs_in_sync.py` still fails as expected (route count now 141, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 2 | `_settings_response` gains `email_mode`/`whatsapp_mode`/`calendar_mode`/`inbound_email_mode` (from `get_settings()`) plus `email_credentials_stored`/`whatsapp_credentials_stored`/`calendar_credentials_stored`; the three `*_integration_configured` booleans now require credentials **AND** the matching process-wide mode (`email_mode=="smtp"`, `whatsapp_mode=="cloud_api"`, `calendar_mode=="google"`) | `tests/test_dashboard_settings_honesty.py` new, 2/2 pass; full suite 221 passed / 3 failed (224 total; passing rose 219→221 as expected, same 3 pre-existing `test_what_is_late.py` failures); no existing test asserted the old meaning, so none needed updating | `check_docs_in_sync.py` still fails as expected (resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 3 | `GET /playbooks` added to `app/api/ops.py` (declared immediately before `GET /playbooks/suggestions`), gated on `get_org_context` (readable by any org member, matching its GET siblings); query params `program_id`, `phase`, `current_only` (default `True`); returns `id`/`program_id`/`phase`/`entries`/`version`/`is_current`/`updated_by` per row, org-scoped, ordered by `phase, version` | `tests/test_dashboard_reads.py` new, 3/3 pass; full suite 224 passed / 3 failed (227 total; passing rose 221→224 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count rose by 1 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
++| 2026-08-13 | 7 | `contact_name`/`phone`/`email` fields added to `GET /vendors` response in `app/api/ops.py` (widened return dict, no route signature change, gated on `get_org_context` unchanged) | `tests/test_dashboard_reads.py` appended 1 test (4th in file), 4/4 pass; full suite 225 passed / 3 failed (228 total; passing rose 224→225 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count unchanged, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+diff --git a/app/api/ops.py b/app/api/ops.py
+index 23657c5..30961b0 100644
+--- a/app/api/ops.py
++++ b/app/api/ops.py
+@@ -269,21 +269,29 @@ async def create_vendor(
+ 
+ @router.get("/vendors")
+ async def list_vendors(
+     ctx: OrgContext = Depends(get_org_context),
+     db: AsyncSession = Depends(get_db),
+ ):
+     rows = (
+         await db.execute(select(Vendor).where(Vendor.org_id == ctx.org_id))
+     ).scalars().all()
+     return [
+-        {"id": v.id, "name": v.name, "category": v.category, "notes": v.notes}
++        {
++            "id": v.id,
++            "name": v.name,
++            "contact_name": v.contact_name,
++            "phone": v.phone,
++            "email": v.email,
++            "category": v.category,
++            "notes": v.notes,
++        }
+         for v in rows
+     ]
+ 
+ 
+ # ─────────────────────────────────────────────────────────────────────────────
+ # Leave & bookings
+ # ─────────────────────────────────────────────────────────────────────────────
+ 
+ 
+ class LeaveRequest(BaseModel):
+diff --git a/tests/test_dashboard_reads.py b/tests/test_dashboard_reads.py
+index 264b26b..f85aa33 100644
+--- a/tests/test_dashboard_reads.py
++++ b/tests/test_dashboard_reads.py
+@@ -68,10 +68,28 @@ async def test_playbooks_current_only_hides_superseded(client, org_a):
+         "&current_only=false",
+         headers=auth(token),
+     )
+     assert len(every.json()) == 2
+ 
+ 
+ async def test_playbooks_are_org_scoped(client, org_a, org_b):
+     resp = await client.get("/api/v1/playbooks", headers=auth(org_b["admin_token"]))
+     assert resp.status_code == 200
+     assert resp.json() == []
++
++
++async def test_vendor_contact_details_are_readable(client, org_a):
++    token = org_a["admin_token"]
++    created = await client.post(
++        "/api/v1/vendors",
++        headers=auth(token),
++        json={"name": "Northgate Logistics", "contact_name": "Ravi Menon",
++              "phone": "+919000000010", "email": "ravi@northgate-example.com",
++              "category": "transport", "notes": "Two-day lead time."},
++    )
++    assert created.status_code == 200, created.text
++
++    rows = (await client.get("/api/v1/vendors", headers=auth(token))).json()
++    row = next(v for v in rows if v["name"] == "Northgate Logistics")
++    assert row["contact_name"] == "Ravi Menon"
++    assert row["phone"] == "+919000000010"
++    assert row["email"] == "ravi@northgate-example.com"

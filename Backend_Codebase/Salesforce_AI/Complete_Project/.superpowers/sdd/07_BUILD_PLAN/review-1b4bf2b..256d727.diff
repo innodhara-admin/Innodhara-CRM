@@ -1,0 +1,356 @@
+# Review package: 1b4bf2b..HEAD
+
+## Commits
+256d727 Add org-scoped POST /admin/reset (change #5, task 6)
+
+## Files changed
+ Dashboard/READMEs/09_BACKEND_CHANGES.md |   3 +-
+ app/api/admin.py                        |  75 +++++++++++++-
+ tests/test_dashboard_reset.py           | 178 ++++++++++++++++++++++++++++++++
+ 3 files changed, 253 insertions(+), 3 deletions(-)
+
+## Diff
+diff --git a/Dashboard/READMEs/09_BACKEND_CHANGES.md b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+index 36f7ae2..31b305c 100644
+--- a/Dashboard/READMEs/09_BACKEND_CHANGES.md
++++ b/Dashboard/READMEs/09_BACKEND_CHANGES.md
+@@ -16,21 +16,21 @@ is fully ticked.
+ 
+ ## 1 · The eight changes
+ 
+ | # | Change | Files | Task | State | Tests | Guards green |
+ |---|---|---|---|---|---|---|
+ | 1 | 5 staff fields on `CreateUserRequest` / `UpdateUserRequest` / `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 4 | `GET /admin/users/{user_id}` + widened `UserResponse` | `app/api/admin.py` | T1 | ✅ | ✅ | ⬜ |
+ | 2 | Delivery mode read-only on `GET /admin/settings`; honest `*_configured` | `app/api/admin.py` | T2 | ✅ | ✅ | ⬜ |
+ | 3 | `GET /playbooks` | `app/api/ops.py` | T3 | ✅ | ✅ | ⬜ |
+ | 7 | `contact_name` / `phone` / `email` on `GET /vendors` | `app/api/ops.py` | T4 | ✅ | ✅ | ⬜ |
+-| 5 | `POST /admin/reset` (dry-run + apply) | `app/api/admin.py`, `app/core/reset_taxonomy.py` *(new)* | T5, T6 | ⬜ | ⬜ | ⬜ |
++| 5 | `POST /admin/reset` (dry-run + apply) | `app/api/admin.py`, `app/core/reset_taxonomy.py` *(new)* | T5, T6 | ✅ | ✅ | ⬜ |
+ | 6 | 8 guarded DELETE routes | `app/api/ops.py` (3), `app/api/admin.py` (5) | T7, T8 | ⬜ | ⬜ | ⬜ |
+ | 8 | Conditional `StaticFiles` mount at `/dashboard` | `app/main.py` | T9 | ⬜ | ⬜ | ⬜ |
+ 
+ **Amendments accepted after the list closed** — none of these is a ninth change:
+ 
+ | Amends | Amendment | Decision |
+ |---|---|---|
+ | #5 | `audit_log` moves WIPE → KEEP | D16 |
+ | #5 | `user_skills` + `approval_rules` move KEEP → a new CONFIG bucket, reached by a third flag `wipe_org_config` | D16 |
+ | #5 | Every delete is org-scoped (`WHERE org_id = :org`), unlike the script it replaces | `06_DESIGN.md` §7.3 |
+@@ -95,10 +95,11 @@ nothing to these figures. Verified by reading the guard.
+ ## 5 · Change log
+ 
+ *(One dated line per change as it lands: what, where, tests added, guards run.)*
+ 
+ | Date | # | What landed | Tests | Guards |
+ |---|---|---|---|---|
+ | 2026-08-13 | 1, 4 | 5 staff fields (`department`, `designation`, `whatsapp_number`, `max_open_tasks`, `working_days`) added to `CreateUserRequest`/`UpdateUserRequest`/`UserResponse`; `GET /admin/users/{user_id}` added (declared after `GET /users`) | `tests/test_dashboard_staff.py` new, 4/4 pass; full suite 219 passed / 3 failed (222 total; count of passing rose 215→219 as expected); the 3 failures are pre-existing `test_what_is_late.py` date-boundary failures, confirmed present before this change via `git stash` | `check_docs_in_sync.py` still fails as expected (route count now 141, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 2 | `_settings_response` gains `email_mode`/`whatsapp_mode`/`calendar_mode`/`inbound_email_mode` (from `get_settings()`) plus `email_credentials_stored`/`whatsapp_credentials_stored`/`calendar_credentials_stored`; the three `*_integration_configured` booleans now require credentials **AND** the matching process-wide mode (`email_mode=="smtp"`, `whatsapp_mode=="cloud_api"`, `calendar_mode=="google"`) | `tests/test_dashboard_settings_honesty.py` new, 2/2 pass; full suite 221 passed / 3 failed (224 total; passing rose 219→221 as expected, same 3 pre-existing `test_what_is_late.py` failures); no existing test asserted the old meaning, so none needed updating | `check_docs_in_sync.py` still fails as expected (resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 3 | `GET /playbooks` added to `app/api/ops.py` (declared immediately before `GET /playbooks/suggestions`), gated on `get_org_context` (readable by any org member, matching its GET siblings); query params `program_id`, `phase`, `current_only` (default `True`); returns `id`/`program_id`/`phase`/`entries`/`version`/`is_current`/`updated_by` per row, org-scoped, ordered by `phase, version` | `tests/test_dashboard_reads.py` new, 3/3 pass; full suite 224 passed / 3 failed (227 total; passing rose 221→224 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count rose by 1 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+ | 2026-08-13 | 7 | `contact_name`/`phone`/`email` fields added to `GET /vendors` response in `app/api/ops.py` (widened return dict, no route signature change, gated on `get_org_context` unchanged) | `tests/test_dashboard_reads.py` appended 1 test (4th in file), 4/4 pass; full suite 225 passed / 3 failed (228 total; passing rose 224→225 as expected, same 3 pre-existing `test_what_is_late.py` failures) | `check_docs_in_sync.py` still fails as expected (route count unchanged, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
++| 2026-08-13 | 5 | `POST /admin/reset` added to `app/api/admin.py` (`ResetRequest` + `reset_organisation`), consuming `deletion_order`/`KEEP`/`CONFIG`/`REPLACE`/`WIPE` from `app/core/reset_taxonomy.py` (built in the prior task, T5, already committed/tested). Dry-run vs apply gated on `body.dry_run`; apply requires `confirm_org_name` to exactly match the org's name (422 otherwise); every count/delete is `WHERE org_id = :org` (`Base.metadata.tables[name]`, iterated in `deletion_order`'s child-before-parent order, never sorted/reversed); writes `admin.org_reset` to `audit_log` (KEEP) only on apply, with `counts`/`total`/the 3 flags as detail, before `db.commit()`; gated on `require_permission("manage_settings")` (org_admin only) | `tests/test_dashboard_reset.py` new, 7/7 pass (dry-run counts without deleting; apply requires echoed org name, both wrong-name 422 and missing-name 422; flags clear only their own bucket; KEEP survives a full reset and the session still works — `/auth/me`, `/admin/users`, `/admin/settings` all still 200; another org untouched by a reset scoped to a different org; audit row written and readable after its own bucket is gone; sales agent gets 403). Every test creates its own throwaway org via `create_org(...)` — none touches the session-scoped `org_a`/`org_b` fixtures except the permission test, which only needs a 403 and applies nothing. Full suite 238 passed / 3 failed (241 total; passing rose 231→238 as expected — 231 was this task's starting baseline, not 225, because T5's own tests (`tests/test_reset_taxonomy.py`) landed in the prior task and are already included); the 3 failures are the same pre-existing `test_what_is_late.py` timezone-boundary failures, untouched by this change | `check_docs_in_sync.py` still fails as expected (route count rose by 1 with this change, resync is Task 10); `check_hardcoded_strings.py` still fails with the same 2 pre-existing cosmetic Java findings, unrelated to this change |
+diff --git a/app/api/admin.py b/app/api/admin.py
+index 655fa3c..2a313e3 100644
+--- a/app/api/admin.py
++++ b/app/api/admin.py
+@@ -1,32 +1,33 @@
+ """Org Admin setup (doc §9.5): staff, programs, pricing, templates, demo
+ teams, feature switches, integrations and the audit log."""
+ from __future__ import annotations
+ 
+ import secrets
+ from typing import Any
+ 
+ from fastapi import APIRouter, Depends
+ from pydantic import BaseModel, EmailStr, Field
+-from sqlalchemy import func, select
++from sqlalchemy import delete as sa_delete, func, select
+ from sqlalchemy.ext.asyncio import AsyncSession
+ 
+ from app.api.deps import get_org_context, require_permission
+ from app.config import get_settings
+ from app.core.constants import (
+     ORG_ROLES, Department, MessageChannel, Role, TemplateKind,
+ )
+ from app.core.context import OrgContext
+ from app.core.crypto import encrypt_secret
+ from app.core.exceptions import ConflictError, NotFoundError, ValidationFailedError
++from app.core.reset_taxonomy import deletion_order
+ from app.core.security import hash_password
+-from app.database import get_db
++from app.database import Base, get_db
+ from app.models.audit import AuditLog
+ from app.models.demo import DemoTeam, DemoTeamMember
+ from app.models.organisation import Organisation, OrgSettings
+ from app.models.program import MessageTemplate, PricingTable, Program, ProposalTemplate
+ from app.models.user import User
+ from app.services import audit_service
+ 
+ router = APIRouter(prefix="/admin", tags=["org admin"])
+ 
+ 
+@@ -871,10 +872,80 @@ async def view_audit_log(
+         {
+             "at": e.at.isoformat(),
+             "user_id": e.user_id,
+             "action": e.action,
+             "entity_type": e.entity_type,
+             "entity_id": e.entity_id,
+             "detail": e.detail,
+         }
+         for e in entries
+     ]
++
++
++# ══════════════════════════ Reset ══════════════════════════════════════════
++class ResetRequest(BaseModel):
++    dry_run: bool = True
++    wipe_transactional: bool = True
++    wipe_catalogue: bool = False
++    wipe_org_config: bool = False
++    confirm_org_name: str | None = None
++
++
++@router.post("/reset")
++async def reset_organisation(
++    body: ResetRequest,
++    ctx: OrgContext = Depends(require_permission("manage_settings")),
++    db: AsyncSession = Depends(get_db),
++):
++    """Bulk removal, scoped to one organisation.
++
++    Unlike scripts/reset_for_datacentre_demo.py — which deletes globally and is
++    safe only because the demo database holds one tenant — every statement here
++    carries `WHERE org_id = :org`. Tables whose org_id is nullable (jobs,
++    llm_usage) keep their platform-level rows, which belong to no tenant.
++    """
++    org = (
++        await db.execute(select(Organisation).where(Organisation.id == ctx.org_id))
++    ).scalar_one()
++
++    if not body.dry_run and (body.confirm_org_name or "").strip() != org.name:
++        raise ValidationFailedError(
++            f"To apply this reset, send confirm_org_name exactly as '{org.name}'"
++        )
++
++    tables = deletion_order(
++        transactional=body.wipe_transactional,
++        catalogue=body.wipe_catalogue,
++        org_config=body.wipe_org_config,
++    )
++
++    counts: dict[str, int] = {}
++    for name in tables:
++        table = Base.metadata.tables[name]
++        scoped = table.c.org_id == ctx.org_id
++        counts[name] = (
++            await db.execute(select(func.count()).select_from(table).where(scoped))
++        ).scalar_one()
++        if not body.dry_run and counts[name]:
++            await db.execute(sa_delete(table).where(scoped))
++
++    total = sum(counts.values())
++    if not body.dry_run:
++        await audit_service.record(
++            db, org_id=ctx.org_id, user_id=ctx.user_id, action="admin.org_reset",
++            entity_type="organisation", entity_id=ctx.org_id,
++            detail={
++                "counts": counts,
++                "total": total,
++                "wipe_transactional": body.wipe_transactional,
++                "wipe_catalogue": body.wipe_catalogue,
++                "wipe_org_config": body.wipe_org_config,
++            },
++        )
++        await db.commit()
++
++    return {
++        "org": {"id": org.id, "name": org.name},
++        "counts": counts,
++        "total": total,
++        "applied": not body.dry_run,
++    }
+diff --git a/tests/test_dashboard_reset.py b/tests/test_dashboard_reset.py
+new file mode 100644
+index 0000000..ea9834a
+--- /dev/null
++++ b/tests/test_dashboard_reset.py
+@@ -0,0 +1,178 @@
++# tests/test_dashboard_reset.py
++"""The reset endpoint: the only route in the system that destroys in bulk.
++
++Every test creates its own organisation — org_a/org_b are session-scoped and
++wiping them would corrupt every test that runs afterwards.
++"""
++from __future__ import annotations
++
++import pytest
++from sqlalchemy import func, select
++
++from tests.conftest import auth, create_org
++
++pytestmark = pytest.mark.asyncio
++
++
++async def _seed(client, token) -> None:
++    """One lead (transactional) + one program (catalogue) + one skill (config)."""
++    lead = await client.post(
++        "/api/v1/leads", headers=auth(token), json={"name": "Meridian Data"}
++    )
++    assert lead.status_code == 200, lead.text
++    prog = await client.post(
++        "/api/v1/admin/programs", headers=auth(token),
++        json={"name": "Commissioning", "code": "RSTC", "description": "Halls."},
++    )
++    assert prog.status_code == 200, prog.text
++    me = (await client.get("/api/v1/auth/me", headers=auth(token))).json()
++    skill = await client.post(
++        "/api/v1/skills", headers=auth(token),
++        json={"user_id": me["user_id"], "skill": "scheduling", "level": "good"},
++    )
++    assert skill.status_code == 200, skill.text
++
++
++async def test_dry_run_counts_without_deleting(client, super_token):
++    org = await create_org(client, super_token, name="Reset Dry",
++                           slug="reset-dry", domain="reset-dry-example.com")
++    token = org["admin_token"]
++    await _seed(client, token)
++
++    resp = await client.post(
++        "/api/v1/admin/reset", headers=auth(token),
++        json={"dry_run": True, "wipe_transactional": True,
++              "wipe_catalogue": True, "wipe_org_config": True},
++    )
++    assert resp.status_code == 200, resp.text
++    body = resp.json()
++    assert body["applied"] is False
++    assert body["counts"]["leads"] == 1
++    assert body["counts"]["programs"] == 1
++    assert body["counts"]["user_skills"] == 1
++
++    still_there = await client.get("/api/v1/leads", headers=auth(token))
++    assert len(still_there.json()) == 1, "a dry run must delete nothing"
++
++
++async def test_apply_requires_the_org_name_echoed_back(client, super_token):
++    org = await create_org(client, super_token, name="Reset Echo",
++                           slug="reset-echo", domain="reset-echo-example.com")
++    token = org["admin_token"]
++    await _seed(client, token)
++
++    wrong = await client.post(
++        "/api/v1/admin/reset", headers=auth(token),
++        json={"dry_run": False, "wipe_transactional": True,
++              "confirm_org_name": "Reset Wrong"},
++    )
++    assert wrong.status_code == 422
++    assert "Reset Echo" in wrong.text
++
++    missing = await client.post(
++        "/api/v1/admin/reset", headers=auth(token),
++        json={"dry_run": False, "wipe_transactional": True},
++    )
++    assert missing.status_code == 422
++
++    assert len((await client.get("/api/v1/leads", headers=auth(token))).json()) == 1
++
++
++async def test_flags_clear_only_their_own_bucket(client, super_token):
++    org = await create_org(client, super_token, name="Reset Flags",
++                           slug="reset-flags", domain="reset-flags-example.com")
++    token = org["admin_token"]
++    await _seed(client, token)
++
++    resp = await client.post(
++        "/api/v1/admin/reset", headers=auth(token),
++        json={"dry_run": False, "wipe_transactional": True,
++              "wipe_catalogue": False, "wipe_org_config": False,
++              "confirm_org_name": "Reset Flags"},
++    )
++    assert resp.status_code == 200, resp.text
++    assert resp.json()["applied"] is True
++
++    assert (await client.get("/api/v1/leads", headers=auth(token))).json() == []
++    assert len((await client.get(
++        "/api/v1/admin/programs", headers=auth(token))).json()) == 1
++    assert len((await client.get("/api/v1/skills", headers=auth(token))).json()) == 1
++
++
++async def test_keep_survives_a_full_reset_and_the_session_still_works(
++    client, super_token
++):
++    org = await create_org(client, super_token, name="Reset Full",
++                           slug="reset-full", domain="reset-full-example.com")
++    token = org["admin_token"]
++    await _seed(client, token)
++
++    resp = await client.post(
++        "/api/v1/admin/reset", headers=auth(token),
++        json={"dry_run": False, "wipe_transactional": True,
++              "wipe_catalogue": True, "wipe_org_config": True,
++              "confirm_org_name": "Reset Full"},
++    )
++    assert resp.status_code == 200, resp.text
++
++    me = await client.get("/api/v1/auth/me", headers=auth(token))
++    assert me.status_code == 200, "the resetting account must survive its own reset"
++    assert len((await client.get(
++        "/api/v1/admin/users", headers=auth(token))).json()) >= 1
++    assert (await client.get(
++        "/api/v1/admin/settings", headers=auth(token))).status_code == 200
++
++
++async def test_another_organisation_is_untouched(client, super_token):
++    keeper = await create_org(client, super_token, name="Reset Bystander",
++                              slug="reset-bystand",
++                              domain="reset-bystand-example.com")
++    await _seed(client, keeper["admin_token"])
++    victim = await create_org(client, super_token, name="Reset Victim",
++                              slug="reset-victim",
++                              domain="reset-victim-example.com")
++    await _seed(client, victim["admin_token"])
++
++    resp = await client.post(
++        "/api/v1/admin/reset", headers=auth(victim["admin_token"]),
++        json={"dry_run": False, "wipe_transactional": True,
++              "wipe_catalogue": True, "wipe_org_config": True,
++              "confirm_org_name": "Reset Victim"},
++    )
++    assert resp.status_code == 200, resp.text
++
++    kept = keeper["admin_token"]
++    assert len((await client.get("/api/v1/leads", headers=auth(kept))).json()) == 1
++    assert len((await client.get(
++        "/api/v1/admin/programs", headers=auth(kept))).json()) == 1
++    assert len((await client.get("/api/v1/skills", headers=auth(kept))).json()) == 1
++
++
++async def test_reset_writes_an_audit_row_that_survives(client, super_token):
++    org = await create_org(client, super_token, name="Reset Audit",
++                           slug="reset-audit", domain="reset-audit-example.com")
++    token = org["admin_token"]
++    await _seed(client, token)
++
++    resp = await client.post(
++        "/api/v1/admin/reset", headers=auth(token),
++        json={"dry_run": False, "wipe_transactional": True,
++              "wipe_catalogue": True, "wipe_org_config": True,
++              "confirm_org_name": "Reset Audit"},
++    )
++    assert resp.status_code == 200, resp.text
++
++    audit = await client.get("/api/v1/admin/audit", headers=auth(token))
++    assert audit.status_code == 200, audit.text
++    actions = [row["action"] for row in audit.json()]
++    assert "admin.org_reset" in actions, (
++        "audit_log is in KEEP precisely so this row outlives the reset"
++    )
++
++
++async def test_a_sales_agent_cannot_reset(client, org_a):
++    resp = await client.post(
++        "/api/v1/admin/reset", headers=auth(org_a["agent_token"]),
++        json={"dry_run": True, "wipe_transactional": True},
++    )
++    assert resp.status_code == 403

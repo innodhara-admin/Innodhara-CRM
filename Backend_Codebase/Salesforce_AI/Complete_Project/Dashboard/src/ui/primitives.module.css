@@ -1,0 +1,577 @@
+/* Primitives — 06_DESIGN.md §9. CSS Modules; no component library, no framework.
+   Selectors are single-class and flat on purpose: the specificity collisions
+   that eat padding rules come from mixing element and class selectors. */
+
+/* ── Status markers ───────────────────────────────────────────────────────── */
+
+.marker {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  inline-size: var(--gutter);
+  flex: 0 0 var(--gutter);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: 1;
+  font-variant-emoji: text;
+}
+
+/* ● satisfied — weight, not hue. */
+.markerDone {
+  color: var(--status-done);
+  font-weight: 700;
+}
+
+/* ◐ partial, or unverifiable. Coloured: it needs looking at. */
+.markerPartial {
+  color: var(--status-partial);
+  font-weight: 700;
+}
+
+/* ○ not started — recedes. */
+.markerNone {
+  color: var(--status-none);
+  font-weight: 400;
+}
+
+/* — cannot be satisfied here. Coloured for the same reason as ◐. */
+.markerBlocked {
+  color: var(--status-blocked);
+  font-weight: 700;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+
+.button {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-raised);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--motion) var(--ease),
+    border-color var(--motion) var(--ease), color var(--motion) var(--ease);
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--ink-muted);
+  background: var(--paper-sunken);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.buttonPrimary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.buttonQuiet {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-muted);
+  padding-inline: 0.4rem;
+}
+
+.buttonQuiet:hover:not(:disabled) {
+  background: var(--paper-sunken);
+  border-color: transparent;
+  color: var(--ink);
+}
+
+/* Destructive is a word, not a colour: this palette spends its only hue on the
+   accent, and a red button next to an amber status marker would compete with
+   the one thing §6 wants looked at. The confirmation copy carries the weight. */
+.buttonDanger {
+  border-color: var(--status-blocked);
+  color: var(--status-blocked);
+}
+
+.buttonDanger:hover:not(:disabled) {
+  background: var(--status-blocked);
+  border-color: var(--status-blocked);
+  color: var(--paper-raised);
+}
+
+/* ── Form row: single column, label left, control right (§9) ──────────────── */
+
+.field {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr);
+  gap: var(--s2) var(--s4);
+  padding-block: var(--s4);
+  border-block-end: 1px solid var(--rule);
+  align-items: start;
+}
+
+.field:last-child {
+  border-block-end: none;
+}
+
+.fieldLabel {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--ink);
+  padding-block-start: 0.45rem;
+}
+
+.fieldRequired {
+  color: var(--accent);
+  margin-inline-start: 0.15rem;
+}
+
+.fieldControl {
+  min-inline-size: 0;
+}
+
+.input,
+.select,
+.textarea {
+  accent-color: var(--accent);
+  inline-size: 100%;
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  color: var(--ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.6rem;
+  transition: border-color var(--motion) var(--ease);
+}
+
+.input:hover,
+.select:hover,
+.textarea:hover {
+  border-color: var(--ink-faint);
+}
+
+.textarea {
+  min-block-size: 7rem;
+  resize: vertical;
+  line-height: var(--leading-normal);
+}
+
+/* Codes, keys, paths and JSON are mono wherever they are typed or shown. */
+.inputMono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.checkboxRow {
+  accent-color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--text-sm);
+  padding-block-start: 0.45rem;
+}
+
+/* The tri-state quantity control: a checkbox and a number, never a number
+   pre-filled with 1 (06_DESIGN.md §3.3). Unchecked sends null, which means
+   "this org did not say how many" and is not the same as one of them. */
+.triState {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  flex-wrap: wrap;
+}
+
+.triStateNumber {
+  inline-size: 8rem;
+}
+
+.inputError {
+  border-color: var(--status-blocked);
+}
+
+.fieldMessage {
+  grid-column: 2;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--status-blocked);
+  margin: 0;
+}
+
+/* ── The provenance line: this interface's signature ──────────────────────── */
+/* Under every control, in small mono, who actually enforces the rule. It is the
+   honesty model (§6) made visible at the point of entry rather than described
+   in a footnote, and it is the reason the three enforcement values exist. */
+
+.provenance {
+  grid-column: 2;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.provenanceText {
+  min-inline-size: 0;
+}
+
+/* Enforced and declared: the plainest possible caption. Nothing to flag. */
+.provenanceSchema {
+  border-inline-start: 2px solid var(--rule-strong);
+  padding-inline-start: var(--s2);
+}
+
+/* Enforced, but the generated schema does not carry it — a handler-body check
+   or a constraint the generator dropped. Dotted, because the rule is real but
+   its provenance is not machine-checkable the way `schema` is. */
+.provenanceUndeclared {
+  border-inline-start: 2px dotted var(--rule-strong);
+  padding-inline-start: var(--s2);
+}
+
+/* The server accepts anything. This is the marker §3.3 requires, and it is the
+   only place in the interface where a caption gets its own colour. */
+.provenanceUiOnly {
+  border-inline-start: 2px solid var(--status-partial);
+  padding-inline-start: var(--s2);
+  color: var(--status-partial);
+}
+
+.stamp {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--status-partial);
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+  padding: 0.05rem 0.3rem;
+  white-space: nowrap;
+}
+
+/* ── Panel: a sheet on the desk ───────────────────────────────────────────── */
+
+.panel {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: var(--s5);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin-block-end: var(--s4);
+  padding-block-end: var(--s3);
+  border-block-end: 1px solid var(--rule);
+  flex-wrap: wrap;
+}
+
+.panelTitle {
+  font-size: var(--text-xl);
+}
+
+/* Small-caps mono eyebrow. Used only where it encodes something — a tier name,
+   a section of the sign-off sheet — never as decoration. */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0;
+}
+
+/* ── Quote: the manual's own words, verbatim ──────────────────────────────── */
+
+.quote {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: var(--leading-loose);
+  color: var(--ink);
+  max-inline-size: var(--measure);
+  margin: 0;
+  padding-inline-start: var(--s4);
+  border-inline-start: 2px solid var(--accent);
+}
+
+.quoteSource {
+  display: block;
+  margin-block-start: var(--s2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}
+
+/* ── Table ────────────────────────────────────────────────────────────────── */
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.table th {
+  text-align: start;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: var(--s2) var(--s3);
+  border-block-end: 1px solid var(--rule-strong);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--s3);
+  border-block-end: 1px solid var(--rule);
+  vertical-align: baseline;
+}
+
+.table tr:last-child td {
+  border-block-end: none;
+}
+
+.tableEmpty {
+  padding: var(--s5) var(--s3);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* ── Banner ───────────────────────────────────────────────────────────────── */
+
+.banner {
+  display: flex;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--rule-strong);
+  border-inline-start-width: 3px;
+  border-radius: var(--radius);
+  background: var(--paper-raised);
+  font-size: var(--text-sm);
+}
+
+.bannerNote {
+  border-inline-start-color: var(--accent);
+}
+
+.bannerWarn {
+  border-inline-start-color: var(--status-partial);
+}
+
+.bannerBlocked {
+  border-inline-start-color: var(--status-blocked);
+}
+
+.bannerBody {
+  min-inline-size: 0;
+}
+
+.bannerTitle {
+  font-weight: 600;
+  margin: 0 0 var(--s1);
+}
+
+.bannerText {
+  margin: 0;
+  color: var(--ink-muted);
+}
+
+/* The server's own words, never paraphrased (§4.1). Mono, so it reads as a
+   quotation from the machine rather than as this console's opinion. */
+.serverMessage {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--ink);
+  background: var(--paper-sunken);
+  border-radius: var(--radius);
+  padding: var(--s2) var(--s3);
+  margin-block-start: var(--s2);
+  overflow-wrap: anywhere;
+}
+
+/* ── Modal ────────────────────────────────────────────────────────────────── */
+
+.modalScrim {
+  position: fixed;
+  inset: 0;
+  background: rgb(10 11 13 / 55%);
+  display: grid;
+  place-items: center;
+  padding: var(--s4);
+  z-index: 10;
+}
+
+.modal {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  padding: var(--s5);
+  inline-size: min(34rem, 100%);
+  max-block-size: calc(100vh - 2 * var(--s4));
+  overflow-y: auto;
+}
+
+.modalTitle {
+  font-size: var(--text-xl);
+  margin-block-end: var(--s3);
+}
+
+/* ── Layout shell ─────────────────────────────────────────────────────────── */
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--rail-width) minmax(0, 1fr);
+  min-block-size: 100vh;
+}
+
+/* §5.1 says the checklist rail is "permanently visible", and until Task 16 put
+   sixteen rows in it that was true by accident — the rail was shorter than the
+   viewport. `overflow-y: auto` alone could never deliver it: a grid row
+   stretches to its tallest item, so the rail was always exactly as tall as its
+   own content and had nothing to scroll. The whole page scrolled instead, and
+   the checklist left the screen.
+
+   Sticky with an explicit viewport height gives the rail a box to scroll
+   inside, so the sheet stays under the operator's eye while the item they are
+   working on scrolls beside it. Measured before changing: 2145px of rail
+   against a 674px viewport. */
+.rail {
+  background: var(--paper-sunken);
+  border-inline-end: 1px solid var(--rule-strong);
+  padding: var(--s5) var(--s4);
+  position: sticky;
+  inset-block-start: 0;
+  block-size: 100vh;
+  overflow-y: auto;
+}
+
+.content {
+  padding: var(--s6) var(--s6) var(--s7);
+  min-inline-size: 0;
+}
+
+.contentInner {
+  max-inline-size: 58rem;
+  display: grid;
+  gap: var(--s5);
+}
+
+/* A two-line lockup, deliberately — not a heading left to wrap.
+   At 21rem the rail cannot hold "Innodhara · Setup Console" on one line, and
+   the break landed mid-suffix ("… Setup / Console"), which reads as a bug.
+   The name carries the serif; the role sits under it in small-caps grotesque,
+   the way a document names itself and then says what kind of document it is. */
+.masthead {
+  margin: 0 0 var(--s5);
+  line-height: var(--leading-tight);
+}
+
+/* D15: the name is a token, so reversing it is one line in tokens.css. */
+.mastheadName {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.mastheadName::before {
+  content: var(--product-name);
+}
+
+.mastheadSuffix {
+  display: block;
+  margin-block-start: var(--s1);
+  font-family: var(--font-ui);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* The rail is the product (§5.1), so on a narrow screen it becomes the page
+   header rather than collapsing behind a hamburger — hiding the checklist would
+   hide the thing the operator is working through. */
+@media (max-width: 60rem) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* As a page header the rail must not be pinned or capped: a sticky 100vh
+     band above the content would leave nothing of the content on screen. */
+  .rail {
+    border-inline-end: none;
+    border-block-end: 1px solid var(--rule-strong);
+    position: static;
+    block-size: auto;
+    overflow-y: visible;
+  }
+
+  .content {
+    padding: var(--s5) var(--s4) var(--s6);
+  }
+
+  .field {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fieldLabel {
+    padding-block-start: 0;
+  }
+
+  .provenance,
+  .fieldMessage {
+    grid-column: 1;
+  }
+}
+
+/* ── Utility ──────────────────────────────────────────────────────────────── */
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.muted {
+  color: var(--ink-muted);
+}
+
+.ruleBreak {
+  border: 0;
+  border-block-start: 1px solid var(--rule);
+  margin-block: var(--s5);
+}

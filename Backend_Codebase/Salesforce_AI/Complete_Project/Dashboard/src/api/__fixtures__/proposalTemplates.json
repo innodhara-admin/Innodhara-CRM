@@ -1,0 +1,10 @@
+[
+  {
+    "id": "970f481d486a45a9a91d1e21e17bf6a7",
+    "name": "Standard commissioning",
+    "version": 1,
+    "kind": "markdown",
+    "is_current": true,
+    "body_md": "## Scope\n\nCommissioning and handover for {{client_name}}.\n"
+  }
+]

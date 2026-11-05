@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/brand_primary" />
+    <item
+        android:drawable="@drawable/ic_yuvipep_mark"
+        android:gravity="center"
+        android:width="112dp"
+        android:height="112dp" />
+</layer-list>

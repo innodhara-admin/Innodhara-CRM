@@ -1,0 +1,219 @@
+/**
+ * Design tokens — 06_DESIGN.md §9.
+ *
+ * "Commissioning document, not admin panel." The subject is a sign-off sheet:
+ * an engineer walks a checklist before a plant goes live, marks each line, and
+ * signs. That is literally what this console is, so the visual language is
+ * bond paper, hairline rules, a ruled status gutter and a rubber stamp — not
+ * cards, not widgets, not a dashboard.
+ *
+ * The accent is aniline stamp violet, the ink commissioning certificates were
+ * actually stamped with. It is the only hue in the interface. Status is carried
+ * by weight and glyph, and ONLY ◐ and — take colour, because those are the two
+ * the operator must look at (§6).
+ *
+ * Light is defined on bare :root. Dark redefines VALUES ONLY, in two places, so
+ * an explicit choice and the system default both work:
+ *   @media (prefers-color-scheme: dark) guarded against an explicit light
+ *   :root[data-theme="dark"] for the toggle
+ * No colour is ever defined for the first time inside either block.
+ */
+
+:root {
+  /* ── Paper and ink ─────────────────────────────────────────────────────── */
+  --paper: #f6f5f2;          /* bond */
+  --paper-raised: #fdfdfc;   /* the sheet itself */
+  --paper-sunken: #e6e3db;   /* the rail, and the status gutter */
+  --ink: #17191c;
+  --ink-muted: #575d66;
+  --ink-faint: #8a9099;
+  --rule: #dbd8d1;           /* hairline */
+  --rule-strong: #b6b2a9;    /* a rule that separates, not decorates */
+
+  /* ── The single accent: aniline stamp violet ───────────────────────────── */
+  --accent: #4c3a8c;
+  --accent-hover: #3b2c70;
+  --accent-wash: #ece8f7;
+  --accent-ink: #ffffff;
+
+  /* ── Status. Only these two are coloured (§6, §9) ──────────────────────── */
+  --status-partial: #94660a;  /* ◐ — some of it is done, or unverifiable */
+  --status-blocked: #8d4038;  /* — — cannot be satisfied here */
+  --status-done: var(--ink);  /* ● — carried by weight, not hue */
+  --status-none: var(--ink-faint);  /* ○ */
+
+  /* The one second hue, and it is not a status.
+
+     The placeholder editor sets this console's own proposals into a copy of the
+     organisation's document. The reader must never be in doubt about which
+     words are theirs and which this console is offering to add, and inside a
+     page of running prose no amount of weight or glyph carries that — which is
+     why the design spec asks for it by name (§11, "green suggestion chips
+     inline"). It appears on exactly one screen and marks provenance, not state,
+     so §6's four status markers are untouched. */
+  --suggest: #2f6b4a;
+  --suggest-rule: #9dc0ad;
+  --suggest-wash: #ecf3ef;
+
+  /* The path gutter in the block flow — wide enough for the longest path
+     measured across the four real documents, sec[21]/hdr/body[0] at 18
+     characters, so the document column does not ripple down the page. */
+  --doc-path-gutter: 8rem;
+
+  /* ── Type. Three roles, §9 ─────────────────────────────────────────────── */
+  /* Serif: headings AND the manual's verbatim quotes. The product's own voice
+     is the strongest asset here and is what stops this looking bootstrapped. */
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
+    "Hoefler Text", Georgia, "Times New Roman", serif;
+  /* Grotesque: every piece of interface chrome. */
+  --font-ui: Inter, "Segoe UI Variable Text", "Segoe UI", -apple-system,
+    BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  /* Mono: codes, keys, paths, JSON, and every constraint citation. */
+  --font-mono: "Cascadia Mono", "JetBrains Mono", "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --text-2xs: 0.6875rem;   /* 11px — gutter labels, stamp text */
+  --text-xs: 0.75rem;      /* 12px — constraint citations */
+  --text-sm: 0.8125rem;    /* 13px — secondary UI */
+  --text-base: 0.9375rem;  /* 15px — body */
+  --text-lg: 1.0625rem;    /* 17px — quoted manual text */
+  --text-xl: 1.375rem;     /* 22px — screen title */
+  --text-2xl: 1.875rem;    /* 30px — the masthead */
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-loose: 1.65;
+  --tracking-caps: 0.09em;
+
+  /* ── Space. 4px base. ──────────────────────────────────────────────────── */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 0.75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2rem;
+  --s7: 3rem;
+
+  /* Near-square: a certificate is printed, not rounded. 2px, not 0 — a true
+     0 reads as a wireframe rather than a considered edge. */
+  --radius: 2px;
+  --rail-width: 21rem;
+  --gutter: 1.75rem;         /* the sign-off column, fixed so markers align */
+  --measure: 34rem;          /* reading measure for quoted text */
+
+  /* §9: no motion beyond 120ms state transitions. */
+  --motion: 120ms;
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+
+  --focus-ring: 2px;
+
+  /* D15 — the product name lives in exactly one place. Reversing this to
+     "YuviPep" is a one-line change, which is the point. */
+  --product-name: "Innodhara";
+}
+
+/* System dark, unless the operator has explicitly chosen light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #14161a;
+    --paper-raised: #1b1e24;
+    --paper-sunken: #0f1114;
+    --ink: #e9e7e2;
+    --ink-muted: #9aa0a9;
+    --ink-faint: #6a7079;
+    --rule: #2b2f36;
+    --rule-strong: #444a53;
+
+    --accent: #a294e6;
+    --accent-hover: #b8adf0;
+    --accent-wash: #221d38;
+    --accent-ink: #14161a;
+
+    --status-partial: #d7a244;
+    --status-blocked: #d68c82;
+
+    --suggest: #7fc39c;
+    --suggest-rule: #3d6b53;
+    --suggest-wash: #182420;
+  }
+}
+
+/* Explicit dark wins in both directions. */
+:root[data-theme="dark"] {
+  --paper: #14161a;
+  --paper-raised: #1b1e24;
+  --paper-sunken: #0f1114;
+  --ink: #e9e7e2;
+  --ink-muted: #9aa0a9;
+  --ink-faint: #6a7079;
+  --rule: #2b2f36;
+  --rule-strong: #444a53;
+
+  --accent: #a294e6;
+  --accent-hover: #b8adf0;
+  --accent-wash: #221d38;
+  --accent-ink: #14161a;
+
+  --status-partial: #d7a244;
+  --status-blocked: #d68c82;
+
+  --suggest: #7fc39c;
+  --suggest-rule: #3d6b53;
+  --suggest-wash: #182420;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  /* Explicit, never transparent: the page must not borrow a host background. */
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+:where(h1, h2, h3, h4) {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+:where(code, kbd, samp, pre) {
+  font-family: var(--font-mono);
+  font-size: 0.925em;
+}
+
+:where(a) {
+  color: var(--accent);
+  text-underline-offset: 0.15em;
+}
+
+/* One focus treatment everywhere, and it is always visible. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

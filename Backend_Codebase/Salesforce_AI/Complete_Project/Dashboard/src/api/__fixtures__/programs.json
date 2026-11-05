@@ -1,0 +1,9 @@
+[
+  {
+    "id": "5d2196610c72443fa1f625a0ed799cff",
+    "name": "Datacentre commissioning",
+    "code": "DC-COMMISSION",
+    "description": "Commissioning and handover of capacity.",
+    "is_active": true
+  }
+]

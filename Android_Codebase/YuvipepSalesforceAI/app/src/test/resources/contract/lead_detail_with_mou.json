@@ -1,0 +1,41 @@
+{
+ "id": "116e205fe2eb4457890129e98dbb2180",
+ "name": "Greenwood International School",
+ "state": "cold_calling",
+ "is_important": false,
+ "owner_id": "7a5fc9a5ee1a4155a70c828f86fe61e2",
+ "address": null,
+ "city": null,
+ "region": null,
+ "website": null,
+ "source": null,
+ "notes": null,
+ "suggested_state": null,
+ "suggested_state_reason": null,
+ "last_activity_at": "2026-09-10T16:04:21.326716",
+ "created_at": "2026-09-10T16:04:21.326727",
+ "owner_name": "Alpha Education Admin",
+ "contacts": [],
+ "action_items": [],
+ "meetings": [],
+ "proposals": [],
+ "mous": [
+  {
+   "id": "76784261e0934bfb89c6e4b9e90e8418",
+   "title": "Innovation Base Course MOU - Greenwood International School",
+   "status": "draft",
+   "created_at": "2026-09-10T16:04:21.488597"
+  }
+ ],
+ "followups": [],
+ "intelligence": [],
+ "state_history": [
+  {
+   "from": null,
+   "to": "cold_calling",
+   "reason": "Assigned to Alpha Education Admin by Alpha Education Admin",
+   "at": "2026-09-10T16:04:21.327856",
+   "by": "Alpha Education Admin"
+  }
+ ]
+}

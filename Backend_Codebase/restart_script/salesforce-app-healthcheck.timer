@@ -1,0 +1,25 @@
+[Unit]
+Description=Hourly reachability check for the Salesforce AI backend
+Documentation=file:///home/telaverge/Ekaghni/Salesforce_AI_Project/Backend_Codebase/restart_script/README.md
+
+[Timer]
+# First probe 10 minutes after boot — long enough for the backend's own
+# start-up (init_db, job queue, Whisper warm) plus the tunnel to settle, so a
+# slow boot is not mistaken for a dead service and restarted underneath itself.
+OnBootSec=10min
+
+# Then once an hour, measured from the end of the last run.
+OnUnitActiveSec=1h
+
+# If the VM was asleep or powered off across a scheduled run, probe shortly
+# after it comes back instead of silently skipping to the next hour.
+Persistent=true
+
+# Spread the wake-up over a minute so the probe never lands at exactly :00
+# alongside every other hourly job on the box.
+RandomizedDelaySec=60
+
+Unit=salesforce-app-healthcheck.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,49 @@
+[Unit]
+Description=YuviPep Salesforce AI backend (FastAPI on :8010) + ngrok tunnel
+Documentation=file:///home/telaverge/Ekaghni/Salesforce_AI_Project/Backend_Codebase/restart_script/README.md
+# The tunnel needs working DNS and a route out, not merely a configured link,
+# so wait for network-online rather than network.target.
+After=network-online.target
+Wants=network-online.target
+# The tunnel points at nginx, which fronts both the API and the download page.
+After=nginx.service
+Wants=nginx.service
+
+[Service]
+# The script execs uvicorn as its final act, so the real server becomes this
+# unit's MAINPID. systemd therefore supervises the actual process: Restart=
+# works, `systemctl stop` tears down the whole control group (ngrok with it),
+# and none of this needs the deprecated KillMode=none that a
+# background-and-return script would have required.
+Type=exec
+
+User=telaverge
+Group=telaverge
+
+# ngrok reads its authtoken from $HOME/.config/ngrok/ngrok.yml, and the backend
+# reads its model caches from $HOME/.cache (Whisper ~3 GB, HuggingFace ~1.1 GB).
+# systemd does not set HOME for a User= unit, so without this ngrok starts
+# unauthenticated and Whisper re-downloads on every boot.
+Environment=HOME=/home/telaverge
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+WorkingDirectory=/home/telaverge/Ekaghni/Salesforce_AI_Project/Backend_Codebase/Salesforce_AI/Complete_Project
+
+ExecStart=/home/telaverge/Ekaghni/Salesforce_AI_Project/Backend_Codebase/restart_script/restart_backend.sh foreground
+
+# Crash recovery between the hourly probes. The 20s pause keeps a genuinely
+# broken build (bad .env, port taken) from spinning in a restart loop.
+Restart=on-failure
+RestartSec=20s
+
+# Cold start does init_db, seeds the super admin, starts three job workers and
+# warms the Whisper dictation model.
+TimeoutStartSec=300
+TimeoutStopSec=90
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=salesforce-app
+
+[Install]
+WantedBy=multi-user.target
